@@ -6,112 +6,70 @@
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, Text, useColorScheme, View, Image, Button } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <SafeAreaView style={styles.safeArea}>
+
+      <View style={styles.sectionContainer}>
+        <Image
+          style={styles.logo}
+          source={require('./assets/logo-tupperfy-v1.png')}
+          resizeMode="contain"
+        />
+        <Text style={styles.title}>{"Tranqui, dejale tus tuppers a tupperfy"}</Text>
+      </View>
+      <View style={{ ...styles.sectionContainer}}>
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Inicia sesión"
+            color='white'
+            onPress={() => Alert.alert('Simple Button pressed')}
+          />
         </View>
-      </ScrollView>
+        <View style={{ ...styles.buttonContainer, marginTop: 20 }}>
+          <Button
+            title="Crea una cuenta"
+            color='white'
+            onPress={() => Alert.alert('Simple Button pressed')}
+          />
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20
   },
-  sectionTitle: {
+  logo: {
+    flex: 1, // Set flex to 1 to take all available space
+    width: '100%', // Set width to 100% to take all available width
+    height: '100%', // Set height to 100% to take all available height
+  },
+  safeArea: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: 'Montserrat-Thin',
+    color: 'black', 
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  buttonContainer: {
+    width: '100%', // Establece el ancho del contenedor del botón al 100%
+    paddingHorizontal: 20,
+    backgroundColor:'blue',
   },
 });
 
