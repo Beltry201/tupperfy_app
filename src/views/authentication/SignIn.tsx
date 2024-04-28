@@ -1,35 +1,22 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { Alert, SafeAreaView, StyleSheet, Text, View, Image, Button } from 'react-native';
 
-import React from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, useColorScheme, View, Image, Button } from 'react-native';
-
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-
+const SignInView = ({navigation}: {navigation: any}) => {
   return (
     <SafeAreaView style={styles.safeArea}>
-
       <View style={styles.sectionContainer}>
         <Image
           style={styles.logo}
-          source={require('./assets/logo-tupperfy-v1.png')}
+          source={require('../../../assets/logo-tupperfy-v1.png')}
           resizeMode="contain"
         />
         <Text style={styles.title}>{"Tranqui, dejale tus tuppers a tupperfy"}</Text>
       </View>
-      <View style={{ ...styles.sectionContainer}}>
+      <View style={{ ...styles.sectionContainer }}>
         <View style={styles.buttonContainer}>
           <Button
             title="Inicia sesión"
             color='white'
-            onPress={() => Alert.alert('Simple Button pressed')}
+            onPress={() => navigation.navigate('LogIn')}
           />
         </View>
         <View style={{ ...styles.buttonContainer, marginTop: 20 }}>
@@ -42,7 +29,7 @@ function App(): React.JSX.Element {
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -53,9 +40,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
   logo: {
-    flex: 1, // Set flex to 1 to take all available space
-    width: '100%', // Set width to 100% to take all available width
-    height: '100%', // Set height to 100% to take all available height
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   safeArea: {
     flex: 1,
@@ -64,13 +51,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontFamily: 'Montserrat-Thin',
-    color: 'black', 
+    color: 'black',
   },
   buttonContainer: {
-    width: '100%', // Establece el ancho del contenedor del botón al 100%
+    width: '100%',
     paddingHorizontal: 20,
-    backgroundColor:'blue',
+    backgroundColor: 'blue',
   },
 });
 
-export default App;
+export default SignInView;
