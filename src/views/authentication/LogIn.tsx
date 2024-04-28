@@ -1,43 +1,91 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, View, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
+const LogInView = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-function LogInView(): React.JSX.Element {
+  const handleLogin = () => {
+    // Aquí puedes agregar la lógica para verificar las credenciales del usuario
+    // Por ejemplo, enviar una solicitud a un servidor para autenticar al usuario
+    console.log('Username:', username);
+    console.log('Password:', password);
+  };
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.sectionContainer}>
-        <Text>{"hola"}</Text>
+    <View style={styles.container}>
+      <Text style={styles.headerText}>Coloca tu usuario y contraseña para iniciar sesión</Text>
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Usuario"
+          placeholderTextColor="#003f5c"
+          onChangeText={text => setUsername(text)}
+        />
       </View>
-    </SafeAreaView>
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Contraseña"
+          placeholderTextColor="#003f5c"
+          secureTextEntry={true}
+          onChangeText={text => setPassword(text)}
+        />
+      </View>
+      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+        <Text style={styles.loginText}>Iniciar Sesión</Text>
+      </TouchableOpacity>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
+  container: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
+    backgroundColor: '#ffffff',
     alignItems: 'center',
-    paddingHorizontal: 20
+    justifyContent: 'center',
   },
-  logo: {
-    flex: 1, // Set flex to 1 to take all available space
-    width: '100%', // Set width to 100% to take all available width
-    height: '100%', // Set height to 100% to take all available height
+  inputView: {
+    width: '80%',
+    backgroundColor: '#ffffff',
+    borderRadius: 25,
+    height: 50,
+    marginBottom: 20,
+    justifyContent: 'center',
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  safeArea: {
-    flex: 1,
-    flexDirection: 'column',
+  inputText: {
+    height: 50,
+    color: 'black',
   },
-  title: {
-    fontSize: 24,
-    fontFamily: 'Montserrat-Thin',
-    color: 'black', 
+  headerText:{
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
-  buttonContainer: {
-    width: '100%', // Establece el ancho del contenedor del botón al 100%
-    paddingHorizontal: 20,
-    backgroundColor:'blue',
+  loginBtn: {
+    width: '80%',
+    backgroundColor: 'blue', // Cambiando el color a azul
+    borderRadius: 25,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 40,
+    marginBottom: 10,
+  },
+  loginText: {
+    color: 'white',
+    fontSize: 18,
   },
 });
 

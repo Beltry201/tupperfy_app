@@ -1,6 +1,7 @@
-import { Alert, SafeAreaView, StyleSheet, Text, View, Image, Button } from 'react-native';
+import React from 'react';
+import { Alert, SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
-const SignInView = ({navigation}: {navigation: any}) => {
+const SignInView = ({ navigation }: { navigation: any }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.sectionContainer}>
@@ -12,20 +13,12 @@ const SignInView = ({navigation}: {navigation: any}) => {
         <Text style={styles.title}>{"Tranqui, dejale tus tuppers a tupperfy"}</Text>
       </View>
       <View style={{ ...styles.sectionContainer }}>
-        <View style={styles.buttonContainer}>
-          <Button
-            title="Inicia sesión"
-            color='white'
-            onPress={() => navigation.navigate('LogIn')}
-          />
-        </View>
-        <View style={{ ...styles.buttonContainer, marginTop: 20 }}>
-          <Button
-            title="Crea una cuenta"
-            color='white'
-            onPress={() => Alert.alert('Simple Button pressed')}
-          />
-        </View>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('LogIn')}>
+          <Text style={styles.buttonText}>Iniciar sesión</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ ...styles.buttonContainer, marginTop: 20 }} onPress={() => Alert.alert('Simple Button pressed')}>
+          <Text style={styles.buttonText}>Crea una cuenta</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -54,9 +47,19 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   buttonContainer: {
-    width: '100%',
+    width: '90%',
     paddingHorizontal: 20,
     backgroundColor: 'blue',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 10,
+    paddingVertical: 15, // Aumenta el espacio vertical dentro del botón
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18, // Tamaño de fuente personalizado
   },
 });
 
