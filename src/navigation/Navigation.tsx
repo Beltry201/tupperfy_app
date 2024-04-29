@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LogInView from '../views/authentication/LogIn';
 import SignInView from '../views/authentication/SignIn';
 import CreateAccountView from '../views/authentication/CreateAccount';
-import { Picker } from '@react-native-picker/picker';
+
 
 const Stack = createNativeStackNavigator();
 

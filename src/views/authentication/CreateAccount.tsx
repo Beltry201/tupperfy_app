@@ -35,118 +35,130 @@ const CreateAccountView = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Nombre</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setFirstName}
-          value={firstName}
-          placeholder="Nombre"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Apellido</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setLastName}
-          value={lastName}
-          placeholder="Apellido"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Correo electrónico</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setEmail}
-          value={email}
-          placeholder="Correo electrónico"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Teléfono</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setPhoneNumber}
-          value={phoneNumber}
-          placeholder="Teléfono"
-          keyboardType="phone-pad"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>País</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setCountry}
-          value={country}
-          placeholder="País"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Ciudad</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setCity}
-          value={city}
-          placeholder="Ciudad"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Dirección</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setAddress}
-          value={address}
-          placeholder="Dirección"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Género</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setGender}
-          value={gender}
-          placeholder="Género (Hombre/Mujer/Otro)"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Contraseña</Text>
-        <View style={styles.passwordContainer}>
+    <View style={{ flex: 1 }}>
+      <Text style={styles.header}>¡Crea tu cuenta y pide tu próximo platillo en Tupperfy!</Text>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Nombre</Text>
           <TextInput
-            style={styles.passwordInput}
-            onChangeText={setPassword}
-            value={password}
-            placeholder="Contraseña"
-            secureTextEntry={!showPassword}
+            style={styles.input}
+            onChangeText={setFirstName}
+            value={firstName}
+            placeholder="Nombre"
           />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Text style={styles.showHide}>{showPassword ? "Ocultar" : "Mostrar"} contraseña</Text>
-          </TouchableOpacity>
         </View>
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Confirmar Contraseña</Text>
-        <View style={styles.passwordContainer}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Apellido</Text>
           <TextInput
-            style={styles.passwordInput}
-            onChangeText={setConfirmPassword}
-            value={confirmPassword}
-            placeholder="Confirmar contraseña"
-            secureTextEntry={!showConfirmPassword}
+            style={styles.input}
+            onChangeText={setLastName}
+            value={lastName}
+            placeholder="Apellido"
           />
-          <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-            <Text style={styles.showHide}>{showConfirmPassword ? "Ocultar" : "Mostrar"} contraseña</Text>
-          </TouchableOpacity>
         </View>
-      </View>
-      <Button title="Crear cuenta" onPress={handleSignUp} />
-    </ScrollView>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Correo electrónico</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setEmail}
+            value={email}
+            placeholder="Correo electrónico"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Teléfono</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setPhoneNumber}
+            value={phoneNumber}
+            placeholder="Teléfono"
+            keyboardType="phone-pad"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>País</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setCountry}
+            value={country}
+            placeholder="País"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Ciudad</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setCity}
+            value={city}
+            placeholder="Ciudad"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Dirección</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setAddress}
+            value={address}
+            placeholder="Dirección"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Género</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setGender}
+            value={gender}
+            placeholder="Género (Hombre/Mujer/Otro)"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Contraseña</Text>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              onChangeText={setPassword}
+              value={password}
+              placeholder="Contraseña"
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Text style={styles.showHide}>{showPassword ? "Ocultar" : "Mostrar"} contraseña</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Confirmar Contraseña</Text>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              onChangeText={setConfirmPassword}
+              value={confirmPassword}
+              placeholder="Confirmar contraseña"
+              secureTextEntry={!showConfirmPassword}
+            />
+            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+              <Text style={styles.showHide}>{showConfirmPassword ? "Ocultar" : "Mostrar"} contraseña</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>Crear cuenta</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  header: {
+    textAlign: 'center',
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 40,
+  },
   container: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -156,16 +168,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    color: '#555',
+    color: '#333',
     marginBottom: 5,
+    fontSize: 16,
   },
   input: {
     height: 40,
     borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
+    borderBottomWidth: 1,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
+    fontSize: 16,
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -175,14 +188,30 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
+    borderBottomWidth: 1,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
+    fontSize: 16,
   },
   showHide: {
     marginLeft: 10,
     color: 'blue',
+    fontSize: 16,
+  },
+  buttonContainer: {
+    alignItems: 'flex-end',
+    marginTop: 20,
+  },
+  button: {
+    backgroundColor: 'blue',
+    paddingVertical: 8,
+    paddingHorizontal: 115, // Ancho ajustado aquí
+    borderRadius: 20,
+    marginBottom: 40,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 
