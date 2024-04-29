@@ -16,7 +16,7 @@ const SignInView = ({ navigation }: { navigation: any }) => {
         <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('LogIn')}>
           <Text style={styles.buttonText}>Iniciar sesión</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ ...styles.buttonContainer, marginTop: 20 }} onPress={() => Alert.alert('Simple Button pressed')}>
+        <TouchableOpacity style={{ ...styles.buttonContainer, marginTop: 20 }} onPress={() => navigation.navigate('CreateAccount')}>
           <Text style={styles.buttonText}>Crea una cuenta</Text>
         </TouchableOpacity>
       </View>
