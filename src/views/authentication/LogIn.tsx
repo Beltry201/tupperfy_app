@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
+
 const LogInView = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // Aquí puedes agregar la lógica para verificar las credenciales del usuario
-    // Por ejemplo, enviar una solicitud a un servidor para autenticar al usuario
+    // Lógica de inicio de sesión...
     console.log('Username:', username);
     console.log('Password:', password);
+  };
+
+  const handleForgotPassword = () => {
   };
 
   return (
@@ -35,6 +38,9 @@ const LogInView = () => {
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginText}>Iniciar Sesión</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.forgotPasswordBtn} onPress={handleForgotPassword}>
+        <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -45,6 +51,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  headerText: {
+    fontSize: 30,
+    marginBottom: 50,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   inputView: {
     width: '80%',
@@ -67,25 +79,28 @@ const styles = StyleSheet.create({
     height: 50,
     color: 'black',
   },
-  headerText:{
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
   loginBtn: {
     width: '80%',
-    backgroundColor: 'blue', // Cambiando el color a azul
+    backgroundColor: 'blue',
     borderRadius: 25,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
+    marginTop: 20,
     marginBottom: 10,
   },
   loginText: {
     color: 'white',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  forgotPasswordBtn: {
+    marginTop: 10,
+  },
+  forgotPasswordText: {
+    color: 'blue',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

@@ -14,9 +14,11 @@ const CreateAccountView = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [username, setUsername] = useState('');
 
   const handleSignUp = () => {
-    if (!firstName || !lastName || !email || !phoneNumber || !country || !city || !gender) {
+    if (!firstName || !lastName || !email || !phoneNumber || !country || !city || !gender || !dateOfBirth) {
       Alert.alert('Campos Obligatorios', 'Todos los campos excepto Dirección y Género son obligatorios.');
       return;
     }
@@ -28,6 +30,7 @@ const CreateAccountView = () => {
     console.log('Phone Number:', phoneNumber);
     console.log('Country:', country);
     console.log('City:', city);
+    console.log('Date of Birth:', dateOfBirth);
     console.log('Gender:', gender);
     console.log('Address:', address);
     console.log('Password:', password);
@@ -68,6 +71,15 @@ const CreateAccountView = () => {
           />
         </View>
         <View style={styles.inputContainer}>
+          <Text style={styles.label}>Nombre de Usuario</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setUsername}
+            value={username}
+            placeholder="Nombre de Usuario"
+          />
+        </View>
+        <View style={styles.inputContainer}>
           <Text style={styles.label}>Teléfono</Text>
           <TextInput
             style={styles.input}
@@ -102,6 +114,15 @@ const CreateAccountView = () => {
             onChangeText={setAddress}
             value={address}
             placeholder="Dirección"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Fecha de Nacimiento</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setDateOfBirth}
+            value={dateOfBirth}
+            placeholder="Fecha de Nacimiento"
           />
         </View>
         <View style={styles.inputContainer}>
@@ -212,6 +233,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

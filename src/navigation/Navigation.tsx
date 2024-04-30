@@ -6,6 +6,7 @@ import SignInView from '../views/authentication/SignIn';
 import CreateAccountView from '../views/authentication/CreateAccount';
 
 
+
 const Stack = createNativeStackNavigator();
 
 const NavigationStack = () => {
@@ -15,6 +16,7 @@ const NavigationStack = () => {
         <Stack.Screen name="SignIn" component={SignInView} />
         <Stack.Screen name="LogIn" component={LogInView} />
         <Stack.Screen name="CreateAccount" component={CreateAccountView} />
+       
       </Stack.Navigator>
     </NavigationContainer>
   );

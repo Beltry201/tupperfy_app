@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 18, // Tamaño de fuente personalizado
+    fontWeight: 'bold',
   },
 });
 
