@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const CreateAccountView = () => {
@@ -19,8 +19,8 @@ const CreateAccountView = () => {
   const [username, setUsername] = useState('');
 
   const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState<'date' | 'time' | undefined>(undefined);
-  const [show, setShow] = useState(false);
+  const [mode, setMode] = useState<'date' | undefined>(undefined);
+  const [show, setShow] = useState(true);
   
   const onChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || date;
@@ -28,18 +28,22 @@ const CreateAccountView = () => {
     setDate(currentDate);
   };
 
-  const showMode = (currentMode: 'date' | 'time') => {
+  const showDatePickerHandler = () => {
     setShow(true);
-    setMode(currentMode);
   };
 
-  const showDatepicker = () => {
-    showMode('date');
-  };
+  // const showMode = (currentMode: 'date' | 'time') => {
+  //   setShow(true);
+  //   setMode(currentMode);
+  // };
 
-  const showTimepicker = () => {
-    showMode('time');
-  };
+  // const showDatepicker = () => {
+  //   showMode('date');
+  // };
+
+  // const showTimepicker = () => {
+  //   showMode('time');
+  // };
 
   const handleSignUp = () => {
     if (!firstName || !lastName || !email || !phoneNumber || !country || !city || !gender || !dateOfBirth) {
@@ -63,23 +67,25 @@ const CreateAccountView = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View>
+      {/* <View>
         <Button onPress={showDatepicker} title="Show date picker!" />
       </View>
       <View>
         <Button onPress={showTimepicker} title="Show time picker!" />
-      </View>
-      <Text>Selected: {date.toLocaleString()}</Text>
-      {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-        />
-      )}
+      </View> */}
+      <TouchableOpacity onPress={showDatePickerHandler}>
+        <Text>Selected: {date.toLocaleString()}</Text>
+      </TouchableOpacity>
+      <View style={styles.datePickerContainer}>
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            mode={mode || 'date'}
+            is24Hour={true}
+            display="calendar"
+            onChange={onChange}
+          />
+        </View>
       <Text style={styles.header}>¡Crea tu cuenta y pide tu próximo platillo en Tupperfy!</Text>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.inputContainer}>
@@ -275,6 +281,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  datePickerContainer: {
+    width: '100%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    margin: 12
   },
 });
 
