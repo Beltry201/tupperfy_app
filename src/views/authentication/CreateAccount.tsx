@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const CreateAccountView = () => {
   const [firstName, setFirstName] = useState('');
@@ -16,6 +17,29 @@ const CreateAccountView = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [username, setUsername] = useState('');
+
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState<'date' | 'time' | undefined>(undefined);
+  const [show, setShow] = useState(false);
+  
+  const onChange = (event: any, selectedDate: Date | undefined) => {
+    const currentDate = selectedDate || date;
+    setShow(false);
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode: 'date' | 'time') => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
 
   const handleSignUp = () => {
     if (!firstName || !lastName || !email || !phoneNumber || !country || !city || !gender || !dateOfBirth) {
@@ -39,6 +63,23 @@ const CreateAccountView = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <View>
+        <Button onPress={showDatepicker} title="Show date picker!" />
+      </View>
+      <View>
+        <Button onPress={showTimepicker} title="Show time picker!" />
+      </View>
+      <Text>Selected: {date.toLocaleString()}</Text>
+      {show && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode={mode}
+          is24Hour={true}
+          display="default"
+          onChange={onChange}
+        />
+      )}
       <Text style={styles.header}>¡Crea tu cuenta y pide tu próximo platillo en Tupperfy!</Text>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.inputContainer}>
