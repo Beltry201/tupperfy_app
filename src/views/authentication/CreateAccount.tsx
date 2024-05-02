@@ -17,33 +17,21 @@ const CreateAccountView = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [username, setUsername] = useState('');
+  const [show, setShow] = useState(false);
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState<'date' | undefined>(undefined);
-  const [show, setShow] = useState(true);
   
   const onChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || date;
     setShow(false);
     setDate(currentDate);
+    setDateOfBirth(currentDate.toISOString().split('T')[0]);
   };
 
   const showDatePickerHandler = () => {
     setShow(true);
   };
-
-  // const showMode = (currentMode: 'date' | 'time') => {
-  //   setShow(true);
-  //   setMode(currentMode);
-  // };
-
-  // const showDatepicker = () => {
-  //   showMode('date');
-  // };
-
-  // const showTimepicker = () => {
-  //   showMode('time');
-  // };
 
   const handleSignUp = () => {
     if (!firstName || !lastName || !email || !phoneNumber || !country || !city || !gender || !dateOfBirth) {
@@ -67,25 +55,6 @@ const CreateAccountView = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* <View>
-        <Button onPress={showDatepicker} title="Show date picker!" />
-      </View>
-      <View>
-        <Button onPress={showTimepicker} title="Show time picker!" />
-      </View> */}
-      <TouchableOpacity onPress={showDatePickerHandler}>
-        <Text>Selected: {date.toLocaleString()}</Text>
-      </TouchableOpacity>
-      <View style={styles.datePickerContainer}>
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode={mode || 'date'}
-            is24Hour={true}
-            display="calendar"
-            onChange={onChange}
-          />
-        </View>
       <Text style={styles.header}>¡Crea tu cuenta y pide tu próximo platillo en Tupperfy!</Text>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.inputContainer}>
@@ -165,12 +134,29 @@ const CreateAccountView = () => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Fecha de Nacimiento</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setDateOfBirth}
-            value={dateOfBirth}
-            placeholder="Fecha de Nacimiento"
-          />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TextInput
+              style={[styles.input, { flex: 1 }]}
+              value={dateOfBirth}
+              placeholder="Fecha de Nacimiento"
+              editable={false}
+            />
+            <TouchableOpacity onPress={showDatePickerHandler}>
+              <Text style={styles.showDatePicker}>Seleccionar</Text>
+            </TouchableOpacity>
+          </View>
+          {show && (
+            <View style={styles.datePickerContainer}>
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={date}
+                mode={mode || 'date'}
+                is24Hour={true}
+                display="calendar"
+                onChange={onChange}
+              />
+            </View>
+          )}
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Género</Text>
@@ -287,8 +273,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
-    margin: 12
+    marginTop: 12
   },
+  showDatePicker: {
+    color: 'blue',
+    fontSize: 16,
+    marginLeft: 10,
+  }
 });
 
 export default CreateAccountView;
