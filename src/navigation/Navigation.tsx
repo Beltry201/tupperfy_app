@@ -7,7 +7,6 @@ import ForgotPasswordView from '../views/authentication/ForgotPassword';
 
 
 
-
 const Stack = createNativeStackNavigator();
 
 const NavigationStack = () => {
