@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from 'react-native-date-picker';
+// import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CreateAccountView = () => {
   const [firstName, setFirstName] = useState('');
@@ -15,23 +16,9 @@ const CreateAccountView = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState(new Date());
   const [username, setUsername] = useState('');
-  const [show, setShow] = useState(false);
-
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState<'date' | undefined>(undefined);
-  
-  const onChange = (event: any, selectedDate: Date | undefined) => {
-    const currentDate = selectedDate || date;
-    setShow(false);
-    setDate(currentDate);
-    setDateOfBirth(currentDate.toISOString().split('T')[0]);
-  };
-
-  const showDatePickerHandler = () => {
-    setShow(true);
-  };
+  const [open, setOpen] = useState(false)
 
   const handleSignUp = () => {
     if (!firstName || !lastName || !email || !phoneNumber || !country || !city || !gender || !dateOfBirth) {
@@ -55,28 +42,31 @@ const CreateAccountView = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Text style={styles.header}>¡Crea tu cuenta y pide tu próximo platillo en Tupperfy!</Text>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Nombre</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setFirstName}
-            value={firstName}
-            placeholder="Nombre"
-          />
+        <Text style={styles.header}>Crea tu cuenta</Text>
+        <View style={{flex:1, flexDirection: "row"}}>
+          <View style={[styles.inputContainer, {flex: 1}]}>
+              <Text style={styles.label}>Nombre *</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={setFirstName}
+                value={firstName}
+                placeholder="Nombre"
+              />
+          </View>
+          <View style={[styles.inputContainer, {flex: 1}]}>
+            <Text style={styles.label}>Apellido *</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={setLastName}
+              value={lastName}
+              placeholder="Apellido"
+            />
+          </View>
         </View>
+        
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Apellido</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setLastName}
-            value={lastName}
-            placeholder="Apellido"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Correo electrónico</Text>
+          <Text style={styles.label}>Correo electrónico *</Text>
           <TextInput
             style={styles.input}
             onChangeText={setEmail}
@@ -87,76 +77,39 @@ const CreateAccountView = () => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Nombre de Usuario</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setUsername}
-            value={username}
-            placeholder="Nombre de Usuario"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Teléfono</Text>
+          <Text style={styles.label}>Teléfono *</Text>
           <TextInput
             style={styles.input}
             onChangeText={setPhoneNumber}
             value={phoneNumber}
-            placeholder="Teléfono"
+            placeholder="+52"
             keyboardType="phone-pad"
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>País</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setCountry}
-            value={country}
-            placeholder="País"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Ciudad</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setCity}
-            value={city}
-            placeholder="Ciudad"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Dirección</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setAddress}
-            value={address}
-            placeholder="Dirección"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Fecha de Nacimiento</Text>
+          <Text style={styles.label}>Fecha de Nacimiento *</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              value={dateOfBirth}
-              placeholder="Fecha de Nacimiento"
-              editable={false}
-            />
-            <TouchableOpacity onPress={showDatePickerHandler}>
-              <Text style={styles.showDatePicker}>Seleccionar</Text>
-            </TouchableOpacity>
+            {/* <Button title="Open" onPress={() => setOpen(true)} /> */}
+            <TouchableOpacity
+                style={styles.datePickerField}
+                onPress={() => setOpen(true)}
+              >
+                {/* <Icon name="calendar" size={20} color="black" /> */}
+                {/* <Text style={styles.dateText}>{dateOfBirth || 'Seleccionar fecha'}</Text> */}
+              </TouchableOpacity>
+            <DatePicker
+              modal
+              open={open}
+              date={dateOfBirth}
+              onConfirm={(date) => {
+                setOpen(false)
+                setDateOfBirth(dateOfBirth)
+              }}
+              onCancel={() => {
+                setOpen(false)
+              }}
+            />   
           </View>
-          {show && (
-            <View style={styles.datePickerContainer}>
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={date}
-                mode={mode || 'date'}
-                is24Hour={true}
-                display="calendar"
-                onChange={onChange}
-              />
-            </View>
-          )}
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Género</Text>
@@ -168,7 +121,7 @@ const CreateAccountView = () => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Contraseña</Text>
+          <Text style={styles.label}>Contraseña *</Text>
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.passwordInput}
@@ -183,7 +136,7 @@ const CreateAccountView = () => {
           </View>
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Confirmar Contraseña</Text>
+          <Text style={styles.label}>Confirmar Contraseña *</Text>
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.passwordInput}
@@ -206,12 +159,14 @@ const CreateAccountView = () => {
 };
 
 const styles = StyleSheet.create({
+  datePicker: {
+    width: '100%',
+  },
   header: {
-    textAlign: 'center',
+    textAlign: 'left',
     fontSize: 25,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 40,
+    paddingBottom: 20,
   },
   container: {
     flexGrow: 1,
@@ -231,8 +186,8 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderBottomWidth: 1,
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
     fontSize: 16,
+    flex: 1
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -269,8 +224,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   datePickerContainer: {
-    width: '100%',
-    backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
     marginTop: 12
@@ -278,6 +231,17 @@ const styles = StyleSheet.create({
   showDatePicker: {
     color: 'blue',
     fontSize: 16,
+    marginLeft: 10,
+  },
+  datePickerField: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+  },
+  dateText: {
     marginLeft: 10,
   }
 });

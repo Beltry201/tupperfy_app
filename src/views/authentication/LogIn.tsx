@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 
 
-const LogInView = () => {
+const LogInView = ({ navigation }: { navigation: any }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -49,7 +49,7 @@ const LogInView = () => {
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
         <Text style={styles.loginText}>Iniciar Sesión</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.forgotPasswordBtn} onPress={handleForgotPassword}>
+      <TouchableOpacity style={styles.forgotPasswordBtn} onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
       </TouchableOpacity>
     </View>
@@ -112,6 +112,22 @@ const styles = StyleSheet.create({
     color: "blue",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  buttonContainer: {
+    width: '90%',
+    paddingHorizontal: 20,
+    backgroundColor: 'blue',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 10,
+    paddingVertical: 15, // Aumenta el espacio vertical dentro del botón
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18, // Tamaño de fuente personalizado
+    fontWeight: 'bold',
   },
 });
 
