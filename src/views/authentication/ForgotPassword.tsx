@@ -1,34 +1,34 @@
-import { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
 
+
+
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 
 const ForgotPasswordView = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-
-  const client_username = "david@gmail.com"
-  const client_password = "1234"
-
-  const handleLogin = () => {
-    if (username.toLowerCase() === client_username) {
-      if (password === client_password) {
-          console.log("-- Inicio de sesión exitoso")
-      } else{
-        console.log("-- Contraseña incorrecta")
-      }
-    } else {
-      console.log("-- El usuario no existe, intente de nuevo.")
-    }
-    console.log("Username:", username);
-    console.log("Password:", password);
-  };
-
-  const handleForgotPassword = () => {
+  const [email, setEmail] = useState('');
+  
+  const handleResetPassword = () => {
+    // Aquí puedes implementar la lógica para enviar un correo electrónico de restablecimiento de contraseña
+    // Puedes usar una API o una función para enviar el correo electrónico
+    // Por ahora, simplemente mostraremos una alerta con el correo electrónico ingresado
+    Alert.alert('Reset Password', `A password reset link has been sent to ${email}`);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Restablecer contraseña</Text>
+      <Text style={styles.title}>¿Olvidaste Contraseña?</Text>
+      <Text style={styles.subTitle}>Ingresa tu email con el que te registraste para recibir tu código de seguridad</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
+        <Text style={styles.buttonText}>Reestablecer Contraseña</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -36,24 +36,31 @@ const ForgotPasswordView = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 30,
   },
-  headerText: {
-    fontSize: 30,
-    marginBottom: 50,
-    textAlign: "center",
-    fontWeight: "bold",
+  title: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+    color: 'black',
   },
-  inputView: {
-    width: "80%",
-    backgroundColor: "#ffffff",
+  subTitle: {
+    fontSize: 16,
+    marginBottom: 30,
+    textAlign: 'center',
+    color: 'black',
+  },
+  input: {
+    width: '80%',
+    backgroundColor: '#ffffff',
     borderRadius: 25,
     height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 20,
+    marginBottom: 30,
+    paddingHorizontal: 20,
+    fontSize: 18,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -63,32 +70,17 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  inputText: {
-    height: 50,
-    color: "black",
+  button: {
+    backgroundColor: 'blue',
+    paddingVertical: 15,
+    paddingHorizontal: 50,
+    borderRadius: 15,
   },
-  loginBtn: {
-    width: "80%",
-    backgroundColor: "blue",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  loginText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  forgotPasswordBtn: {
-    marginTop: 10,
-  },
-  forgotPasswordText: {
-    color: "blue",
+  buttonText: {
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

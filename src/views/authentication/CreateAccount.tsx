@@ -8,20 +8,16 @@ const CreateAccountView = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [country, setCountry] = useState('');
-  const [city, setCity] = useState('');
   const [gender, setGender] = useState('');
-  const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
-  const [username, setUsername] = useState('');
   const [open, setOpen] = useState(false)
 
   const handleSignUp = () => {
-    if (!firstName || !lastName || !email || !phoneNumber || !country || !city || !gender || !dateOfBirth) {
+    if (!firstName || !lastName || !email || !phoneNumber || !gender || !dateOfBirth) {
       Alert.alert('Campos Obligatorios', 'Todos los campos excepto Dirección y Género son obligatorios.');
       return;
     }
@@ -31,11 +27,8 @@ const CreateAccountView = () => {
     console.log('Last Name:', lastName);
     console.log('Email:', email);
     console.log('Phone Number:', phoneNumber);
-    console.log('Country:', country);
-    console.log('City:', city);
     console.log('Date of Birth:', dateOfBirth);
     console.log('Gender:', gender);
-    console.log('Address:', address);
     console.log('Password:', password);
     console.log('Confirm Password:', confirmPassword);
   };

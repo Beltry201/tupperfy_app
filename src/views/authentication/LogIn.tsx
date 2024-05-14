@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     textAlign: "center",
     fontWeight: "bold",
+    color: 'black',
   },
   inputView: {
     width: "80%",
