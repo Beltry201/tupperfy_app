@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert 
 import DatePicker from 'react-native-date-picker';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 
-const CreateAccountView = () => {
+const CreateAccountView = ({ navigation }: { navigation: any }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -13,8 +13,8 @@ const CreateAccountView = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [dateOfBirth, setDateOfBirth] = useState(new Date());
-  const [open, setOpen] = useState(false)
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
+  const [open, setOpen] = useState(false);
 
   const handleSignUp = () => {
     if (!firstName || !lastName || !email || !phoneNumber || !gender || !dateOfBirth) {
@@ -22,6 +22,8 @@ const CreateAccountView = () => {
       return;
     }
 
+    navigation.navigate('FavoriteDishesForm')
+    
     // Lógica para crear la cuenta
     console.log('First Name:', firstName);
     console.log('Last Name:', lastName);
@@ -31,6 +33,15 @@ const CreateAccountView = () => {
     console.log('Gender:', gender);
     console.log('Password:', password);
     console.log('Confirm Password:', confirmPassword);
+  };
+
+  // Format date to display in the input field
+  const formatDate = (date: Date | null) => {
+    if (!date) return 'dia/mes/año'; // Placeholder text when no date is selected
+    const day = (`0${date.getDate()}`).slice(-2);
+    const month = (`0${date.getMonth() + 1}`).slice(-2);
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -81,28 +92,28 @@ const CreateAccountView = () => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Fecha de Nacimiento *</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {/* <Button title="Open" onPress={() => setOpen(true)} /> */}
-            <TouchableOpacity
-                style={styles.datePickerField}
-                onPress={() => setOpen(true)}
-              >
-                {/* <Icon name="calendar" size={20} color="black" /> */}
-                {/* <Text style={styles.dateText}>{dateOfBirth || 'Seleccionar fecha'}</Text> */}
-              </TouchableOpacity>
-            <DatePicker
-              modal
-              open={open}
-              date={dateOfBirth}
-              onConfirm={(date) => {
-                setOpen(false)
-                setDateOfBirth(dateOfBirth)
-              }}
-              onCancel={() => {
-                setOpen(false)
-              }}
-            />   
-          </View>
+          {/* Muy importante, usar luego */}
+          <TouchableOpacity
+            style={styles.input}
+            onPress={() => setOpen(true)}
+          >
+            <Text style={dateOfBirth ? styles.text : styles.placeholder}>
+              {formatDate(dateOfBirth)}
+            </Text>
+          </TouchableOpacity>
+          <DatePicker
+            modal
+            open={open}
+            mode='date'
+            date={dateOfBirth || new Date()}
+            onConfirm={(date) => {
+              setOpen(false);
+              setDateOfBirth(date);
+            }}
+            onCancel={() => {
+              setOpen(false);
+            }}
+          />
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Género</Text>
@@ -174,14 +185,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize: 16,
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderBottomWidth: 1,
-    paddingHorizontal: 10,
-    fontSize: 16,
-    flex: 1
-  },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -236,7 +239,24 @@ const styles = StyleSheet.create({
   },
   dateText: {
     marginLeft: 10,
-  }
+  },
+  text: {
+    fontSize: 16,
+    color: '#000',
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderBottomWidth: 1,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    flex: 1,
+    justifyContent: 'center', // Center the text vertically
+  },
+  placeholder: {
+    fontSize: 16,
+    color: '#aaa', // Placeholder text color (grey)
+  },
 });
 
 export default CreateAccountView;
