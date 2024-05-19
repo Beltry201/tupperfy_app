@@ -1,12 +1,70 @@
-import { View, Text, StyleSheet } from "react-native";
+import { useState } from "react";
+import { View, Text, StyleSheet, Button } from "react-native";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+
+type DishesState = {
+  [key: string]: boolean;
+};
 
 
 const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
-  
+  const [dishes, setDishes] = useState<DishesState>({
+    dish1: false,
+    dish2: false,
+    dish3: false,
+  });
+
+  const changeDishState = (dish: string, isChecked: boolean) => {
+    setDishes((prevDishes) => ({ ...prevDishes, [dish]: isChecked }));
+  };
+
+  const handleContinue = () => {
+    const selectedDishes = Object.keys(dishes).filter(dish => dishes[dish]);
+    console.log(selectedDishes);
+  };
+
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}>Coloca tu usuario y contraseña para iniciar sesión</Text>
+      <Text style={styles.headerText}>
+        Select Your Favorite Dishes
+      </Text>
+      <View style={styles.checkboxContainer}>
+        <BouncyCheckbox
+          size={25}
+          fillColor="red"
+          unFillColor="#FFFFFF"
+          text="Dish 1"
+          iconStyle={{ borderColor: "red" }}
+          innerIconStyle={{ borderWidth: 2 }}
+          onPress={(isChecked) => {
+            changeDishState('dish1', isChecked);
+          }}
+        />
+        <BouncyCheckbox
+          size={25}
+          fillColor="red"
+          unFillColor="#FFFFFF"
+          text="Dish 2"
+          iconStyle={{ borderColor: "red" }}
+          innerIconStyle={{ borderWidth: 2 }}
+          onPress={(isChecked) => {
+            changeDishState('dish2', isChecked);
+          }}
+        />
+        <BouncyCheckbox
+          size={25}
+          fillColor="red"
+          unFillColor="#FFFFFF"
+          text="Dish 3"
+          iconStyle={{ borderColor: "red" }}
+          innerIconStyle={{ borderWidth: 2 }}
+          onPress={(isChecked) => {
+            changeDishState('dish3', isChecked);
+          }}
+        />
+      </View>
+      <Button title="Continue" onPress={handleContinue} />
     </View>
   );
 };
@@ -23,44 +81,12 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     textAlign: "center",
     fontWeight: "bold",
-    color: 'black',
-  },
-  inputView: {
-    width: "80%",
-    backgroundColor: "#ffffff",
-    borderRadius: 25,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  inputText: {
-    height: 50,
     color: "black",
   },
-  buttonContainer: {
-    width: '90%',
-    paddingHorizontal: 20,
-    backgroundColor: 'blue',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 10,
-    paddingVertical: 15,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+  checkboxContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
   },
 });
 

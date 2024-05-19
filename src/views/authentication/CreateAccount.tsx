@@ -17,13 +17,11 @@ const CreateAccountView = ({ navigation }: { navigation: any }) => {
   const [open, setOpen] = useState(false);
 
   const handleSignUp = () => {
+    navigation.navigate('FavoriteDishesForm')
     if (!firstName || !lastName || !email || !phoneNumber || !gender || !dateOfBirth) {
       Alert.alert('Campos Obligatorios', 'Todos los campos excepto Dirección y Género son obligatorios.');
       return;
-    }
-
-    navigation.navigate('FavoriteDishesForm')
-    
+    }    
     // Lógica para crear la cuenta
     console.log('First Name:', firstName);
     console.log('Last Name:', lastName);
