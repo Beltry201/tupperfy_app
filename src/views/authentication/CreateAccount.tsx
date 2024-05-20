@@ -19,7 +19,7 @@ const CreateAccountView = ({ navigation }: { navigation: any }) => {
   const handleSignUp = () => {
     navigation.navigate('FavoriteDishesForm')
     if (!firstName || !lastName || !email || !phoneNumber || !gender || !dateOfBirth) {
-      Alert.alert('Campos Obligatorios', 'Todos los campos excepto Dirección y Género son obligatorios.');
+      Alert.alert('Campos Obligatorios', 'Todos los campos excepto Género son obligatorios.');
       return;
     }    
     // Lógica para crear la cuenta
@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+    backgroundColor: '#ffffff', // Fondo blanco
   },
   inputContainer: {
     marginBottom: 20,
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
   },
   showHide: {
     marginLeft: 10,
-    color: 'blue',
+    color: 'black',
     fontSize: 16,
   },
   buttonContainer: {

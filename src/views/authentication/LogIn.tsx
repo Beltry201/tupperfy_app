@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 30,
     marginBottom: 50,
+    marginTop: -70,
     textAlign: "center",
     fontWeight: "bold",
     color: 'black',

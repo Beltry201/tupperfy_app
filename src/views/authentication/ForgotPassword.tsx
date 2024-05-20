@@ -1,34 +1,32 @@
-
-
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 
-const ForgotPasswordView = () => {
+const ForgotPasswordView = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState('');
-  
+
   const handleResetPassword = () => {
-    // Aquí puedes implementar la lógica para enviar un correo electrónico de restablecimiento de contraseña
-    // Puedes usar una API o una función para enviar el correo electrónico
-    // Por ahora, simplemente mostraremos una alerta con el correo electrónico ingresado
-    Alert.alert('Reset Password', `A password reset link has been sent to ${email}`);
+    navigation.navigate('CodeInput')
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>¿Olvidaste Contraseña?</Text>
-      <Text style={styles.subTitle}>Ingresa tu email con el que te registraste para recibir tu código de seguridad</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-        <Text style={styles.buttonText}>Reestablecer Contraseña</Text>
-      </TouchableOpacity>
+      <View style={styles.header}>
+        <Text style={styles.title}>¿Olvidaste Contraseña?</Text>
+        <Text style={styles.subTitle}>Ingresa tu email para recuperar tu contraseña</Text>
+      </View>
+      <View style={styles.middle}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
+          <Text style={styles.buttonText}>Recibir código</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -36,20 +34,30 @@ const ForgotPasswordView = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: 30,
+    backgroundColor: '#ffffff', // Fondo blanco
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 60,
+    marginTop: 40, // Asegura que el header esté en la parte superior
+  },
+  middle: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flex: 1,
+    marginTop: -20, // Ajuste sutil para subir un poco los elementos
   },
   title: {
-    fontSize: 25,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 12,
     textAlign: 'center',
     color: 'black',
   },
   subTitle: {
-    fontSize: 16,
-    marginBottom: 30,
+    fontSize: 18,
+    marginBottom: 100,
     textAlign: 'center',
     color: 'black',
   },
@@ -58,7 +66,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 25,
     height: 50,
-    marginBottom: 30,
+    marginBottom: 20,
     paddingHorizontal: 20,
     fontSize: 18,
     shadowColor: "#000",
@@ -85,3 +93,4 @@ const styles = StyleSheet.create({
 });
 
 export default ForgotPasswordView;
+

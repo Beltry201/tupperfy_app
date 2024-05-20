@@ -5,6 +5,11 @@ import SignInView from '../views/authentication/SignIn';
 import CreateAccountView from '../views/authentication/CreateAccount';
 import ForgotPasswordView from '../views/authentication/ForgotPassword';
 import FavoriteDishesForm from '../views/authentication/FavoriteDishesForm';
+import AddPaymentMethod from '../views/authentication/AddPaymentMethod';
+import PaymentSelection from '../views/authentication/PaymentSelection';
+import AddPayment from '../views/authentication/AddPayment';
+import CodeInput from '../views/authentication/CodeInput';
+import ResetPassword from '../views/authentication/ResetPassword';
 
 
 
@@ -19,6 +24,12 @@ const NavigationStack = () => {
         <Stack.Screen name="CreateAccount" component={CreateAccountView} />
         <Stack.Screen name="FavoriteDishesForm" component={FavoriteDishesForm} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordView} />
+        <Stack.Screen name="AddPaymentMethod" component={AddPaymentMethod} />
+        <Stack.Screen name="PaymentSelection" component={PaymentSelection} />
+        <Stack.Screen name="AddPayment" component={AddPayment} />
+        <Stack.Screen name="CodeInput" component={CodeInput} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
