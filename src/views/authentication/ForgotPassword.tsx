@@ -5,6 +5,7 @@ const ForgotPasswordView = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState('');
 
   const handleResetPassword = () => {
+    Alert.alert('Reset Password', `A password reset link has been sent to ${email}`);
     navigation.navigate('CodeInput')
   };
 

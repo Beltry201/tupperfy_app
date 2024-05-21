@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 
-const ResetPassword: React.FC = () => {
+const ResetPassword: React.FC = ({ navigation }: { navigation: any }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -9,6 +9,7 @@ const ResetPassword: React.FC = () => {
 
   const handleCreatePassword = () => {
     if (password === confirmPassword) {
+      navigation.navigate('LogIn')
       // Aquí puedes agregar la lógica para guardar la contraseña
       Alert.alert('Contraseña creada', 'Tu contraseña ha sido creada exitosamente.');
     } else {
