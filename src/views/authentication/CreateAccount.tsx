@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    backgroundColor: '#ffffff', // Fondo blanco
+    backgroundColor: 'white', // Fondo blanco
   },
   inputContainer: {
     marginBottom: 20,
@@ -208,10 +208,12 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: 'blue',
-    paddingVertical: 8,
+    paddingVertical: 15,
     paddingHorizontal: 115, // Ancho ajustado aquí
-    borderRadius: 20,
+    borderRadius: 18,
     marginBottom: 40,
+    borderColor: 'black',
+  borderWidth: 2,
   },
   buttonText: {
     color: '#fff',

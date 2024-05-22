@@ -6,17 +6,16 @@ const CodeInput = ({ navigation }: { navigation: any }) => {
   const inputRefs = useRef([]);
 
   const handleVerification = () => {
-    navigation.navigate('ResetPassword')
+    navigation.navigate('ResetPassword');
     const verificationCode = code.join('');
     if (verificationCode.length === 4) {
-      alert(`¡Código ingresado: ${verificationCode}`);
+      Alert.alert('¡Código ingresado exitosamente!', verificationCode);
     } else {
-      alert('Por favor, ingresa un código de 4 dígitos.');
+      Alert.alert('Error', 'Por favor, ingresa un código de 4 dígitos.');
     }
   };
 
   const handleResendCode = () => {
-    // Aquí puedes agregar la lógica para reenviar el código
     Alert.alert('Código reenviado', 'Te hemos reenviado un código.');
   };
 
@@ -35,7 +34,8 @@ const CodeInput = ({ navigation }: { navigation: any }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Código de verificación{'\n'}<Text style={styles.subtitle}>Enviamos un código de verificación a tu email</Text></Text>
+      <Text style={styles.title}>Código de verificación</Text>
+      <Text style={styles.subtitle}>Enviamos un código de verificación a tu email</Text>
       <View style={styles.codeContainer}>
         {code.map((value, index) => (
           <TextInput
@@ -47,6 +47,7 @@ const CodeInput = ({ navigation }: { navigation: any }) => {
             maxLength={1}
             value={value}
             onChangeText={(text) => handleChange(index, text)}
+          placeholderTextColor="#003f5c"
           />
         ))}
       </View>
@@ -70,13 +71,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 90,
+    marginBottom: 10,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: 'gray',
+    fontSize: 18,
+    textAlign: 'left',
+    color: 'black',
+    width: '100%',
+    marginBottom: 70,
   },
   codeContainer: {
     flexDirection: 'row',
@@ -84,21 +87,28 @@ const styles = StyleSheet.create({
     marginBottom: 70,
   },
   input: {
-    height: 60,
+    height: 80, // Incremento de la altura para alargar las cajas
     width: 60,
     marginHorizontal: 5,
-    borderColor: '#ccc',
+    borderColor: '#333', // Borde gris oscuro
     borderWidth: 1,
     borderRadius: 10,
     textAlign: 'center',
     fontSize: 24,
+    shadowColor: '#000', // Color de la sombra
+    shadowOffset: { width: 0, height: 2 }, // Desplazamiento de la sombra
+    shadowOpacity: 0.25, // Opacidad de la sombra
+    shadowRadius: 3.84, // Radio de la sombra
+    elevation: 5, // Sombra en Android
   },
   button: {
     backgroundColor: 'blue',
     paddingVertical: 17,
     paddingHorizontal: 70,
-    borderRadius: 15,
+    borderRadius: 18,
     marginBottom: 20,
+    borderColor: 'black',
+    borderWidth: 2, 
   },
   buttonText: {
     color: '#fff',

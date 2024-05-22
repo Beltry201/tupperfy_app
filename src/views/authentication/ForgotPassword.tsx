@@ -5,8 +5,12 @@ const ForgotPasswordView = ({ navigation }: { navigation: any }) => {
   const [email, setEmail] = useState('');
 
   const handleResetPassword = () => {
-    Alert.alert('Reset Password', `A password reset link has been sent to ${email}`);
-    navigation.navigate('CodeInput')
+    Alert.alert('Restablecer contraseña', `Te hemos enviado un código de verificación ${email}`);
+    navigation.navigate('CodeInput');
+  };
+
+  const setEmailLowerCase = (text: string) => {
+    setEmail(text.toLowerCase()); // Convertir el texto a minúsculas antes de establecerlo en el estado
   };
 
   return (
@@ -20,9 +24,11 @@ const ForgotPasswordView = ({ navigation }: { navigation: any }) => {
           style={styles.input}
           placeholder="Email"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={setEmailLowerCase} // Usar la función que convierte a minúsculas
           keyboardType="email-address"
           autoCapitalize="none"
+          placeholderTextColor="#003f5c"
+          
         />
         <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
           <Text style={styles.buttonText}>Recibir código</Text>
@@ -69,7 +75,8 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 20,
     paddingHorizontal: 20,
-    fontSize: 18,
+    fontSize: 15, // Tamaño de fuente más pequeño
+    color: 'black', // Cambio de color a negro
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -83,7 +90,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     paddingVertical: 15,
     paddingHorizontal: 50,
-    borderRadius: 15,
+    borderRadius: 18,
+    borderColor: 'black', // Borde negro
+    borderWidth: 2, // Grosor del borde
   },
   buttonText: {
     color: '#fff',
@@ -94,4 +103,3 @@ const styles = StyleSheet.create({
 });
 
 export default ForgotPasswordView;
-

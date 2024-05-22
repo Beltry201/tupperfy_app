@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     borderRadius: 30,
     marginBottom: 30, // Separación aumentada entre los botones
-    borderWidth: 4, // Grosor del borde aumentado
+    borderWidth: 3, // Grosor del borde aumentado
     borderColor: "black", // Color del borde
   },
   creditCardButton: {

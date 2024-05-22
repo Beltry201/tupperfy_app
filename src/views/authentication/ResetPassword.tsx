@@ -35,6 +35,7 @@ const ResetPassword: React.FC = ({ navigation }: { navigation: any }) => {
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
+          placeholderTextColor="#003f5c"
         />
         <TouchableOpacity onPress={toggleShowPassword} style={styles.eyeIcon}>
           <Text style={styles.eyeText}>{showPassword ? 'Ocultar' : 'Mostrar'}</Text>
@@ -47,6 +48,7 @@ const ResetPassword: React.FC = ({ navigation }: { navigation: any }) => {
           secureTextEntry={!showConfirmPassword}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
+          placeholderTextColor="#003f5c"
         />
         <TouchableOpacity onPress={toggleShowConfirmPassword} style={styles.eyeIcon}>
           <Text style={styles.eyeText}>{showConfirmPassword ? 'Ocultar' : 'Mostrar'}</Text>
@@ -105,7 +107,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     paddingVertical: 15,
     paddingHorizontal: 45,
-    borderRadius: 15,
+    borderRadius: 18,
+    borderColor: 'black',
+    borderWidth: 2, 
   },
   buttonText: {
     color: '#fff',

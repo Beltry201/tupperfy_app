@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 type DishesState = {
@@ -17,6 +17,36 @@ const dishNames = [
   "Quesadillas",
   "Sopes",
   "Pasta",
+  "Pizza Margarita",
+  "Sushi de Salmón",
+  "Enchiladas de Pollo",
+  "Hamburguesa con Queso",
+  "Pasta Alfredo",
+  "Paella",
+  "Tacos de Carne Asada",
+  "Curry de Pollo",
+  "Lasaña",
+  "Filete de Salmón al Horno",
+  "Pollo a la Parrilla",
+  "Risotto de Champiñones",
+  "Tostadas de Aguacate",
+  "Sopa de Tomate",
+  "Pad Thai",
+  "Pescado a la Parrilla con Verduras",
+  "Canelones de Carne",
+  "Fajitas de Carne de Res",
+  "Pollo al Curry con Arroz",
+  "Burritos de Frijoles y Queso",
+  "Tarta de Queso",
+  "Bistec con Puré de Papas",
+  "Sopa de Lentejas",
+  "Pollo al Horno con Papas",
+  "Hot Dogs",
+  "Espagueti a la Boloñesa",
+  "Tacos de Pescado",
+  "Estofado de Carne",
+  "Quiche de Espinacas y Queso",
+  "Arroz Frito con Verduras y Pollo",
 ];
 
 const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
@@ -26,10 +56,13 @@ const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
   }, {} as DishesState);
 
   const [dishes, setDishes] = useState<DishesState>(initialState);
+  const [searchText, setSearchText] = useState('');
 
   const changeDishState = (dish: string, isChecked: boolean) => {
     setDishes((prevDishes) => ({ ...prevDishes, [dish]: isChecked }));
   };
+
+  const filteredDishNames = dishNames.filter(dish => dish.toLowerCase().includes(searchText.toLowerCase()));
 
   const handleContinue = () => { 
     navigation.navigate('AddPaymentMethod')
@@ -40,8 +73,16 @@ const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.headerText}>Select Your Favorite Dishes</Text>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          onChangeText={setSearchText}
+          value={searchText}
+        />
+      </View>
       <View style={styles.checkboxContainer}>
-        {dishNames.map((dish, index) => (
+        {filteredDishNames.map((dish, index) => (
           <BouncyCheckbox
             key={index}
             size={25}
@@ -77,10 +118,29 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    marginBottom: 65,
+    marginBottom: 20,
     textAlign: "center",
     fontWeight: "bold",
     color: "black",
+  },
+  searchContainer: {
+    width: '100%',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderRadius: 12,
+  },
+  searchInput: {
+    height: 40,
+    width: '100%',
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
   },
   checkboxContainer: {
     width: '100%',
@@ -95,13 +155,15 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     alignItems: 'flex-end',
-    paddingRight: 20, // Añadir un padding derecho para separar el botón del borde de la pantalla
+    paddingRight: 20, 
   },
   buttonBox: {
     backgroundColor: 'blue',
-    borderRadius: 25,
+    borderRadius: 18,
     paddingHorizontal: 20,
     paddingVertical: 12,
+    borderColor: 'black',
+    borderWidth: 2,
   },
   buttonText: {
     color: 'white',

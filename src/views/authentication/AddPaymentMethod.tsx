@@ -52,6 +52,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 80, // Ajuste para alargar el botón
     borderRadius: 25,
     marginBottom: 20, // Espacio entre los botones
+    borderColor: 'black',
+    borderWidth: 2, 
   },
   buttonText: {
     color: "#ffffff", // Blanco
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
   },
   notNowText: {
     color: "blue", // Azul oscuro
-    fontSize: 20, // Tamaño de fuente original
+    fontSize: 18, // Tamaño de fuente original
     fontWeight: "bold",
   },
 });

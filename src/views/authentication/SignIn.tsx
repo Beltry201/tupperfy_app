@@ -56,6 +56,15 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 10,
     paddingVertical: 15, // Aumenta el espacio vertical dentro del botón
+    // Propiedades de sombra
+    elevation: 5, // Sombra en Android
+    shadowColor: 'black', // Color de la sombra en iOS
+    shadowOffset: { width: 0, height: 2 }, // Desplazamiento de la sombra en iOS
+    shadowOpacity: 0.25, // Opacidad de la sombra en iOS
+    shadowRadius: 3.84, // Radio de la sombra en iOS
+    // Propiedades de borde
+    borderWidth: 2, // Grosor del borde
+    borderColor: 'black', // Color del borde
   },
   buttonText: {
     color: 'white',

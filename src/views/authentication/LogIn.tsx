@@ -1,30 +1,40 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-
 
 const LogInView = ({ navigation }: { navigation: any }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  
+  
 
-  const client_username = "david@gmail.com"
-  const client_password = "1234"
+  const client_username = "david@gmail.com";
+  const client_password = "1234";
 
   const handleLogin = () => {
-    if (username.toLowerCase() === client_username) {
+    if (username === client_username.toLowerCase()) {
       if (password === client_password) {
-          console.log("-- Inicio de sesión exitoso")
-      } else{
-        console.log("-- Contraseña incorrecta")
+        console.log("-- Inicio de sesión exitoso");
+      } else {
+        console.log("-- Contraseña incorrecta");
       }
     } else {
-      console.log("-- El usuario no existe, intente de nuevo.")
+      console.log("-- El usuario no existe, intente de nuevo.");
     }
     console.log("Username:", username);
     console.log("Password:", password);
   };
 
-  const handleForgotPassword = () => {
+  const handleForgotPassword = () => {};
+
+  const handleUsernameChange = (text: string) => {
+    setUsername(text.charAt(0).toLowerCase() + text.slice(1));
   };
+
+  const handlePasswordChange = (text: string) => {
+    setPassword(text.charAt(0).toLowerCase() + text.slice(1));
+  };
+
+  
 
   return (
     <View style={styles.container}>
@@ -34,7 +44,7 @@ const LogInView = ({ navigation }: { navigation: any }) => {
           style={styles.inputText}
           placeholder="Usuario"
           placeholderTextColor="#003f5c"
-          onChangeText={text => setUsername(text)}
+          onChangeText={handleUsernameChange}
         />
       </View>
       <View style={styles.inputView}>
@@ -43,7 +53,7 @@ const LogInView = ({ navigation }: { navigation: any }) => {
           placeholder="Contraseña"
           placeholderTextColor="#003f5c"
           secureTextEntry={true}
-          onChangeText={text => setPassword(text)}
+          onChangeText={handlePasswordChange}
         />
       </View>
       <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
@@ -95,12 +105,14 @@ const styles = StyleSheet.create({
   loginBtn: {
     width: "80%",
     backgroundColor: "blue",
-    borderRadius: 25,
+    borderRadius: 18, // Ajusta el borderRadius aquí
     height: 50,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
     marginBottom: 10,
+    borderColor: 'black', // Agrega el borde negro
+    borderWidth: 2, // Grosor del borde
   },
   loginText: {
     color: "white",
@@ -119,7 +131,7 @@ const styles = StyleSheet.create({
     width: '90%',
     paddingHorizontal: 20,
     backgroundColor: 'blue',
-    borderRadius: 20,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 40,
