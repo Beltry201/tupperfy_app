@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from "react-native";
+import { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 type DishesState = {
@@ -65,14 +65,16 @@ const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
   const filteredDishNames = dishNames.filter(dish => dish.toLowerCase().includes(searchText.toLowerCase()));
 
   const handleContinue = () => { 
-    navigation.navigate('AddPaymentMethod')
+    navigation.navigate('AddPaymentMethod');
     const selectedDishes = Object.keys(dishes).filter((dish) => dishes[dish]);
     console.log(selectedDishes);
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.headerText}>Select Your Favorite Dishes</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -81,7 +83,7 @@ const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
           value={searchText}
         />
       </View>
-      <View style={styles.checkboxContainer}>
+      <ScrollView contentContainerStyle={styles.checkboxContainer}>
         {filteredDishNames.map((dish, index) => (
           <BouncyCheckbox
             key={index}
@@ -98,30 +100,21 @@ const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
             }}
           />
         ))}
-      </View>
+      </ScrollView>
       <TouchableOpacity style={styles.buttonContainer} onPress={handleContinue}>
         <View style={styles.buttonBox}>
           <Text style={styles.buttonText}>Continuar</Text>
         </View>
       </TouchableOpacity>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
     padding: 20,
-  },
-  headerText: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: "center",
-    fontWeight: "bold",
-    color: "black",
   },
   searchContainer: {
     width: '100%',
@@ -143,6 +136,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   checkboxContainer: {
+    flexGrow: 1,
     width: '100%',
     marginBottom: 20,
   },
@@ -155,7 +149,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     alignItems: 'flex-end',
-    paddingRight: 20, 
+    paddingRight: 20,
   },
   buttonBox: {
     backgroundColor: 'blue',

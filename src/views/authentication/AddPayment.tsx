@@ -1,57 +1,126 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 
-const AddPayment = () => {
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardName, setCardName] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCVV] = useState('');
+const AddPayment = ({ navigation }: { navigation: any }) => {
+  const [cardNumber, setCardNumber] = useState<string>('');
+  const [cardName, setCardName] = useState<string>('');
+  const [expiryDate, setExpiryDate] = useState<string>('');
+  const [cvv, setCVV] = useState<string>('');
 
-  const formatCardNumber = (input) => {
-    // Asegurar que solo se permitan números
+  const formatCardNumber = (input: string): string => {
     const cleaned = input.replace(/\D/g, '');
-    // Dividir el número de tarjeta en grupos de 4 dígitos
     const cardGroups = cleaned.match(/.{1,4}/g);
-    // Unir los grupos con un espacio entre ellos
     if (cardGroups) {
       return cardGroups.join(' ');
     }
     return cleaned;
   };
 
-  const handleCardNumberChange = (input) => {
+  const handleCardNumberChange = (input: string) => {
     setCardNumber(formatCardNumber(input));
   };
 
-  const formatExpiryDate = (input) => {
-    // Asegurar que solo se permitan números
-    const cleaned = input.replace(/\D/g, '');
-    // Insertar el "/" después del segundo número
-    if (cleaned.length > 2) {
-      return `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
-    }
-    return cleaned;
+  const handleCardNameChange = (input: string) => {
+    setCardName(input.toUpperCase());
   };
 
-  const handleExpiryDateChange = (input) => {
+  const formatExpiryDate = (input: string): string => {
+    const cleaned = input.replace(/\D/g, '');
+    let formatted = cleaned;
+    if (cleaned.length > 2) {
+      formatted = `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
+    }
+    if (formatted.length > 5) {
+      Alert.alert('Fecha de vencimiento no válida.');
+    }
+    if (formatted.length === 5) {
+      const [month, year] = formatted.split('/').map(Number);
+      if (month < 1 || month > 12) {
+        Alert.alert('Mes de vencimiento no válido.');
+      }
+      const currentYear = new Date().getFullYear() % 100;
+      const currentMonth = new Date().getMonth() + 1;
+      if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        Alert.alert('La tarjeta está vencida.');
+      }
+      if (year > currentYear + 20) {
+        Alert.alert('Año de vencimiento no válido.');
+      }
+    }
+    return formatted;
+  };
+
+  const formatCVV = (input: string): string => {
+    return input.replace(/\D/g, '');
+  };
+
+  const handleCVVChange = (input: string) => {
+    setCVV(formatCVV(input));
+  };
+
+  const handleExpiryDateChange = (input: string) => {
     setExpiryDate(formatExpiryDate(input));
   };
 
-  return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {/* Título "Agregar tarjeta" */}
-        <Text style={styles.title}>Agregar tarjeta</Text>
+  const validateCardName = () => {
+    const parts = cardName.split(' ').filter(Boolean);
+    let firstName = parts[0] || '';
+    let lastName = parts.slice(1).join(' ') || '';
 
-        {/* Tarjeta de crédito */}
+    if (firstName.length > 8 || lastName.length > 11) {
+      Alert.alert(
+        'Error de validación',
+        'El nombre debe tener un máximo de 8 caracteres para el primer nombre y 11 caracteres para el apellido.'
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const validateCardExpiryDate = () => {
+    const [month, year] = expiryDate.split('/').map(Number);
+    if (month < 1 || month > 12) {
+      Alert.alert('Mes de vencimiento no válido.');
+      return false;
+    }
+
+    const currentYear = new Date().getFullYear() % 100;
+    const currentMonth = new Date().getMonth() + 1;
+
+    if (year < currentYear || (year === currentYear && month < currentMonth)) {
+      Alert.alert('La tarjeta está vencida.');
+      return false;
+    }
+    if (year > currentYear + 20) {
+      Alert.alert('Año de vencimiento no válido.');
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleSave = () => {
+    if (validateCardName() && validateCardExpiryDate()) {
+      // Guardar los datos o realizar la acción correspondiente
+      Alert.alert('Datos guardados', 'La tarjeta ha sido guardada correctamente.');
+      navigation.navigate('ForgotPassword');
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : -200} // Ajusta según sea necesario
+    >
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Text style={styles.title}>Agregar tarjeta</Text>
         <View style={styles.card}>
           <Text style={styles.cardText}>{cardNumber || 'XXXX XXXX XXXX XXXX'}</Text>
           <Text style={styles.cardText}>{cardName || 'Nombre en la tarjeta'}</Text>
           <Text style={styles.cardText}>{expiryDate || 'MM/YY'}</Text>
           <Text style={styles.cardText}>{cvv || 'CVV'}</Text>
         </View>
-
-        {/* Formulario para ingresar datos de la tarjeta */}
         <View style={styles.formContainer}>
           <Text style={styles.label}>Número de tarjeta *</Text>
           <TextInput
@@ -59,13 +128,15 @@ const AddPayment = () => {
             placeholder="Número de tarjeta"
             value={cardNumber}
             onChangeText={handleCardNumberChange}
+            maxLength={19}
+            keyboardType="numeric"
           />
           <Text style={styles.label}>Nombre en la tarjeta *</Text>
           <TextInput
             style={styles.input}
             placeholder="Nombre en la tarjeta"
             value={cardName}
-            onChangeText={setCardName}
+            onChangeText={handleCardNameChange}
           />
           <Text style={styles.label}>Fecha de expiración *</Text>
           <TextInput
@@ -73,36 +144,37 @@ const AddPayment = () => {
             placeholder="MM/YY"
             value={expiryDate}
             onChangeText={handleExpiryDateChange}
-            maxLength={5} // Máximo de 5 caracteres (MM/YY)
+            maxLength={5}
           />
           <Text style={styles.label}>CVV *</Text>
           <TextInput
             style={styles.input}
             placeholder="CVV"
             value={cvv}
-            onChangeText={setCVV}
+            onChangeText={handleCVVChange}
+            maxLength={3}
+            keyboardType="numeric"
           />
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
             <Text style={styles.buttonText}>Guardar</Text>
           </TouchableOpacity>
-          {/* Agregar margen inferior */}
           <View style={{ marginBottom: 20 }} />
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   scrollViewContent: {
     flexGrow: 1,
     justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   title: {
     fontSize: 24,
@@ -114,8 +186,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ADD8E6',
     borderRadius: 15,
     padding: 20,
-    elevation: 3, 
-    shadowColor: '#000', 
+    elevation: 3,
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -146,7 +218,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
     borderRadius: 15,
     borderColor: 'black',
-    borderWidth: 2, 
+    borderWidth: 2,
   },
   buttonText: {
     color: '#fff',
