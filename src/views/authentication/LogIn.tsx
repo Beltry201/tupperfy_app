@@ -14,7 +14,7 @@ const LogInView = ({ navigation }: { navigation: any }) => {
     if (username === client_username.toLowerCase()) {
       if (password === client_password) {
         console.log("-- Inicio de sesión exitoso");
-      } else {
+      }else {
         console.log("-- Contraseña incorrecta");
       }
     } else {
@@ -22,6 +22,8 @@ const LogInView = ({ navigation }: { navigation: any }) => {
     }
     console.log("Username:", username);
     console.log("Password:", password);
+    navigation.navigate('HomePage')
+    
   };
 
   const handleForgotPassword = () => {};

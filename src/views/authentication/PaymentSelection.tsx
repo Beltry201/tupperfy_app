@@ -11,8 +11,7 @@ const PaymentSelection = ({ navigation }: { navigation: any }) => {
   };
 
   const handleCashPayment = () => {
-    // Lógica para el pago en efectivo
-  };
+    navigation.navigate('HomePage')  };
 
   return (
     <View style={styles.container}>

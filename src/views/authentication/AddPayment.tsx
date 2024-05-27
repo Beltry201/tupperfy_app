@@ -103,8 +103,7 @@ const AddPayment = ({ navigation }: { navigation: any }) => {
     if (validateCardName() && validateCardExpiryDate()) {
       // Guardar los datos o realizar la acción correspondiente
       Alert.alert('Datos guardados', 'La tarjeta ha sido guardada correctamente.');
-      navigation.navigate('ForgotPassword');
-    }
+      navigation.navigate('HomePage')}
   };
 
   return (

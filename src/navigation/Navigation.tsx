@@ -10,6 +10,7 @@ import PaymentSelection from '../views/authentication/PaymentSelection';
 import AddPayment from '../views/authentication/AddPayment';
 import CodeInput from '../views/authentication/CodeInput';
 import ResetPassword from '../views/authentication/ResetPassword';
+import HomePage from '../views/authentication/HomePage';
 
 
 
@@ -29,6 +30,7 @@ const NavigationStack = () => {
         <Stack.Screen name="AddPayment" component={AddPayment} />
         <Stack.Screen name="CodeInput" component={CodeInput} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        <Stack.Screen name="HomePage" component={HomePage} />
 
       </Stack.Navigator>
     </NavigationContainer>
