@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 // Generar datos aleatorios
 const generateRandomItems = (numItems) => {
   const items = [];
-  const peopleNames = ["Messi", "María", "Pedro", "Lucía", "Carlos", "Ana", "Miguel", "Laura", "José", "Elena"];
-  const dishNames = ["Tacos", "Paella", "Sushi", "Pizza", "Hamburguesa", "Ensalada", "Pasta", "Ramen", "Ceviche", "Empanadas"];
+  const peopleNames = ["José", "María", "Pedro", "Lucía", "Carlos", "Ana", "Miguel", "Laura", "José", "Elena"];
+  const dishNames = ["Arepas", "Paella", "Sushi", "Pizza", "Hamburguesa", "Ensalada", "Pasta", "Ramen", "Ceviche", "Empanadas"];
   
   for (let i = 0; i < numItems; i++) {
     const randomPerson = peopleNames[Math.floor(Math.random() * peopleNames.length)];
@@ -23,19 +24,22 @@ const nearestItems = generateRandomItems(5);
 const newestItems = generateRandomItems(5);
 const otherTasteItems = generateRandomItems(5);
 
-const HomePage = ({ navigation }: { navigation: any }) => {
+const HomePage = () => {
   const [selectedButton, setSelectedButton] = useState(null);
+  const navigation = useNavigation();
 
   const handleButtonPress = (buttonName) => {
     setSelectedButton(buttonName);
     navigation.navigate(buttonName);
   };
 
-
   const handleItemPress = (item) => {
-    // Aquí puedes navegar a la pantalla deseada, pasando el ítem como parámetro si es necesario
-    // navigation.navigate('NombreDeLaPantalla', { item });
     navigation.navigate('DishDetails', { item });
+  };
+
+  const handleSeeMorePress = (category) => {
+    // Lógica para manejar la acción de "Ver más", puede ser navegar a una nueva pantalla con más elementos
+    navigation.navigate('CategoryDetails', { category });
   };
 
   return (
@@ -87,7 +91,12 @@ const HomePage = ({ navigation }: { navigation: any }) => {
           </TouchableOpacity>
         </ScrollView>
       </View>
-      <Text style={styles.subtitle}>Los más populares</Text>
+      <View style={styles.subtitleContainer}>
+        <Text style={styles.subtitle}>Los más populares</Text>
+        <TouchableOpacity onPress={() => handleSeeMorePress('Los más populares')}>
+          <Text style={styles.seeMoreButton}>Ver más</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView horizontal={true} style={styles.popularItemsContainer}>
         {popularItems.map((item, index) => (
           <TouchableOpacity key={index} style={styles.popularItem} onPress={() => handleItemPress(item)}>
@@ -100,7 +109,12 @@ const HomePage = ({ navigation }: { navigation: any }) => {
         ))}
       </ScrollView>
 
-      <Text style={styles.subtitle}>Los más buscados</Text>
+      <View style={styles.subtitleContainer}>
+        <Text style={styles.subtitle}>Los más buscados</Text>
+        <TouchableOpacity onPress={() => handleSeeMorePress('Los más buscados')}>
+          <Text style={styles.seeMoreButton}>Ver más</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView horizontal={true} style={styles.popularItemsContainer}>
         {mostSearchedItems.map((item, index) => (
           <TouchableOpacity key={index} style={styles.popularItem} onPress={() => handleItemPress(item)}>
@@ -113,7 +127,12 @@ const HomePage = ({ navigation }: { navigation: any }) => {
         ))}
       </ScrollView>
 
-      <Text style={styles.subtitle}>Los más cercanos</Text>
+      <View style={styles.subtitleContainer}>
+        <Text style={styles.subtitle}>Los más cercanos</Text>
+        <TouchableOpacity onPress={() => handleSeeMorePress('Los más cercanos')}>
+          <Text style={styles.seeMoreButton}>Ver más</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView horizontal={true} style={styles.popularItemsContainer}>
         {nearestItems.map((item, index) => (
           <TouchableOpacity key={index} style={styles.popularItem} onPress={() => handleItemPress(item)}>
@@ -126,7 +145,12 @@ const HomePage = ({ navigation }: { navigation: any }) => {
         ))}
       </ScrollView>
 
-      <Text style={styles.subtitle}>Los más nuevos</Text>
+      <View style={styles.subtitleContainer}>
+        <Text style={styles.subtitle}>Los más nuevos</Text>
+        <TouchableOpacity onPress={() => handleSeeMorePress('Los más nuevos')}>
+          <Text style={styles.seeMoreButton}>Ver más</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView horizontal={true} style={styles.popularItemsContainer}>
         {newestItems.map((item, index) => (
           <TouchableOpacity key={index} style={styles.popularItem} onPress={() => handleItemPress(item)}>
@@ -139,7 +163,12 @@ const HomePage = ({ navigation }: { navigation: any }) => {
         ))}
       </ScrollView>
 
-      <Text style={styles.subtitle}>Otros gustos</Text>
+      <View style={styles.subtitleContainer}>
+        <Text style={styles.subtitle}>Otros gustos</Text>
+        <TouchableOpacity onPress={() => handleSeeMorePress('Otros gustos')}>
+          <Text style={styles.seeMoreButton}>Ver más</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView horizontal={true} style={styles.popularItemsContainer}>
         {otherTasteItems.map((item, index) => (
           <TouchableOpacity key={index} style={styles.popularItem} onPress={() => handleItemPress(item)}>
@@ -175,9 +204,17 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
+  },
+  subtitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginVertical: 20,
-    textAlign: 'left',
-    marginLeft: 20,
+    marginHorizontal: 20,
+  },
+  seeMoreButton: {
+    color: '#007BFF',
+    fontSize: 14,
+    marginLeft: 10, // Añadir margen para separar el botón del subtítulo
   },
   profileButton: {
     paddingVertical: 10,
