@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Switch } from 'react-native';
 
 const OrderPayment = () => {
-    const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
-  
+  const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
+  const [needUtensils, setNeedUtensils] = useState(false); // Estado para el interruptor de cubiertos
+  const [selectedTipIndex, setSelectedTipIndex] = useState(3); // 15% como predeterminado
+
   // Simulación de datos del producto seleccionado y precios
   const selectedProduct = {
     name: 'Producto Seleccionado',
@@ -13,7 +15,6 @@ const OrderPayment = () => {
 
   const deliveryCost = selectedDeliveryOption === 'prioritaria' ? 20 : 10; // Coste de entrega basado en la opción seleccionada
   const tipPercentages = [0, 5, 10, 15, 20];
-  const [selectedTipIndex, setSelectedTipIndex] = useState(3); // 15% como predeterminado
 
   const handleDeliveryOptionPress = (option) => {
     setSelectedDeliveryOption(option);
@@ -68,6 +69,16 @@ const OrderPayment = () => {
             <Text style={styles.itemText}>Nombre: {selectedProduct.name}</Text>
             <Text style={styles.itemText}>Cantidad: {selectedProduct.quantity}</Text>
             <Text style={styles.itemText}>Precio: ${selectedProduct.price}</Text>
+            
+            {/* Sección de "¿Necesitas cubiertos?" */}
+            <View style={styles.utensilsContainer}>
+              <Text style={styles.utensilsText}>¿Necesitas cubiertos?</Text>
+              <Switch
+                value={needUtensils}
+                onValueChange={(value) => setNeedUtensils(value)}
+              />
+            </View>
+
             <View style={styles.deliveryTimeContainer}>
               <Text style={styles.deliveryTimeText}>Tiempo de entrega estimado</Text>
               <TouchableOpacity
@@ -116,28 +127,28 @@ const OrderPayment = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.summaryContainer}>
-  <Text style={styles.sectionTitle}>Resumen de Pago</Text>
-  <View style={styles.horizontalLine} />
-  <Text style={styles.itemText}>Productos: ${selectedProduct.price}</Text>
-  <Text style={styles.itemText}>Envío: ${deliveryCost}</Text>
-  <Text style={styles.itemText}>Propina ({tipPercentages[selectedTipIndex]}%): ${tipAmount.toFixed(2)}</Text>
-  <Text style={styles.totalText}>Total: ${totalCost}</Text>
-  <Text style={styles.tipSelectionText}>Selecciona la propina para tu repartidor</Text>
-  <View style={styles.tipButtonsContainer}>
-    {tipPercentages.map((percentage, index) => (
-      <TouchableOpacity
-        key={index}
-        style={[
-          styles.tipButton,
-          index === selectedTipIndex && styles.selectedTipButton
-        ]}
-        onPress={() => handleTipPress(index)}
-      >
-        <Text style={styles.tipButtonText}>{percentage}%</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
-</View>
+            <Text style={styles.sectionTitle}>Resumen de Pago</Text>
+            <View style={styles.horizontalLine} />
+            <Text style={styles.itemText}>Productos: ${selectedProduct.price}</Text>
+            <Text style={styles.itemText}>Envío: ${deliveryCost}</Text>
+            <Text style={styles.itemText}>Propina ({tipPercentages[selectedTipIndex]}%): ${tipAmount.toFixed(2)}</Text>
+            <Text style={styles.totalText}>Total: ${totalCost}</Text>
+            <Text style={styles.tipSelectionText}>Selecciona la propina para tu repartidor</Text>
+            <View style={styles.tipButtonsContainer}>
+              {tipPercentages.map((percentage, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.tipButton,
+                    index === selectedTipIndex && styles.selectedTipButton
+                  ]}
+                  onPress={() => handleTipPress(index)}
+                >
+                  <Text style={styles.tipButtonText}>{percentage}%</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
         </View>
       </ScrollView>
       <TouchableOpacity style={styles.confirmButton}>
@@ -194,33 +205,33 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    },
-    buttonRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 10,
-    },
-    optionButton: {
-        backgroundColor: '#007BFF',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      optionButtonText: {
-        color: '#FFF',
-        fontSize: 14,
-        fontWeight: 'bold',
-      },
-    addressInput: {
-        borderWidth: 1,
-        borderColor: '#666',
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        borderRadius: 5,
-        marginBottom: 20,
-        alignSelf: 'stretch', // Estira el input para ocupar todo el ancho
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  optionButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  optionButtonText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  addressInput: {
+    borderWidth: 1,
+    borderColor: '#666',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    marginBottom: 20,
+    alignSelf: 'stretch', // Estira el input para ocupar todo el ancho
   },
   instructionsInput: {
     borderWidth: 1,
@@ -237,109 +248,120 @@ const styles = StyleSheet.create({
   deliveryTimeContainer: {
     backgroundColor: '#D3D3D3',
     padding: 10,
-    marginTop: 10,borderRadius: 5,
-},
-deliveryTimeText: {
-  fontSize: 16,
-  color: '#333',
-  fontWeight: 'bold',
-},
-deliveryOption: {
-  backgroundColor: '#F0F0F0',
-  padding: 10,
-  marginTop: 10,
-  borderRadius: 5,
-},
-selectedOption: {
-  backgroundColor: '#D0D0D0',
-},
-deliveryOptionText: {
-  fontSize: 16,
-  color: '#333',
-},
-paymentMethod: {
-  marginBottom: 40,
-},
-paymentButton: {
-  backgroundColor: '#007BFF',
-  borderRadius: 5,
-  paddingVertical: 15,
-  paddingHorizontal: 20,
-  marginBottom: 10,
-},
-paymentButtonText: {
-  color: '#FFF',
-  fontSize: 16,
-  textAlign: 'center',
-  fontWeight: 'bold',
-},
-summaryContainer: {
-  backgroundColor: '#D3D3D3',
-  padding: 10,
-  borderRadius: 5,
-  marginBottom: 40,
-},
-confirmButton: {
-  backgroundColor: '#007BFF',
-  borderRadius: 5,
-  paddingVertical: 15,
-  paddingHorizontal: 20,
-  alignItems: 'center',
-  position: 'absolute',
-  bottom: 20,
-  left: 20,
-  right: 20,
-},
-confirmButtonText: {
-  fontSize: 18,
-  color: '#FFF',
-  fontWeight: 'bold',
-},
-horizontalLine: {
-  borderBottomColor: '#000',
-  borderBottomWidth: 1,
-  marginBottom: 10,
-},
-leftAlign: {
-  alignSelf: 'flex-start',
-},
-checkboxContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-},
-checkbox: {
-  width: 20,
-  height: 20,
-  borderWidth: 1,
-  borderColor: '#666',
-  marginRight: 10,
-},
-checked: {
-  backgroundColor: '#007BFF',
-},
-tipSelectionText: {
+    marginTop: 10, borderRadius: 5,
+  },
+  deliveryTimeText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  deliveryOption: {
+    backgroundColor: '#F0F0F0',
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  selectedOption: {
+    backgroundColor: '#D0D0D0',
+  },
+  deliveryOptionText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  paymentMethod: {
+    marginBottom: 40,
+  },
+  paymentButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  paymentButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  summaryContainer: {
+    backgroundColor: '#D3D3D3',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 40,
+  },
+  confirmButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+  confirmButtonText: {
+    fontSize: 18,
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+  horizontalLine: {
+    borderBottomColor: '#000',
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  },
+  leftAlign: {
+    alignSelf: 'flex-start',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#666',
+    marginRight: 10,
+  },
+  checked: {
+    backgroundColor: '#007BFF',
+  },
+  tipSelectionText: {
     fontSize: 13,
     marginTop: 10,
   },
-tipButtonsContainer: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  marginTop: 10,
-},
-tipButton: {
-  backgroundColor: '#007BFF',
-  borderRadius: 5,
-  padding: 10,
-  width: '18%',
-},
-selectedTipButton: {
-  backgroundColor: '#0056b3',
-},
-tipButtonText: {
-  color: '#FFF',
-  fontSize: 16,
-  textAlign: 'center',
-},
+  tipButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  tipButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    padding: 10,
+    width: '18%',
+  },
+  selectedTipButton: {
+    backgroundColor: '#0056b3',
+  },
+  tipButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  utensilsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  utensilsText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: 'bold',
+  },
 });
 
 export default OrderPayment;
