@@ -38,7 +38,6 @@ const HomePage = () => {
   };
 
   const handleSeeMorePress = (category) => {
-    // Lógica para manejar la acción de "Ver más", puede ser navegar a una nueva pantalla con más elementos
     navigation.navigate('CategoryDetails', { category });
   };
 
@@ -55,13 +54,20 @@ const HomePage = () => {
           placeholder="Buscar dirección..."
           placeholderTextColor="#666"
         />
+        <TouchableOpacity 
+          style={styles.cartButton}
+          onPress={() => navigation.navigate('CartView')}>
+         <Text style={styles.profileButtonText}>Carrito</Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.title}>¡Bienvenido a Tupperfy!</Text>
+      <View style={styles.searchBoxContainer}>
         <TextInput
           style={styles.searchBox}
-          placeholder="Buscar..."
+          placeholder="¿Qué se te antoja hoy?"
           placeholderTextColor="#666"
         />
       </View>
-      <Text style={styles.title}>Bienvenido a la Home Page</Text>
       <View style={styles.buttonContainer}>
         <ScrollView horizontal={true} contentContainerStyle={styles.horizontalButtonContainer}>
           <TouchableOpacity 
@@ -194,13 +200,28 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 10, // Reducido
+    paddingBottom: 10, // Añadido para más consistencia
   },
   title: {
     fontSize: 24,
-    marginVertical: 20,
+    marginVertical: 10, // Reducido
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  searchBoxContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 15, // Reducido
+  },
+  searchBox: {
+    borderWidth: 1,
+    borderColor: '#666',
+    paddingVertical: 10,
+    paddingHorizontal: 13,
+    borderRadius: 20,
+    width: 320,
   },
   subtitle: {
     fontSize: 16,
@@ -208,7 +229,7 @@ const styles = StyleSheet.create({
   subtitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 18, // Reducido
     marginHorizontal: 20,
   },
   seeMoreButton: {
@@ -226,25 +247,22 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 14,
   },
-  searchBox: {
-    borderWidth: 1,
-    borderColor: '#666',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-    width: 150,
-  },
   addressSearchBox: {
     borderWidth: 1,
     borderColor: '#666',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 5,
+    borderRadius: 20,
     flex: 1,
     marginRight: 10,
   },
+  cartButton: {
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: '#007BFF',
+  },
   buttonContainer: {
-    marginTop: 20,
+    marginTop: 10, // Reducido
     alignItems: 'center',
   },
   horizontalButtonContainer: {
@@ -256,7 +274,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginHorizontal: 5,
+    marginHorizontal: 3, // Reducido
     borderRadius: 5,
     alignItems: 'center',
   },
