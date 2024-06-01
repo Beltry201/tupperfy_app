@@ -10,12 +10,10 @@ import PaymentSelection from '../views/authentication/PaymentSelection';
 import AddPayment from '../views/authentication/AddPayment';
 import CodeInput from '../views/authentication/CodeInput';
 import ResetPassword from '../views/authentication/ResetPassword';
-import HomePage from '../views/authentication/HomePage';
-import DishDetails from '../views/authentication/DishDetails';
-import CartView from '../views/authentication/CartView';
-import OrderPayment from '../views/authentication/OrderPayment';
-
-
+import HomePage from '../views/home/HomePage';
+import DishDetails from '../views/home/DishDetails';
+import CartView from '../views/orders/CartView';
+import OrderPayment from '../views/orders/OrderPayment';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,9 +35,6 @@ const NavigationStack = () => {
         <Stack.Screen name="DishDetails" component={DishDetails} />
         <Stack.Screen name="CartView" component={CartView} />
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
-
-
-
       </Stack.Navigator>
     </NavigationContainer>
   );

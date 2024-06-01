@@ -1,50 +1,64 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 // Generar datos aleatorios
-const generateRandomItems = (numItems) => {
+const generateRandomItems = (numItems: number, categoryId: string) => {
   const items = [];
   const peopleNames = ["José", "María", "Pedro", "Lucía", "Carlos", "Ana", "Miguel", "Laura", "José", "Elena"];
   const dishNames = ["Arepas", "Paella", "Sushi", "Pizza", "Hamburguesa", "Ensalada", "Pasta", "Ramen", "Ceviche", "Empanadas"];
-  
+
   for (let i = 0; i < numItems; i++) {
     const randomPerson = peopleNames[Math.floor(Math.random() * peopleNames.length)];
     const randomDish = dishNames[Math.floor(Math.random() * dishNames.length)];
     const randomPrice = (Math.random() * 100).toFixed(2);
-    items.push({ person: randomPerson, dish: randomDish, price: `$${randomPrice}` });
+    const randomId = Math.floor(Math.random() * 1000).toString();
+    items.push({ id: randomId, person: randomPerson, dish: randomDish, price: `$${randomPrice}`, categoryId });
   }
-  
+
   return items;
 };
 
-const popularItems = generateRandomItems(5);
-const mostSearchedItems = generateRandomItems(5);
-const nearestItems = generateRandomItems(5);
-const newestItems = generateRandomItems(5);
-const otherTasteItems = generateRandomItems(5);
+const popularItems = generateRandomItems(5, "POP123");
+const mostSearchedItems = generateRandomItems(5, "BUS456");
+const nearestItems = generateRandomItems(5, "NEA789");
+const newestItems = generateRandomItems(5, "NEW012");
+const otherTasteItems = generateRandomItems(5, "TAS345");
 
-const HomePage = () => {
-  const [selectedButton, setSelectedButton] = useState(null);
-  const navigation = useNavigation();
+const HomePage = ({ navigation }: { navigation: any }) => {
 
-  const handleButtonPress = (buttonName) => {
+  console.log(nearestItems)
+  const [selectedButton, setSelectedButton] = useState('') as [String, Function];
+
+  // Función para manejar el evento de categoría seleccionada
+  const handleCategoryCardPress = (buttonName: String) => {
     setSelectedButton(buttonName);
-    navigation.navigate(buttonName);
   };
 
-  const handleItemPress = (item) => {
-    navigation.navigate('DishDetails', { item });
+  const handleItemPress = (item: any) => {
+    navigation.navigate("DishDetails", { item });
   };
 
-  const handleSeeMorePress = (category) => {
-    navigation.navigate('CategoryDetails', { category });
+  const getCategoryItems = (categoryId: string) => {
+    // Create a dictionary for category IDs and dish lists
+    const categoryItems: { [key: string]: any[] } = {
+      "POP123": popularItems,
+      "BUS456": mostSearchedItems,
+      "NEA789": newestItems,
+      "NEW012": newestItems,
+      "TAS345": otherTasteItems,
+    };
+
+    // Return the dish list for the given category ID
+    return categoryItems[categoryId];
+  };
+
+  const handleSeeMorePress = (category: any) => { 
   };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.profileButton}
           onPress={() => navigation.navigate('UserProfile')}>
           <Text style={styles.profileButtonText}>Perfil</Text>
@@ -54,10 +68,10 @@ const HomePage = () => {
           placeholder="Buscar dirección..."
           placeholderTextColor="#666"
         />
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.cartButton}
           onPress={() => navigation.navigate('CartView')}>
-         <Text style={styles.profileButtonText}>Carrito</Text>
+          <Text style={styles.profileButtonText}>Carrito</Text>
         </TouchableOpacity>
       </View>
       <Text style={styles.title}>¡Bienvenido a Tupperfy!</Text>
@@ -68,31 +82,33 @@ const HomePage = () => {
           placeholderTextColor="#666"
         />
       </View>
+
+      {/* Esto deberia ser una lista inteligente que reciba objetos de categorias de la db */}
       <View style={styles.buttonContainer}>
         <ScrollView horizontal={true} contentContainerStyle={styles.horizontalButtonContainer}>
-          <TouchableOpacity 
-            style={[styles.button, selectedButton === 'Comidas' && styles.selectedButton]} 
-            onPress={() => handleButtonPress('Comidas')}>
+          <TouchableOpacity
+            style={[styles.button, selectedButton === 'Comidas' && styles.selectedButton]}
+            onPress={() => handleCategoryCardPress('Comidas')}>
             <Text style={[styles.buttonText, selectedButton === 'Comidas' && styles.selectedButtonText]}>Comidas</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.button, selectedButton === 'ComidasVeganas' && styles.selectedButton]} 
-            onPress={() => handleButtonPress('ComidasVeganas')}>
+          <TouchableOpacity
+            style={[styles.button, selectedButton === 'ComidasVeganas' && styles.selectedButton]}
+            onPress={() => handleCategoryCardPress('ComidasVeganas')}>
             <Text style={[styles.buttonText, selectedButton === 'ComidasVeganas' && styles.selectedButtonText]}>Comidas Veganas</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.button, selectedButton === 'Bebidas' && styles.selectedButton]} 
-            onPress={() => handleButtonPress('Bebidas')}>
+          <TouchableOpacity
+            style={[styles.button, selectedButton === 'Bebidas' && styles.selectedButton]}
+            onPress={() => handleCategoryCardPress('Bebidas')}>
             <Text style={[styles.buttonText, selectedButton === 'Bebidas' && styles.selectedButtonText]}>Bebidas</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.button, selectedButton === 'Postres' && styles.selectedButton]} 
-            onPress={() => handleButtonPress('Postres')}>
+          <TouchableOpacity
+            style={[styles.button, selectedButton === 'Postres' && styles.selectedButton]}
+            onPress={() => handleCategoryCardPress('Postres')}>
             <Text style={[styles.buttonText, selectedButton === 'Postres' && styles.selectedButtonText]}>Postres</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.button, selectedButton === 'Otros' && styles.selectedButton]} 
-            onPress={() => handleButtonPress('Otros')}>
+          <TouchableOpacity
+            style={[styles.button, selectedButton === 'Otros' && styles.selectedButton]}
+            onPress={() => handleCategoryCardPress('Otros')}>
             <Text style={[styles.buttonText, selectedButton === 'Otros' && styles.selectedButtonText]}>Otros</Text>
           </TouchableOpacity>
         </ScrollView>
