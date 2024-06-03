@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5'; // Importa el componente Icon
 import DatePicker from 'react-native-date-picker';
-// import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CreateAccountView = ({ navigation }: { navigation: any }) => {
   const [firstName, setFirstName] = useState('');
@@ -17,7 +17,7 @@ const CreateAccountView = ({ navigation }: { navigation: any }) => {
   const [open, setOpen] = useState(false);
 
   const handleSignUp = () => {
-    navigation.navigate('FavoriteDishesForm')
+    navigation.navigate('FavoriteDishesForm');
     if (!firstName || !lastName || !email || !phoneNumber || !gender || !dateOfBirth) {
       Alert.alert('Campos Obligatorios', 'Todos los campos excepto Género son obligatorios.');
       return;
@@ -90,14 +90,11 @@ const CreateAccountView = ({ navigation }: { navigation: any }) => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Fecha de Nacimiento *</Text>
-          {/* Muy importante, usar luego */}
           <TouchableOpacity
             style={styles.input}
             onPress={() => setOpen(true)}
           >
-            <Text style={dateOfBirth ? styles.text : styles.placeholder}>
-              {formatDate(dateOfBirth)}
-            </Text>
+            <Icon name="calendar" size={20} color="#003f5c" />
           </TouchableOpacity>
           <DatePicker
             modal
@@ -133,7 +130,7 @@ const CreateAccountView = ({ navigation }: { navigation: any }) => {
               secureTextEntry={!showPassword}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Text style={styles.showHide}>{showPassword ? "Ocultar" : "Mostrar"} contraseña</Text>
+              <Icon name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#003f5c" />
             </TouchableOpacity>
           </View>
         </View>
@@ -148,7 +145,7 @@ const CreateAccountView = ({ navigation }: { navigation: any }) => {
               secureTextEntry={!showConfirmPassword}
             />
             <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-              <Text style={styles.showHide}>{showConfirmPassword ? "Ocultar" : "Mostrar"} contraseña</Text>
+              <Icon name={showConfirmPassword ? 'eye-slash' : 'eye'} size={20} color="#003f5c" />
             </TouchableOpacity>
           </View>
         </View>
@@ -197,11 +194,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     fontSize: 16,
   },
-  showHide: {
-    marginLeft: 10,
-    color: 'black',
-    fontSize: 16,
-  },
   buttonContainer: {
     alignItems: 'flex-end',
     marginTop: 20,
@@ -213,39 +205,18 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     marginBottom: 40,
     borderColor: 'black',
-  borderWidth: 2,
-  },
-  buttonText: {
+    borderWidth: 2,
+    },
+    buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  datePickerContainer: {
-    padding: 20,
-    borderRadius: 10,
-    marginTop: 12
-  },
-  showDatePicker: {
-    color: 'blue',
-    fontSize: 16,
-    marginLeft: 10,
-  },
-  datePickerField: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
-  },
-  dateText: {
-    marginLeft: 10,
-  },
-  text: {
+    },
+    text: {
     fontSize: 16,
     color: '#000',
-  },
-  input: {
+    },
+    input: {
     height: 40,
     borderColor: '#ccc',
     borderBottomWidth: 1,
@@ -253,11 +224,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     justifyContent: 'center', // Center the text vertically
-  },
-  placeholder: {
+    },
+    placeholder: {
     fontSize: 16,
     color: '#aaa', // Placeholder text color (grey)
-  },
-});
-
-export default CreateAccountView;
+    },
+    });
+    
+    export default CreateAccountView;

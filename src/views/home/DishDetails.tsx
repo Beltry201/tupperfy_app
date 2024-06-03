@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Importación del icono
 
 const DishDetails = ({ route }: { route: any }) => {
   const { item } = route.params;
@@ -43,7 +44,10 @@ const DishDetails = ({ route }: { route: any }) => {
         style={styles.addToCartButton}
         onPress={() => navigation.navigate('CartView')}
       >
-        <Text style={styles.addToCartButtonText}>Añadir al carrito</Text>
+        <Text style={styles.addToCartButtonContent}>
+          <Text style={styles.addToCartButtonText}>Añadir al carrito</Text>
+          <Icon name="shopping-cart" size={20} color="#FFF" style={styles.cartIcon} />
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -114,6 +118,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   addToCartButton: {
+    flexDirection: 'row', // Para alinear el texto y el ícono horizontalmente
+    alignItems: 'center', // Para centrar el contenido verticalmente
     position: 'absolute',
     bottom: 20,
     right: 20,
@@ -122,10 +128,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
+  addToCartButtonContent: {
+    flexDirection: 'row', // Para alinear el texto y el ícono horizontalmente
+    alignItems: 'center', // Para centrar el contenido verticalmente
+  },
   addToCartButtonText: {
-    fontSize: 18,
+    fontSize: 15,
     color: '#FFF',
     fontWeight: 'bold',
+    marginRight: 20, // Espacio entre el texto y el ícono
+  },
+  cartIcon: {
+    marginLeft: 20, // Espacio entre el texto y el ícono
   },
 });
 

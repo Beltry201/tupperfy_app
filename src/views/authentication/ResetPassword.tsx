@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const ResetPassword = ({ navigation }: { navigation: any }) => {
   const [password, setPassword] = useState('');
@@ -38,7 +39,7 @@ const ResetPassword = ({ navigation }: { navigation: any }) => {
           placeholderTextColor="#003f5c"
         />
         <TouchableOpacity onPress={toggleShowPassword} style={styles.eyeIcon}>
-          <Text style={styles.eyeText}>{showPassword ? 'Ocultar' : 'Mostrar'}</Text>
+          <Icon name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#003f5c" />
         </TouchableOpacity>
       </View>
       <View style={styles.inputView}>
@@ -51,7 +52,7 @@ const ResetPassword = ({ navigation }: { navigation: any }) => {
           placeholderTextColor="#003f5c"
         />
         <TouchableOpacity onPress={toggleShowConfirmPassword} style={styles.eyeIcon}>
-          <Text style={styles.eyeText}>{showConfirmPassword ? 'Ocultar' : 'Mostrar'}</Text>
+          <Icon name={showConfirmPassword ? 'eye-slash' : 'eye'} size={20} color="#003f5c" />
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.button} onPress={handleCreatePassword}>
@@ -99,9 +100,6 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     padding: 20,
-  },
-  eyeText: {
-    textAlign: 'left',
   },
   button: {
     backgroundColor: 'blue',

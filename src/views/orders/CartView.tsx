@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkoutButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#FFF',
     fontWeight: 'bold',
   },

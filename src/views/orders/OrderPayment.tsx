@@ -65,11 +65,10 @@ const OrderPayment = () => {
           </View>
           <View style={styles.selectedProductContainer}>
             <Text style={styles.subtitle}>Producto Seleccionado</Text>
-            <View style={styles.horizontalLine} />
             <Text style={styles.itemText}>Nombre: {selectedProduct.name}</Text>
             <Text style={styles.itemText}>Cantidad: {selectedProduct.quantity}</Text>
             <Text style={styles.itemText}>Precio: ${selectedProduct.price}</Text>
-            
+            <View style={styles.horizontalLine} />
             {/* Sección de "¿Necesitas cubiertos?" */}
             <View style={styles.utensilsContainer}>
               <Text style={styles.utensilsText}>¿Necesitas cubiertos?</Text>
@@ -152,7 +151,7 @@ const OrderPayment = () => {
         </View>
       </ScrollView>
       <TouchableOpacity style={styles.confirmButton}>
-        <Text style={styles.confirmButtonText}>Confirmar Pedido (${totalCost})</Text>
+        <Text style={styles.confirmButtonText}>Realizar pago (${totalCost})</Text>
       </TouchableOpacity>
     </View>
   );

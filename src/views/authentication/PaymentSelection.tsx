@@ -1,9 +1,10 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const PaymentSelection = ({ navigation }: { navigation: any }) => {
   const handleCreditCardPayment = () => {
-    navigation.navigate('AddPayment')
+    navigation.navigate('AddPayment');
   };
 
   const handleMercadoPagoPayment = () => {
@@ -11,19 +12,22 @@ const PaymentSelection = ({ navigation }: { navigation: any }) => {
   };
 
   const handleCashPayment = () => {
-    navigation.navigate('HomePage')  };
+    navigation.navigate('HomePage');
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Selecciona tu método de pago</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={[styles.button, styles.creditCardButton]} onPress={handleCreditCardPayment}>
+          <Icon name="credit-card" size={20} color="#ffffff" style={styles.icon} />
           <Text style={styles.buttonText}>Tarjeta de crédito/débito</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleMercadoPagoPayment}>
           <Text style={styles.buttonText}>Mercado Pago</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleCashPayment}>
+          <Icon name="money" size={20} color="#ffffff" style={styles.icon} />
           <Text style={styles.buttonText}>Efectivo</Text>
         </TouchableOpacity>
       </View>
@@ -55,18 +59,25 @@ const styles = StyleSheet.create({
     width: 300,
     paddingVertical: 30,
     borderRadius: 30,
-    marginBottom: 30, // Separación aumentada entre los botones
-    borderWidth: 3, // Grosor del borde aumentado
-    borderColor: "black", // Color del borde
+    marginBottom: 30,
+    borderWidth: 3,
+    borderColor: "black",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   creditCardButton: {
-    marginBottom: 40, // Aumentar el espacio entre este botón y los otros
+    marginBottom: 40,
   },
   buttonText: {
     color: "#ffffff",
-    fontSize: 20, // Tamaño del texto mantenido
+    fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+    marginLeft: 10,
+  },
+  icon: {
+    marginRight: 10,
   },
 });
 

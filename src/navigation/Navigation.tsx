@@ -35,6 +35,9 @@ const NavigationStack = () => {
         <Stack.Screen name="DishDetails" component={DishDetails} />
         <Stack.Screen name="CartView" component={CartView} />
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
+        
+
+
       </Stack.Navigator>
     </NavigationContainer>
   );
