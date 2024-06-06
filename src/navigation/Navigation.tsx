@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import 'react-native-gesture-handler';
 import LogInView from '../views/authentication/LogIn';
 import SignInView from '../views/authentication/SignIn';
 import CreateAccountView from '../views/authentication/CreateAccount';
@@ -10,8 +11,8 @@ import PaymentSelection from '../views/authentication/PaymentSelection';
 import AddPayment from '../views/authentication/AddPayment';
 import CodeInput from '../views/authentication/CodeInput';
 import ResetPassword from '../views/authentication/ResetPassword';
-import HomePage from '../views/home/HomePage';
-import DishDetails from '../views/home/DishDetails';
+import HomePage from '../screens/HomePage';
+import DishDetails from '../views/orders/DishDetails';
 import CartView from '../views/orders/CartView';
 import OrderPayment from '../views/orders/OrderPayment';
 
@@ -36,8 +37,6 @@ const NavigationStack = () => {
         <Stack.Screen name="CartView" component={CartView} />
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
         
-
-
       </Stack.Navigator>
     </NavigationContainer>
   );

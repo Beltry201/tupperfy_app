@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import AntDesignIcon from 'react-native-vector-icons/AntDesign';
+import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+
 
 // Generar datos aleatorios
 const generateRandomItems = (numItems: number, categoryId: string) => {
@@ -67,13 +70,13 @@ const HomePage = ({ navigation }: { navigation: any }) => {
             style={styles.profileButton}
             onPress={() => navigation.navigate('UserProfile')}>
             <Text>
-              <Icon name="user" size={35} color="black" />
+              <FontAwesome5Icon name="user" size={28} color="black" />
             </Text>
           </TouchableOpacity>
           <View style={styles.addressSearchContainer}>
             <View style={styles.addressSearchBox}>
               <TouchableOpacity style={styles.addressSearchIconWrapper} onPress={() => console.log('Location icon pressed')}>
-                <Icon name="map-marker" size={23} color="red" />
+                <SimpleLineIcon name="location-pin" size={23} color="red" />
               </TouchableOpacity>
               <TextInput
                 ref={searchInputRef}
@@ -96,7 +99,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
             <TouchableOpacity
               style={styles.searchIconWrapper}
               onPress={handleSearchIconPress}>
-              <Icon name="search" size={20} color="black" />
+              <AntDesignIcon name="search1" size={20} color="black" />
             </TouchableOpacity>
           </View>
         </View>
@@ -219,14 +222,10 @@ const HomePage = ({ navigation }: { navigation: any }) => {
           ))}
         </ScrollView>
       </ScrollView>
-      <TouchableOpacity
-        style={styles.floatingCartButton}
-        onPress={() => navigation.navigate('CartView')}>
-        <Text>
-          <Icon name="shopping-cart" size={30} color="white" />
-        </Text>
+      <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate('CartView')}>
+        <AntDesignIcon name="shoppingcart" size={30} color="black" />
       </TouchableOpacity>
-    </View>
+      </View>
   );
 };
 
@@ -388,22 +387,22 @@ itemText: {
     fontSize: 14, // Tamaño del texto
     textAlign: 'center',
 },
-  floatingCartButton: {
-    position: 'absolute',
-    bottom: 30,
-    right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: 'gray',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-  },
+cartButton: {
+  position: 'absolute',
+  top: 12,
+  right: 20,
+  width: 50,
+  height: 50,
+  borderRadius: 30,
+  backgroundColor: 'white',
+  justifyContent: 'center',
+  alignItems: 'center',
+  elevation: 5,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 2,
+},
 });
 
 export default HomePage;

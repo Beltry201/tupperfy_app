@@ -90,12 +90,20 @@ const CreateAccountView = ({ navigation }: { navigation: any }) => {
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Fecha de Nacimiento *</Text>
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setOpen(true)}
-          >
-            <Icon name="calendar" size={20} color="#003f5c" />
-          </TouchableOpacity>
+          <View style={styles.dateInputContainer}>
+            <TouchableOpacity
+              style={styles.dateIcon}
+              onPress={() => setOpen(true)}
+            >
+              <Icon name="calendar" size={20} color="#003f5c" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.dateTextContainer}
+              onPress={() => setOpen(true)}
+            >
+              <Text style={styles.dateText}>{formatDate(dateOfBirth)}</Text>
+            </TouchableOpacity>
+          </View>
           <DatePicker
             modal
             open={open}
@@ -229,6 +237,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#aaa', // Placeholder text color (grey)
     },
-    });
-    
-    export default CreateAccountView;
+    dateInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    },
+    dateIcon: {
+    marginRight: 10,
+    },
+    dateTextContainer: {
+    flex: 1,
+    },
+    dateText: {
+    fontSize: 16,
+    color: '#000',
+    },
+});
+
+export default CreateAccountView;

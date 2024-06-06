@@ -114,12 +114,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>RNScreens.xcscheme</key>
+		<key>RNGestureHandler.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>RNVectorIcons.xcscheme</key>
+		<key>RNReanimated.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RNScreens.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
