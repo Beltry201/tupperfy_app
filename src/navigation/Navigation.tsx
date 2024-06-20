@@ -39,29 +39,23 @@ const HomeTabs = () => {
 
           if (route.name === 'Home') {
             iconName = 'home';
-          } else if (route.name === 'Settings') {
-            iconName = 'user';
+          } else if (route.name === 'Mi Menu') {
+            iconName = 'calendar'; // Nombre del ícono de calendario en Ionicons
           } else if (route.name === 'Tupperfy') {
-            iconName = 'video';
+            return <EntypoIcon name="video" size={size} color={color} />; // Icono de video de Entypo
           } else if (route.name === 'Profile') {
             return <FontAwesome5Icon name="user-alt" size={23} color={color} />;
-          } else if (route.name === 'Menu') {
-            iconName = 'calendar';
           }
 
-          // Usando Ionicons
-          if (route.name === 'Home' || route.name === 'Menu') {
-            return <Icon name={iconName} size={size} color={color} />;
-          }
-          // Usando Entypo
-          return <EntypoIcon name={iconName} size={size} color={color} />;
+          // Usando Ionicons para el ícono de calendario
+          return <Icon name={iconName} size={size} color={color} />;
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
-      <Tab.Screen name="Menu" component={MenuView} options={{ headerShown: false }} />
-      <Tab.Screen name="Tupperfy" component={MediaView} options={{ headerShown: false }} />
-      <Tab.Screen name="Profile" component={UserProfile} options={{ headerShown: false }} />
+      <Tab.Screen name="Home" component={HomePage} />
+      <Tab.Screen name="Mi Menu" component={MenuView} />
+      <Tab.Screen name="Tupperfy" component={MediaView} />
+      <Tab.Screen name="Profile" component={UserProfile} />
     </Tab.Navigator>
   );
 };
@@ -70,23 +64,20 @@ const NavigationStack = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* Pantallas con encabezado */}
+        <Stack.Screen name="SignIn" component={SignInView} />
         <Stack.Screen name="LogIn" component={LogInView} />
         <Stack.Screen name="CreateAccount" component={CreateAccountView} />
-        
-        {/* Pantallas sin encabezado */}
-        <Stack.Screen name="SignIn" component={SignInView} options={{ headerShown: false }} />
-        <Stack.Screen name="FavoriteDishesForm" component={FavoriteDishesForm} options={{ headerShown: false }} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordView} options={{ headerShown: false }} />
-        <Stack.Screen name="AddPaymentMethod" component={AddPaymentMethod} options={{ headerShown: false }} />
-        <Stack.Screen name="PaymentSelection" component={PaymentSelection} options={{ headerShown: false }} />
-        <Stack.Screen name="AddPayment" component={AddPayment} options={{ headerShown: false }} />
-        <Stack.Screen name="CodeInput" component={CodeInput} options={{ headerShown: false }} />
-        <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ headerShown: false }} />
-        <Stack.Screen name="HomePage" component={HomeTabs} options={{ headerShown: false }} />
-        <Stack.Screen name="DishDetails" component={DishDetails} options={{ headerShown: false }} />
-        <Stack.Screen name="CartView" component={CartView} options={{ headerShown: false }} />
-        <Stack.Screen name="OrderPayment" component={OrderPayment} options={{ headerShown: false }} />
+        <Stack.Screen name="FavoriteDishesForm" component={FavoriteDishesForm} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordView} />
+        <Stack.Screen name="AddPaymentMethod" component={AddPaymentMethod} />
+        <Stack.Screen name="PaymentSelection" component={PaymentSelection} />
+        <Stack.Screen name="AddPayment" component={AddPayment} />
+        <Stack.Screen name="CodeInput" component={CodeInput} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        <Stack.Screen name="HomePage" component={HomeTabs} />
+        <Stack.Screen name="DishDetails" component={DishDetails} />
+        <Stack.Screen name="CartView" component={CartView} />
+        <Stack.Screen name="OrderPayment" component={OrderPayment} />
       </Stack.Navigator>
     </NavigationContainer>
   );
