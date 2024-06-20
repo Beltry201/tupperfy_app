@@ -2,7 +2,8 @@ import { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput} from 'react-native';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
+import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 
 
 // Generar datos aleatorios
@@ -68,15 +69,15 @@ const HomePage = ({ navigation }: { navigation: any }) => {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.profileButton}
-            onPress={() => navigation.navigate('UserProfile')}>
+            onPress={() => navigation.navigate('DrawerInfo')}>
             <Text>
-              <FontAwesome5Icon name="user" size={28} color="black" />
+              <IoniconsIcon name="menu" size={28} color="black" />
             </Text>
           </TouchableOpacity>
           <View style={styles.addressSearchContainer}>
             <View style={styles.addressSearchBox}>
               <TouchableOpacity style={styles.addressSearchIconWrapper} onPress={() => console.log('Location icon pressed')}>
-                <SimpleLineIcon name="location-pin" size={23} color="red" />
+                <FontAwesome6Icon name="location-dot" size={23} color="#FF4500" />
               </TouchableOpacity>
               <TextInput
                 ref={searchInputRef}
@@ -248,31 +249,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   searchBoxContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 15,
-  },
-  searchBox: {
-    borderWidth: 1,
-    borderColor: '#666',
     paddingVertical: 10,
-    paddingHorizontal: 13,
-    borderRadius: 20,
-    width: 320,
-  },
-  searchIcon: {
-    position: 'absolute',
-    right: 15,
   },
   searchBoxWrapper: {
-    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    width: '90%',
+  },
+  searchBox: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
   },
   searchIconWrapper: {
-    position: 'absolute',
-    right: 10,
-    top: '50%',
-    transform: [{ translateY: -10 }],
+    marginLeft: 10,
   },
   subtitle: {
     fontSize: 16,
@@ -308,31 +308,29 @@ const styles = StyleSheet.create({
   },
   addressSearchContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginLeft: 20,
+    marginRight: 90,
   },
   addressSearchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: '#666',
-    marginRight: 115,
-    marginLeft: 25,
-    paddingHorizontal: 8,
-    // Agregar sombra
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3, // Este es para Android
-  },
-  addressSearchInput: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
     paddingVertical: 8,
-    paddingHorizontal: 5,
-    flex: 1,
+    paddingHorizontal: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
   addressSearchIconWrapper: {
-    padding: 5,
+    marginRight: 12,
+  },
+  addressSearchInput: {
+    flex: 1,
+    fontSize: 13,
+    color: '#333',
   },
   buttonContainer: {
     marginTop: 10,
