@@ -2,20 +2,19 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; // Para iconos
 import { StatusBar } from 'expo-status-bar';
+import { useNavigation } from '@react-navigation/native'; // Importa useNavigation desde react-navigation/native
 
 const UserProfile = () => {
-  // Estado para controlar qué botón está activo
+  const navigation = useNavigation(); // Obtiene el objeto de navegación
   const [activeButton, setActiveButton] = useState('publicaciones');
-
-  // Datos del usuario (pueden venir de una fuente de datos externa o propiedades)
   const [refreshing, setRefreshing] = useState(false);
 
   const user = {
     firstName: 'Diego',
     lastName: 'Arria',
-    followedCount: 50, // Número de seguidos del usuario
-    followersCount: 150, // Número de seguidores del usuario
-    likesCount: 200, // Número de "Me gusta" totales del usuario
+    followedCount: 25,
+    followersCount: 75,
+    likesCount: 200,
   };
 
   const onRefresh = useCallback(() => {
@@ -31,30 +30,47 @@ const UserProfile = () => {
     // Aquí podrías manejar la navegación o cualquier lógica adicional según el botón presionado
   };
 
+  const handleEditProfile = () => {
+    // Aquí puedes agregar la lógica para navegar a la pantalla de edición de perfil
+    console.log("Editar perfil presionado");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
-            {/* Avatar */}
             <View style={styles.avatarCircle}>
               <Text style={styles.avatarText}>{user.firstName[0]}</Text>
             </View>
-            {/* Nombre del usuario */}
             <Text style={styles.userName}>{user.firstName} {user.lastName}</Text>
+
+            {/* Botón de Editar Perfil */}
+            <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
+              <Text style={styles.editProfileButtonText}>Editar Perfil</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.subtitleContainer}>
-            <Text style={styles.subtitleTextLeft}>Chefs seguidos</Text>
-            <Text style={[styles.subtitleTextLeft, styles.pedidosRealizados]}>Pedidos realizados</Text>
+            <View style={[styles.subtitleItem, styles.moveLeft]}>
+              <Text style={styles.subtitleText}>Chefs seguidos</Text>
+              <TouchableOpacity onPress={() =>  navigation.navigate('FollowedChefs')}
+>
+                <Text style={styles.subtitleCount}>{user.followedCount}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.subtitleItem, styles.moveLeft]}>
+              <Text style={[styles.subtitleText, styles.pedidosRealizados]}>Pedidos realizados</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('OrdersCompleted')}>
+                <Text style={[styles.subtitleCount, styles.pedidosRealizados]}>{user.followersCount}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
-        {/* Secciones del usuario */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionRow}>
             <TouchableOpacity
@@ -97,10 +113,8 @@ const UserProfile = () => {
           </View>
         </View>
 
-        {/* Línea horizontal */}
         <View style={styles.line}></View>
 
-        {/* Contenido del usuario */}
         <ScrollView style={styles.contentContainer}>
           <Text style={styles.contentText}>Contenido del usuario...</Text>
           {/* Aquí se mostrarán las publicaciones, platillos, etc. */}
@@ -149,26 +163,45 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center', // Centrado horizontal del texto
   },
+  editProfileButton: {
+    marginTop: 10,
+    backgroundColor: '#CCCCCC',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 5,
+  },
+  editProfileButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   subtitleContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: -65, // Ajuste para alinear con el círculo azul
+    alignItems: 'flex-start',
+    marginTop: -70, // Ajuste para alinear con el círculo azul
     paddingHorizontal: 20,
   },
-  subtitleTextLeft: {
+  subtitleItem: {
     flex: 1,
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'left',
+    alignItems: 'center', // Centramos horizontalmente
+    justifyContent: 'center', // Centramos verticalmente
   },
-  subtitleTextRight: {
+  subtitleText: {
     fontSize: 12,
     color: '#666',
-    textAlign: 'left', // Alineación a la izquierda
-    marginLeft: 10, // Ajuste para separar del otro subtítulo
+    textAlign: 'center', // Centramos el texto del subtítulo
+    marginBottom: 10, // Añadimos un margen inferior para separar del número
+  },
+  subtitleCount: {
+    fontSize: 20, // Aumentamos el tamaño de la fuente para hacer el número más grande
+    color: '#333',
+    textAlign: 'center', // Centramos el número
   },
   pedidosRealizados: {
     marginLeft: -75, // Ajuste para pegar más a la izquierda
+  },
+  moveLeft: {
+    marginLeft: -65, // Ajusta este valor para mover los subtítulos más a la izquierda
   },
   sectionContainer: {
     paddingHorizontal: 40,

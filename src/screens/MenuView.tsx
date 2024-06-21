@@ -1,10 +1,13 @@
+// MenuView.tsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const MenuView = () => {
+  const navigation = useNavigation();
+
   const handleCustomizeMenu = () => {
-    // Aquí puedes implementar la lógica para personalizar el menú
-    console.log('Personalizando menú...');
+    navigation.navigate('CreateMenu'); // Navega a la pantalla de calendario
   };
 
   return (

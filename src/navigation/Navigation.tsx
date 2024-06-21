@@ -1,10 +1,11 @@
+// Navigation.tsx
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Ionicons'; // Importa desde Ionicons
-import EntypoIcon from 'react-native-vector-icons/Entypo'; // Importa desde Entypo
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'; // Importa desde Feather
+import Icon from 'react-native-vector-icons/Ionicons';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 // Importa tus vistas
 import LogInView from '../views/authentication/LogIn';
@@ -22,10 +23,14 @@ import DishDetails from '../views/orders/DishDetails';
 import OrderPayment from '../views/orders/OrderPayment';
 import CartView from '../views/orders/CartView';
 
-// Tus vistas dentro de las tabs
+// Importa la pantalla CreateMenu
 import MenuView from '../screens/MenuView';
 import MediaView from '../screens/MediaView';
 import UserProfile from '../screens/UserProfile';
+import CreateMenu from '../screens/CreateMenu';
+import FollowedChefs from '../screens/FollowedChefs';
+import OrdersCompleted from '../screens/OrdersCompleted';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,14 +45,13 @@ const HomeTabs = () => {
           if (route.name === 'Home') {
             iconName = 'home';
           } else if (route.name === 'Mi Menu') {
-            iconName = 'calendar'; // Nombre del ícono de calendario en Ionicons
+            iconName = 'calendar';
           } else if (route.name === 'Tupperfy') {
-            return <EntypoIcon name="video" size={size} color={color} />; // Icono de video de Entypo
+            return <EntypoIcon name="video" size={size} color={color} />;
           } else if (route.name === 'Profile') {
             return <FontAwesome5Icon name="user-alt" size={23} color={color} />;
           }
 
-          // Usando Ionicons para el ícono de calendario
           return <Icon name={iconName} size={size} color={color} />;
         },
       })}
@@ -63,7 +67,7 @@ const HomeTabs = () => {
 const NavigationStack = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="SignIn">
         <Stack.Screen name="SignIn" component={SignInView} />
         <Stack.Screen name="LogIn" component={LogInView} />
         <Stack.Screen name="CreateAccount" component={CreateAccountView} />
@@ -78,6 +82,9 @@ const NavigationStack = () => {
         <Stack.Screen name="DishDetails" component={DishDetails} />
         <Stack.Screen name="CartView" component={CartView} />
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
+        <Stack.Screen name="CreateMenu" component={CreateMenu} />
+        <Stack.Screen name="FollowedChefs" component={FollowedChefs} />
+        <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} />
       </Stack.Navigator>
     </NavigationContainer>
   );
