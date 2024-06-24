@@ -253,6 +253,7 @@ const CreateMenu = () => {
                   hideNotificationPicker();
                 }}
               >
+                <Picker.Item label="3 horas antes" value="3 horas antes" />
                 <Picker.Item label="2 horas antes" value="2 horas antes" />
                 <Picker.Item label="1 hora antes" value="1 hora antes" />
               </Picker>

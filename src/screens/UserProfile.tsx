@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native'; // Importa useNavigati
 
 const UserProfile = () => {
   const navigation = useNavigation(); // Obtiene el objeto de navegación
-  const [activeButton, setActiveButton] = useState('publicaciones');
+  const [activeButton, setActiveButton] = useState('platillos');
   const [refreshing, setRefreshing] = useState(false);
 
   const user = {
@@ -57,8 +57,7 @@ const UserProfile = () => {
           <View style={styles.subtitleContainer}>
             <View style={[styles.subtitleItem, styles.moveLeft]}>
               <Text style={styles.subtitleText}>Chefs seguidos</Text>
-              <TouchableOpacity onPress={() =>  navigation.navigate('FollowedChefs')}
->
+              <TouchableOpacity onPress={() => navigation.navigate('FollowedChefs')}>
                 <Text style={styles.subtitleCount}>{user.followedCount}</Text>
               </TouchableOpacity>
             </View>
@@ -72,16 +71,10 @@ const UserProfile = () => {
         </View>
 
         <View style={styles.sectionContainer}>
-          <View style={styles.sectionRow}>
+          {/* Nueva fila única para los botones */}
+          <View style={styles.sectionRowSingle}>
             <TouchableOpacity
-              style={[styles.sectionButton, activeButton === 'publicaciones' && styles.activeButton]}
-              onPress={() => onPressButton('publicaciones')}
-            >
-              <Icon name="grid-outline" size={24} color={activeButton === 'publicaciones' ? '#FFFFFF' : '#007BFF'} />
-              <Text style={[styles.sectionButtonText, activeButton === 'publicaciones' && styles.activeButtonText]}>Publicaciones</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.sectionButton, activeButton === 'platillos' && styles.activeButton, styles.leftAlignedButton]}
+              style={[styles.sectionButton, activeButton === 'platillos' && styles.activeButton]}
               onPress={() => onPressButton('platillos')}
             >
               <Icon name="fast-food-outline" size={24} color={activeButton === 'platillos' ? '#FFFFFF' : '#007BFF'} />
@@ -94,8 +87,6 @@ const UserProfile = () => {
               <Icon name="heart-outline" size={24} color={activeButton === 'cocineros' ? '#FFFFFF' : '#007BFF'} />
               <Text style={[styles.sectionButtonText, activeButton === 'cocineros' && styles.activeButtonText]}>Likes</Text>
             </TouchableOpacity>
-          </View>
-          <View style={styles.sectionRow}>
             <TouchableOpacity
               style={[styles.sectionButton, activeButton === 'guardadas' && styles.activeButton]}
               onPress={() => onPressButton('guardadas')}
@@ -204,24 +195,21 @@ const styles = StyleSheet.create({
     marginLeft: -65, // Ajusta este valor para mover los subtítulos más a la izquierda
   },
   sectionContainer: {
-    paddingHorizontal: 40,
+    paddingHorizontal: 20, // Reducido para alinear los botones en una sola fila
     marginTop: 20, // Aumentamos el margen superior de las secciones
   },
-  sectionRow: {
+  sectionRowSingle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15, // Aumentamos el margen inferior de las secciones
   },
   sectionButton: {
     alignItems: 'center',
     paddingVertical: 8,
-    paddingHorizontal: 12, // Ajustado para los otros botones
+    flex: 1, // Para que cada botón ocupe el mismo espacio
     borderRadius: 5,
-    flexDirection: 'column', // Cambiamos a columna para colocar el texto debajo del icono
+    flexDirection: 'column', // Mantener el texto debajo del icono
     justifyContent: 'center', // Centramos contenido verticalmente
-  },
-  leftAlignedButton: {
-    paddingHorizontal: 8, // Reducido solo para mover los iconos a la izquierda
+    marginHorizontal: 2, // Espaciado entre los botones
   },
   sectionButtonText: {
     marginTop: 4,

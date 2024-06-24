@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, FlatList, StyleSheet, TouchableOpacity, Text, TextInput } from 'react-native';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 
 const data = [
   { id: '1', backgroundColor: '#007BFF' },
@@ -26,24 +27,21 @@ const data = [
 ];
 
 const MediaView = () => {
-  const handleCirclePress = () => {
-    // Lógica para manejar la acción del círculo blanco
-    console.log('Circle pressed');
+  const [likedItems, setLikedItems] = useState({});
+  const [commentVisible, setCommentVisible] = useState({});
+
+  const handleLikePress = (itemId) => {
+    setLikedItems((prevState) => ({
+      ...prevState,
+      [itemId]: !prevState[itemId],
+    }));
   };
 
-  const handleLikePress = () => {
-    // Lógica para manejar la acción del botón Like
-    console.log('Like pressed');
-  };
-
-  const handleCommentPress = () => {
-    // Lógica para manejar la acción del botón Comment
-    console.log('Comment pressed');
-  };
-
-  const handleSharePress = () => {
-    // Lógica para manejar la acción del botón Share
-    console.log('Share pressed');
+  const toggleCommentVisibility = (itemId) => {
+    setCommentVisible((prevState) => ({
+      ...prevState,
+      [itemId]: !prevState[itemId],
+    }));
   };
 
   const renderItem = ({ item }) => (
@@ -51,22 +49,57 @@ const MediaView = () => {
       <View style={styles.content}>
         <View style={styles.rectangle} />
         <View style={styles.iconsContainer}>
-          <TouchableOpacity style={styles.circle} onPress={handleCirclePress}>
+          <TouchableOpacity style={styles.circle} onPress={() => console.log('Circle pressed')}>
             <FontAwesome5Icon name="user" size={30} color="#007BFF" style={styles.icon} />
           </TouchableOpacity>
           <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={handleLikePress}>
-              <FontAwesome5Icon name="heart" size={30} color="white" style={styles.icon} />
+            <TouchableOpacity onPress={() => handleLikePress(item.id)}>
+              <AntDesignIcon
+                name="heart"
+                size={30}
+                color={likedItems[item.id] ? 'red' : 'white'}
+                style={styles.icon}
+              />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleCommentPress}>
+            <TouchableOpacity onPress={() => toggleCommentVisibility(item.id)}>
               <FontAwesome5Icon name="comment-dots" size={30} color="white" style={styles.icon} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleSharePress}>
+            <TouchableOpacity onPress={() => console.log('Share pressed')}>
               <FontAwesome5Icon name="share" size={30} color="white" style={styles.icon} />
             </TouchableOpacity>
           </View>
         </View>
       </View>
+      {commentVisible[item.id] && (
+        <View style={[styles.commentArea, styles.commentAreaOpen]}>
+          <FlatList
+            data={[
+              { id: 'comment1', text: 'Comentario 1' },
+              { id: 'comment2', text: 'Comentario 2' },
+              { id: 'comment3', text: 'Comentario 3' },
+              // Aquí podrías usar datos reales o dinámicos
+            ]}
+            renderItem={({ item }) => (
+              <View style={styles.comment}>
+                <Text style={styles.commentText}>{item.text}</Text>
+              </View>
+            )}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.commentList}
+            inverted  // Para invertir el orden y mostrar los comentarios desde abajo hacia arriba
+          />
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Añadir comentario..."
+              // Puedes manejar la lógica de enviar comentario aquí
+            />
+            <TouchableOpacity onPress={() => console.log('Send comment')}>
+              <FontAwesome5Icon name="paper-plane" size={25} color="#007BFF" style={styles.sendIcon} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 
@@ -76,7 +109,7 @@ const MediaView = () => {
       <FlatList
         data={data}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={styles.flatListContainer}
       />
     </View>
@@ -86,7 +119,7 @@ const MediaView = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // Color de fondo general
+    backgroundColor: '#fff',
   },
   headerText: {
     fontSize: 22,
@@ -100,9 +133,9 @@ const styles = StyleSheet.create({
   item: {
     alignItems: 'flex-end',
     justifyContent: 'center',
-    height: 600, // Altura de cada elemento
+    height: 600,
     width: '100%',
-    marginBottom: 20, // Espacio blanco entre elementos
+    marginBottom: 50,
     paddingHorizontal: 20,
   },
   content: {
@@ -128,7 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   iconContainer: {
     flexDirection: 'column',
@@ -137,6 +170,50 @@ const styles = StyleSheet.create({
   icon: {
     marginVertical: 5,
     marginHorizontal: 10,
+  },
+  commentArea: {
+    backgroundColor: '#fff',  // Color de fondo de la zona de comentarios
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    paddingBottom: 10,
+  },
+  commentAreaOpen: {
+    maxHeight: 150,  // Altura máxima para la zona de comentarios abierta
+    overflow: 'hidden',  // Para manejar el desbordamiento de contenido
+  },
+  commentList: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',  // Alinea los comentarios desde abajo hacia arriba
+  },
+  comment: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    width: '100%',
+  },
+  commentText: {
+    fontSize: 16,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    paddingTop: 10,
+    paddingHorizontal: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    marginRight: 10,
+  },
+  sendIcon: {
+    marginLeft: 10,
   },
 });
 
