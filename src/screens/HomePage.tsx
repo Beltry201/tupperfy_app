@@ -1,10 +1,9 @@
-import { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput} from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
-
 
 // Generar datos aleatorios
 const generateRandomItems = (numItems: number, categoryId: string) => {
@@ -30,10 +29,9 @@ const newestItems = generateRandomItems(5, "NEW012");
 const otherTasteItems = generateRandomItems(5, "TAS345");
 
 const HomePage = ({ navigation }: { navigation: any }) => {
-  const [selectedButton, setSelectedButton] = useState('') as [String, Function];
-  
+  const [selectedButton, setSelectedButton] = useState('');
 
-  const handleCategoryCardPress = (buttonName: String) => {
+  const handleCategoryCardPress = (buttonName: string) => {
     setSelectedButton(buttonName);
   };
 
@@ -70,9 +68,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
           <TouchableOpacity
             style={styles.profileButton}
             onPress={() => navigation.navigate('DrawerInfo')}>
-            <Text>
-              <IoniconsIcon name="menu" size={28} color="black" />
-            </Text>
+            <IoniconsIcon name="menu" size={28} color="black" />
           </TouchableOpacity>
           <View style={styles.addressSearchContainer}>
             <View style={styles.addressSearchBox}>
@@ -231,7 +227,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
       <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate('CartView')}>
         <AntDesignIcon name="shoppingcart" size={30} color="black" />
       </TouchableOpacity>
-      </View>
+    </View>
   );
 };
 
@@ -255,15 +251,15 @@ const styles = StyleSheet.create({
   },
   searchBoxContainer: {
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 15,
   },
   searchBoxWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 13,
+    paddingHorizontal: 18,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -351,12 +347,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginHorizontal: 3,
-    borderRadius: 5,
+    borderRadius: 20,
     alignItems: 'center',
   },
   buttonText: {
     color: '#FFF',
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   selectedButton: {
     backgroundColor: '#0056b3',
@@ -369,43 +366,43 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   popularItem: {
-    width: 140, // Ancho de la caja
-    height: 140, // Alto de la caja
+    width: 160, // Aumenté el ancho de la caja
+    height: 160, // Aumenté el alto de la caja
     backgroundColor: '#007BFF',
     marginHorizontal: 5,
     borderRadius: 5,
     justifyContent: 'flex-end',
     alignItems: 'center',
-},
-itemInfo: {
+  },
+  itemInfo: {
     backgroundColor: '#D3D3D3',
     width: '100%',
     alignItems: 'center',
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
-    paddingVertical: 5, // Espacio vertical dentro de la caja
-},
-itemText: {
+    paddingVertical: 5,
+  },
+  itemText: {
     color: '#000',
-    fontSize: 14, // Tamaño del texto
+    fontSize: 14,
     textAlign: 'center',
-},
-cartButton: {
-  position: 'absolute',
-  top: 12,
-  right: 20,
-  width: 50,
-  height: 50,
-  borderRadius: 30,
-  backgroundColor: 'white',
-  justifyContent: 'center',
-  alignItems: 'center',
-  elevation: 5,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 2,
-},
+  },
+  cartButton: {
+    position: 'absolute',
+    top: 12,
+    right: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 30,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+  },
 });
 
 export default HomePage;

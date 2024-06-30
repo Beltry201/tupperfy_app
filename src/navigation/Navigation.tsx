@@ -27,7 +27,6 @@ import CartView from '../views/orders/CartView';
 import MenuView from '../screens/MenuView';
 import MediaView from '../screens/MediaView';
 import UserProfile from '../screens/UserProfile';
-import CreateMenu from '../screens/CreateMenu';
 import FollowedChefs from '../screens/FollowedChefs';
 import OrdersCompleted from '../screens/OrdersCompleted';
 
@@ -47,7 +46,7 @@ const HomeTabs = () => {
           } else if (route.name === 'Mi Menu') {
             iconName = 'calendar';
           } else if (route.name === 'Tupperfy') {
-            return <EntypoIcon name="video" size={size} color={color} />;
+            return <EntypoIcon name="youtube" size={size} color={color} />;
           } else if (route.name === 'Profile') {
             return <FontAwesome5Icon name="user-alt" size={23} color={color} />;
           }
@@ -82,7 +81,6 @@ const NavigationStack = () => {
         <Stack.Screen name="DishDetails" component={DishDetails} />
         <Stack.Screen name="CartView" component={CartView} />
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
-        <Stack.Screen name="CreateMenu" component={CreateMenu} />
         <Stack.Screen name="FollowedChefs" component={FollowedChefs} />
         <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} />
       </Stack.Navigator>

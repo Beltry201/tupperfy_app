@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Ref
 import Icon from 'react-native-vector-icons/Ionicons'; // Para iconos
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native'; // Importa useNavigation desde react-navigation/native
+import MaterialIconsIcon from 'react-native-vector-icons/MaterialIcons';
 
 const UserProfile = () => {
   const navigation = useNavigation(); // Obtiene el objeto de navegación
@@ -77,28 +78,28 @@ const UserProfile = () => {
               style={[styles.sectionButton, activeButton === 'platillos' && styles.activeButton]}
               onPress={() => onPressButton('platillos')}
             >
-              <Icon name="fast-food-outline" size={24} color={activeButton === 'platillos' ? '#FFFFFF' : '#007BFF'} />
+              <MaterialIconsIcon name="food-bank" size={24} color={activeButton === 'platillos' ? '#FFFFFF' : '#007BFF'} />
               <Text style={[styles.sectionButtonText, activeButton === 'platillos' && styles.activeButtonText]}>Platillos Favoritos</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.sectionButton, activeButton === 'cocineros' && styles.activeButton]}
               onPress={() => onPressButton('cocineros')}
             >
-              <Icon name="heart-outline" size={24} color={activeButton === 'cocineros' ? '#FFFFFF' : '#007BFF'} />
+              <Icon name="heart" size={24} color={activeButton === 'cocineros' ? '#FFFFFF' : '#007BFF'} />
               <Text style={[styles.sectionButtonText, activeButton === 'cocineros' && styles.activeButtonText]}>Likes</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.sectionButton, activeButton === 'guardadas' && styles.activeButton]}
               onPress={() => onPressButton('guardadas')}
             >
-              <Icon name="bookmark-outline" size={24} color={activeButton === 'guardadas' ? '#FFFFFF' : '#007BFF'} />
+              <Icon name="bookmark" size={24} color={activeButton === 'guardadas' ? '#FFFFFF' : '#007BFF'} />
               <Text style={[styles.sectionButtonText, activeButton === 'guardadas' && styles.activeButtonText]}>Guardados</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.sectionButton, activeButton === 'notificaciones' && styles.activeButton]}
               onPress={() => onPressButton('notificaciones')}
             >
-              <Icon name="notifications-outline" size={24} color={activeButton === 'notificaciones' ? '#FFFFFF' : '#007BFF'} />
+              <Icon name="notifications" size={24} color={activeButton === 'notificaciones' ? '#FFFFFF' : '#007BFF'} />
               <Text style={[styles.sectionButtonText, activeButton === 'notificaciones' && styles.activeButtonText]}>Notificaciones</Text>
             </TouchableOpacity>
           </View>

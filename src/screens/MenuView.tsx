@@ -5,7 +5,7 @@ import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
 
-const CreateMenu = () => {
+const MenuView = () => {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [eventName, setEventName] = useState('');
@@ -176,7 +176,7 @@ const CreateMenu = () => {
         <View style={styles.horizontalLine} />
         {savedEvent && (
           <View style={styles.savedEventContainer}>
-            <Text style={styles.sectionTitle}>Mi Menú</Text>
+            <Text style={styles.sectionTitle}>Nombre del menú</Text>
             <Text>{`Fecha: ${moment(savedEvent.selectedDate).format('MMMM DD, YYYY')}`}</Text>
             <Text>{`Productos: ${savedEvent.dishes.map((dish) => dish.name).join(', ')}`}</Text>
             <Text>{`Dirección: ${savedEvent.eventLocation}`}</Text>
@@ -286,6 +286,16 @@ const CreateMenu = () => {
               <Text style={styles.subtitle}>Resumen de Pago:</Text>
               <Text style={styles.paymentSummaryText}>Costo de productos: ${dishes.length * 10}</Text>
               <Text style={styles.paymentSummaryText}>Costo de envío: $5</Text>
+              <View style={styles.tipContainer}>
+                <Text style={styles.subtitle}>Propina (%):</Text>
+                <TextInput
+                  style={styles.tipInput}
+                  placeholder="10%"
+                  keyboardType="numeric"
+                  value={String(tipPercentage)}
+                  onChangeText={(text) => setTipPercentage(text)}
+                />
+              </View>
               <Text style={styles.paymentSummaryText}>Propina: ${calculateTip()}</Text>
               <Text style={styles.totalCostText}>Costo Total: ${calculateTotalCost()}</Text>
             </View>
@@ -526,6 +536,21 @@ const styles = StyleSheet.create({
   hideButtonText: {
     color: '#333333',
   },
+  tipContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  tipInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+    borderRadius: 4,
+    padding: 10,
+    backgroundColor: '#FFFFFF',
+    color: '#333333',
+    marginRight: 10,
+  },
 });
 
-export default CreateMenu;
+export default MenuView;
