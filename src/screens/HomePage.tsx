@@ -127,9 +127,9 @@ const HomePage = ({ navigation }: { navigation: any }) => {
               <Text style={[styles.buttonText, selectedButton === 'Postres' && styles.selectedButtonText]}>Postres</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, selectedButton === 'Condimentos' && styles.selectedButton]}
-              onPress={() => handleCategoryCardPress('Condmientos')}>
-              <Text style={[styles.buttonText, selectedButton === 'Condimentos' && styles.selectedButtonText]}>Condimentos</Text>
+              style={[styles.button, selectedButton === 'Congelados' && styles.selectedButton]}
+              onPress={() => handleCategoryCardPress('Congelados')}>
+              <Text style={[styles.buttonText, selectedButton === 'Congelados' && styles.selectedButtonText]}>Congelados</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, selectedButton === 'Otros' && styles.selectedButton]}
