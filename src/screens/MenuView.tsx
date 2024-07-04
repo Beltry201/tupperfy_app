@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, View, StyleSheet, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, View, StyleSheet, Text, ScrollView, TextInput, TouchableOpacity, Switch } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -10,6 +10,7 @@ const MenuView = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [eventName, setEventName] = useState('');
   const [eventLocation, setEventLocation] = useState('');
+  const [eventInstructions, setEventInstructions] = useState('');
   const [needUtensils, setNeedUtensils] = useState(false);
   const [repeatEvent, setRepeatEvent] = useState('Nunca');
   const [deliveryTime, setDeliveryTime] = useState('');
@@ -118,16 +119,6 @@ const MenuView = () => {
     setDishes(updatedDishes);
   };
 
-  const renderCustomHeader = (date) => {
-    const monthName = moment(date).format('MMMM');
-    const year = moment(date).format('YYYY');
-    return (
-      <View style={styles.customHeader}>
-        <Text style={styles.monthText}>{monthName}</Text>
-        <Text style={styles.yearText}>{year}</Text>
-      </View>
-    );
-  };
 
   const calculateTip = () => {
     const productCost = dishes.length * 10;
@@ -205,7 +196,6 @@ const MenuView = () => {
               arrowColor: '#007AFF',
               monthTextColor: '#333333',
             }}
-            renderHeader={renderCustomHeader}
           />
         </View>
         <View style={styles.horizontalLine} />
@@ -215,8 +205,10 @@ const MenuView = () => {
             <Text style={styles.sectionTitle}>{`Nombre de menú`}</Text>
             <Text>{`Fecha: ${moment(event.selectedDate).format('MMMM DD, YYYY')}`}</Text>
             <Text>{`Productos: ${event.dishes.map((dish) => dish.name).join(', ')}`}</Text>
-            <Text>{`Dirección: ${event.eventLocation}`}</Text>
+            <Text>{`Dirección: ${eventLocation}`}</Text>
+            <Text>{`Instrucciones: ${eventInstructions}`}</Text>            
             <Text>{`Hora de entrega: ${event.deliveryTime}`}</Text>
+            <Text>{`¿Necesitas cubiertos? : ${event.needUtensils}`}</Text>
             <Text>{`Método de Pago: ${event.paymentMethod}`}</Text>
             <Text>{`Costo Final: $${calculateTotalCost()}`}</Text>
             <View style={styles.eventOptions}>
@@ -268,6 +260,11 @@ const MenuView = () => {
               value={eventLocation}
               onChangeText={setEventLocation}
             />
+             <TextInput
+              style={styles.instructionsInput}
+              placeholder="Instrucciones"
+              placeholderTextColor="#666"
+            />
             <View style={styles.timePickerContainer}>
               <Text style={styles.subtitle}>Hora de entrega:</Text>
               <TouchableOpacity style={styles.timePicker} onPress={showTimePicker}>
@@ -282,7 +279,11 @@ const MenuView = () => {
               headerTextIOS="Seleccionar hora"
               cancelTextIOS="Cancelar"
             />
-
+            <View style={styles.switchContainer}>
+              <Text style={styles.label}>¿Necesitas cubiertos?</Text>
+              <Switch value={needUtensils} onValueChange={setNeedUtensils} />
+            </View>
+            <View style={styles.horizontalLine} />
             <TouchableOpacity style={styles.pickerContainer} onPress={showNotificationPicker}>
               <Text style={styles.subtitle}>Recordatorio:</Text>
               <Text>{notificationAlert}</Text>
@@ -403,6 +404,15 @@ const styles = StyleSheet.create({
     textAlign: 'left',   // Alineamos a la derecha
     paddingRight: 20,     // Añadimos un padding derecho para moverlo a la derecha
   },  
+  instructionsInput: {
+    borderWidth: 1,
+    borderColor: '#666',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    marginBottom: 20,
+    alignSelf: 'stretch', // Estira el input para ocupar todo el ancho
+  },
   scrollViewContent: {
     paddingHorizontal: 20,
   },
@@ -465,6 +475,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+  },
+  utensilsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  utensilsText: {
+    fontSize: 20,
+    color: '#333',
+    fontWeight: 'bold',
   },
   dishInput: {
     flex: 1,
@@ -537,6 +558,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  switchText: {
+    marginRight: 10,
   },
   hideButton: {
     backgroundColor: '#FF6347',

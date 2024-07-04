@@ -41,13 +41,13 @@ const HomeTabs = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          if (route.name === 'Home') {
+          if (route.name === 'Inicio') {
             iconName = 'home';
           } else if (route.name === 'Mi Menu') {
             iconName = 'calendar';
           } else if (route.name === 'Tupperfy') {
             return <EntypoIcon name="youtube" size={size} color={color} />;
-          } else if (route.name === 'Profile') {
+          } else if (route.name === 'Perfil') {
             return <FontAwesome5Icon name="user-alt" size={23} color={color} />;
           }
 
@@ -55,10 +55,10 @@ const HomeTabs = () => {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomePage} />
+      <Tab.Screen name="Inicio" component={HomePage} />
       <Tab.Screen name="Mi Menu" component={MenuView} />
       <Tab.Screen name="Tupperfy" component={MediaView} />
-      <Tab.Screen name="Profile" component={UserProfile} />
+      <Tab.Screen name="Perfil" component={UserProfile} />
     </Tab.Navigator>
   );
 };
