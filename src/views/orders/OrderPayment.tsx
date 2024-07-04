@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Switch } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const OrderPayment = () => {
+const OrderPayment = ({ navigation }: { navigation: any }) => {
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
   const [needUtensils, setNeedUtensils] = useState(false); // Estado para el interruptor de cubiertos
   const [selectedTipIndex, setSelectedTipIndex] = useState(3); // 15% como predeterminado
@@ -22,6 +23,12 @@ const OrderPayment = () => {
 
   const handleTipPress = (index) => {
     setSelectedTipIndex(index);
+  };
+
+  const handlePayment = () => {
+    // Aquí se realizarían las acciones de pago
+    // Luego navegar a la pantalla de estado del pedido
+    navigation.navigate('OrderStatus')
   };
 
   const tipAmount = selectedProduct.price * (tipPercentages[selectedTipIndex] / 100);
@@ -150,7 +157,7 @@ const OrderPayment = () => {
           </View>
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.confirmButton}>
+      <TouchableOpacity style={styles.confirmButton} onPress={handlePayment}>
         <Text style={styles.confirmButtonText}>Realizar pago (${totalCost})</Text>
       </TouchableOpacity>
     </View>

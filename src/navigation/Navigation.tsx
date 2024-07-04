@@ -23,12 +23,14 @@ import DishDetails from '../views/orders/DishDetails';
 import OrderPayment from '../views/orders/OrderPayment';
 import CartView from '../views/orders/CartView';
 
+
 // Importa la pantalla CreateMenu
 import MenuView from '../screens/MenuView';
 import MediaView from '../screens/MediaView';
 import UserProfile from '../screens/UserProfile';
 import FollowedChefs from '../screens/FollowedChefs';
 import OrdersCompleted from '../screens/OrdersCompleted';
+import ProfileEdit from '../screens/ProfileEdit';
 
 
 const Stack = createNativeStackNavigator();
@@ -83,6 +85,7 @@ const NavigationStack = () => {
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
         <Stack.Screen name="FollowedChefs" component={FollowedChefs} />
         <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} />
+        <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
       </Stack.Navigator>
     </NavigationContainer>
   );

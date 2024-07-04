@@ -1,12 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, RefreshControl } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // Para iconos
+import Icon from 'react-native-vector-icons/Ionicons';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native'; // Importa useNavigation desde react-navigation/native
 import MaterialIconsIcon from 'react-native-vector-icons/MaterialIcons';
 
-const UserProfile = () => {
-  const navigation = useNavigation(); // Obtiene el objeto de navegación
+const UserProfile = ({ navigation }: { navigation: any }) => {
   const [activeButton, setActiveButton] = useState('platillos');
   const [refreshing, setRefreshing] = useState(false);
 
@@ -20,20 +19,17 @@ const UserProfile = () => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    // Aquí iría la lógica para refrescar los datos del usuario desde la fuente de datos
     setTimeout(() => {
       setRefreshing(false);
-    }, 1000); // Ejemplo de tiempo simulado para refresco
+    }, 1000);
   }, []);
 
   const onPressButton = (buttonName) => {
     setActiveButton(buttonName);
-    // Aquí podrías manejar la navegación o cualquier lógica adicional según el botón presionado
   };
 
   const handleEditProfile = () => {
-    // Aquí puedes agregar la lógica para navegar a la pantalla de edición de perfil
-    console.log("Editar perfil presionado");
+    navigation.navigate('ProfileEdit'); // Navegar a la pantalla de edición de perfil
   };
 
   return (
@@ -72,7 +68,6 @@ const UserProfile = () => {
         </View>
 
         <View style={styles.sectionContainer}>
-          {/* Nueva fila única para los botones */}
           <View style={styles.sectionRowSingle}>
             <TouchableOpacity
               style={[styles.sectionButton, activeButton === 'platillos' && styles.activeButton]}
@@ -109,7 +104,6 @@ const UserProfile = () => {
 
         <ScrollView style={styles.contentContainer}>
           <Text style={styles.contentText}>Contenido del usuario...</Text>
-          {/* Aquí se mostrarán las publicaciones, platillos, etc. */}
         </ScrollView>
       </ScrollView>
     </SafeAreaView>
@@ -125,15 +119,15 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   header: {
-    flexDirection: 'row', // Alineación de elementos en fila
+    flexDirection: 'row',
     paddingHorizontal: 20,
     marginTop: 10,
-    alignItems: 'center', // Alineación vertical centrada
+    alignItems: 'center',
     marginBottom: 20,
   },
   avatarContainer: {
     alignItems: 'center',
-    marginRight: 10, // Espacio entre el avatar y los subtítulos
+    marginRight: 10,
   },
   avatarCircle: {
     width: 100,
@@ -153,7 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     color: '#333',
-    textAlign: 'center', // Centrado horizontal del texto
+    textAlign: 'center',
   },
   editProfileButton: {
     marginTop: 10,
@@ -170,34 +164,34 @@ const styles = StyleSheet.create({
   subtitleContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: -70, // Ajuste para alinear con el círculo azul
+    marginTop: -70,
     paddingHorizontal: 20,
   },
   subtitleItem: {
     flex: 1,
-    alignItems: 'center', // Centramos horizontalmente
-    justifyContent: 'center', // Centramos verticalmente
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   subtitleText: {
     fontSize: 12,
     color: '#666',
-    textAlign: 'center', // Centramos el texto del subtítulo
-    marginBottom: 10, // Añadimos un margen inferior para separar del número
+    textAlign: 'center',
+    marginBottom: 10,
   },
   subtitleCount: {
-    fontSize: 20, // Aumentamos el tamaño de la fuente para hacer el número más grande
+    fontSize: 20,
     color: '#333',
-    textAlign: 'center', // Centramos el número
+    textAlign: 'center',
   },
   pedidosRealizados: {
-    marginLeft: -75, // Ajuste para pegar más a la izquierda
+    marginLeft: -75,
   },
   moveLeft: {
-    marginLeft: -65, // Ajusta este valor para mover los subtítulos más a la izquierda
+    marginLeft: -65,
   },
   sectionContainer: {
-    paddingHorizontal: 20, // Reducido para alinear los botones en una sola fila
-    marginTop: 20, // Aumentamos el margen superior de las secciones
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   sectionRowSingle: {
     flexDirection: 'row',
@@ -206,17 +200,17 @@ const styles = StyleSheet.create({
   sectionButton: {
     alignItems: 'center',
     paddingVertical: 8,
-    flex: 1, // Para que cada botón ocupe el mismo espacio
+    flex: 1,
     borderRadius: 5,
-    flexDirection: 'column', // Mantener el texto debajo del icono
-    justifyContent: 'center', // Centramos contenido verticalmente
-    marginHorizontal: 2, // Espaciado entre los botones
+    flexDirection: 'column',
+    justifyContent: 'center',
+    marginHorizontal: 2,
   },
   sectionButtonText: {
     marginTop: 4,
-    fontSize: 10, // Reducimos el tamaño del texto
+    fontSize: 10,
     color: '#007BFF',
-    textAlign: 'center', // Centramos texto horizontalmente
+    textAlign: 'center',
   },
   activeButton: {
     backgroundColor: '#007BFF',
