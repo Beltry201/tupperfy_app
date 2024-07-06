@@ -32,6 +32,7 @@ import UserProfile from '../screens/UserProfile';
 import FollowedChefs from '../screens/FollowedChefs';
 import OrdersCompleted from '../screens/OrdersCompleted';
 import ProfileEdit from '../screens/ProfileEdit';
+import OrderStatus from '../views/orders/OrderStatus';
 
 
 const Stack = createNativeStackNavigator();
@@ -86,6 +87,7 @@ const NavigationStack = () => {
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
         <Stack.Screen name="FollowedChefs" component={FollowedChefs} />
         <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} />
+        <Stack.Screen name="OrdersStatus" component={OrderStatus} />
         <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
         <Stack.Screen name="ProfileInfo" component={ProfileInfo} />
       </Stack.Navigator>

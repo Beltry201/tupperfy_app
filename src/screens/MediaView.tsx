@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text, TextInput, Animated, ScrollView } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, Text, TextInput, Animated, ScrollView, RefreshControl } from 'react-native';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIconsIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const data = [
   { id: '1', backgroundColor: '#007BFF' },
@@ -24,6 +25,7 @@ const MediaView = () => {
   ]);
   const [replyText, setReplyText] = useState(''); // Estado para el texto de la respuesta
   const [replyingTo, setReplyingTo] = useState(null); // Estado para controlar a qué comentario se está respondiendo
+  const [refreshing, setRefreshing] = useState(false); // Estado para controlar el refresco
 
   const handleLikePress = (itemId) => {
     setLikedItems((prevState) => ({
@@ -102,27 +104,27 @@ const MediaView = () => {
   const renderItem = ({ item }) => (
     <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
       <View style={styles.content}>
-        <View style={styles.rectangle} />
-        <View style={styles.iconsContainer}>
-          <TouchableOpacity style={styles.circle} onPress={() => console.log('Circle pressed')}>
-            <FontAwesome5Icon name="user" size={35} color="#007BFF" style={styles.icon} />
+        <TouchableOpacity style={styles.userIconContainer} onPress={() => console.log('User icon pressed')}>
+          <FontAwesome5Icon name="user-circle" size={50} color="white" style={styles.icon} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.cameraIconContainer} onPress={() => console.log('Add content pressed')}>
+          <MaterialCommunityIconsIcon name="camera-plus" size={40} color="white" style={styles.cameraIcon} />
+        </TouchableOpacity>
+        <View style={styles.rightAlignedIcons}>
+          <TouchableOpacity onPress={() => handleLikePress(item.id)}>
+            <AntDesignIcon
+              name="heart"
+              size={45}
+              color={likedItems[item.id] ? 'red' : 'white'}
+              style={styles.icon}
+            />
           </TouchableOpacity>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={() => handleLikePress(item.id)}>
-              <AntDesignIcon
-                name="heart"
-                size={30}
-                color={likedItems[item.id] ? 'red' : 'white'}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => toggleCommentVisibility(item.id)}>
-              <FontAwesomeIcon name="commenting" size={35} color="white" style={styles.icon} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => console.log('Share pressed')}>
-              <FontAwesome5Icon name="share" size={35} color="white" style={styles.icon} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => toggleCommentVisibility(item.id)}>
+            <FontAwesomeIcon name="commenting" size={45} color="white" style={styles.icon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => console.log('Share pressed')}>
+            <FontAwesome5Icon name="share" size={45} color="white" style={styles.icon} />
+          </TouchableOpacity>
         </View>
       </View>
       {commentVisible === item.id && (
@@ -174,6 +176,14 @@ const MediaView = () => {
     </View>
   );
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    // Aquí puedes realizar cualquier operación de refresco, como cargar nuevos datos
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000); // Simulación de carga, en realidad deberías cargar los datos nuevos aquí
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Tupperfy Media</Text>
@@ -182,6 +192,14 @@ const MediaView = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.flatListContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#007BFF']}
+            tintColor="#007BFF"
+          />
+        }
       />
     </View>
   );
@@ -202,7 +220,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   item: {
-    alignItems: 'flex-end',
     justifyContent: 'center',
     height: 600,
     width: '100%',
@@ -212,111 +229,98 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
+    justifyContent: 'space-between',
+    padding: 10,
   },
-  rectangle: {
-    flex: 1,
-    height: '100%',
-    backgroundColor: '#007BFF',
-  },
-  iconsContainer: {
-    flexDirection: 'column',
-    alignItems: 'flex-end',
+  userIconContainer: {
+    position: 'absolute',
+    bottom: 220,
+    left: -10,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
-    marginRight: 10,
-  },
-  circle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'white',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
   },
-  iconContainer: {
-    flexDirection: 'column',
+  cameraIconContainer: {
+    position: 'absolute',
+    bottom: 230,
+    left: 290,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rightAlignedIcons: {
+    position: 'absolute',
+    right: 10,
+    top: -20,
     alignItems: 'center',
   },
   icon: {
-    marginVertical: 5,
-    marginHorizontal: 10,
+    marginBottom: 20,
   },
   commentOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingBottom: 0, // Ajusta según el tamaño de la barra de comentarios
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top: 120,
+    backgroundColor: '#fff', // Cambiar el color a blanco
+    padding: 10,
+    zIndex: 100, // Ajusta el índice z para que esté sobre otros elementos
   },
   commentArea: {
-    width: '100%',
-    height: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingTop: 20, // Ajusta según el tamaño de la barra de comentarios
-    paddingBottom: 50, // Espacio para la barra de entrada
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10, // Ajusta según la separación deseada
-    right: 10,
-    zIndex: 2, // Asegura que el botón esté en el frente
-    padding: 10, // Aumenta la zona clickable alrededor del icono
-    backgroundColor: '#fff', // Fondo blanco para destacar
-    borderRadius: 20, // Bordes redondeados para el botón
-  },
-  scrollViewContainer: {
-    flexGrow: 1,
-    paddingBottom: 20, // Ajusta según la separación deseada
-  },
-  comment: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  commentText: {
-    fontSize: 16,
-  },
-  replyButtonText: {
-    fontSize: 14,
-    color: '#007BFF',
-    marginTop: 5,
-    marginLeft: 5,
-  },
-  replyText: {
-    fontSize: 14,
-    color: '#555',
-    marginLeft: 20, // Indentación para las respuestas
+    flex: 1,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Espacio entre los elementos
+    backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
-    paddingTop: 10,
-    paddingBottom: 10, // Añade espacio inferior
-    paddingHorizontal: 20,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
+    padding: 10,
   },
   input: {
     flex: 1,
     height: 40,
-    paddingHorizontal: 10,
-    borderWidth: 1,
     borderColor: '#ccc',
+    borderWidth: 1,
     borderRadius: 20,
-    marginRight: 10,
+    paddingHorizontal: 10,
   },
   sendIcon: {
     marginLeft: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+  },
+  scrollViewContainer: {
+    paddingBottom: 100, // Espacio adicional para los comentarios
+  },
+  comment: {
+    marginBottom: 10,
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    borderRadius: 10,
+  },
+  commentText: {
+    fontSize: 16,
+  },
+  replyText: {
+    fontSize: 14,
+    color: '#555',
+    paddingLeft: 20,
+  },
+  replyButtonText: {
+    color: '#007BFF',
+    fontSize: 14,
+    marginTop: 5,
   },
   replyContainer: {
     flexDirection: 'row',
@@ -326,12 +330,11 @@ const styles = StyleSheet.create({
   replyInput: {
     flex: 1,
     height: 30,
-    paddingHorizontal: 10,
-    borderWidth: 1,
     borderColor: '#ccc',
+    borderWidth: 1,
     borderRadius: 15,
+    paddingHorizontal: 10,
     marginRight: 10,
-    fontSize: 14,
   },
   sendReplyIcon: {
     marginLeft: 10,

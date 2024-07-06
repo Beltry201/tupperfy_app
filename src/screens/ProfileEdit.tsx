@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useNavigation } from '@react-navigation/native'; // Importa useNavigation desde react-navigation/native
+import { useNavigation } from '@react-navigation/native';
 
 const EditProfile = () => {
   const [username, setUsername] = useState('diegoarria');
   const [fullName, setFullName] = useState('Diego Arria');
   const [bio, setBio] = useState('¡Hola! Soy Diego.');
-  const navigation = useNavigation(); // Obtiene el objeto de navegación
+  const navigation = useNavigation();
 
   const handleSave = () => {
-    // Lógica para guardar los cambios del perfil
     console.log('Guardando cambios...');
-    // Aquí podrías añadir la lógica para guardar los cambios
+    // Aquí podrías añadir la lógica para guardar los cambios en tu base de datos o almacenamiento
 
-    // Navegar de vuelta a UserProfile después de guardar
-    navigation.navigate('HomePage');
+    navigation.navigate('HomePage'); // Navegar de vuelta a la pantalla de inicio después de guardar
   };
 
   return (
