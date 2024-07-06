@@ -67,7 +67,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.profileButton}
-            onPress={() => navigation.navigate('DrawerInfo')}>
+            onPress={() => navigation.navigate('ProfileInfo')}>
             <IoniconsIcon name="menu" size={28} color="black" />
           </TouchableOpacity>
           <View style={styles.addressSearchContainer}>

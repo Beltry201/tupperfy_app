@@ -22,6 +22,7 @@ import HomePage from '../screens/HomePage';
 import DishDetails from '../views/orders/DishDetails';
 import OrderPayment from '../views/orders/OrderPayment';
 import CartView from '../views/orders/CartView';
+import ProfileInfo from '../drawer_screens/ProfileInfo';
 
 
 // Importa la pantalla CreateMenu
@@ -86,6 +87,7 @@ const NavigationStack = () => {
         <Stack.Screen name="FollowedChefs" component={FollowedChefs} />
         <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} />
         <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
+        <Stack.Screen name="ProfileInfo" component={ProfileInfo} />
       </Stack.Navigator>
     </NavigationContainer>
   );
