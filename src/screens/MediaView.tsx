@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text, TextInput, Animated, ScrollView, RefreshControl } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, Text, TextInput, Animated, ScrollView, RefreshControl, Share, Dimensions } from 'react-native';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIconsIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+const { height, width } = Dimensions.get('window');
 
 const data = [
   { id: '1', backgroundColor: '#007BFF' },
@@ -101,32 +103,44 @@ const MediaView = () => {
     setReplyingTo(null); // Resetea el estado de respuesta
   };
 
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: '¡Mira este contenido en Tupperfy!',
+      });
+    } catch (error) {
+      console.error('Error al compartir', error);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
       <View style={styles.content}>
-        <TouchableOpacity style={styles.userIconContainer} onPress={() => console.log('User icon pressed')}>
-          <FontAwesome5Icon name="user-circle" size={50} color="white" style={styles.icon} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.cameraIconContainer} onPress={() => console.log('Add content pressed')}>
-          <MaterialCommunityIconsIcon name="camera-plus" size={40} color="white" style={styles.cameraIcon} />
-        </TouchableOpacity>
-        <View style={styles.rightAlignedIcons}>
-          <TouchableOpacity onPress={() => handleLikePress(item.id)}>
-            <AntDesignIcon
-              name="heart"
-              size={45}
-              color={likedItems[item.id] ? 'red' : 'white'}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => toggleCommentVisibility(item.id)}>
-            <FontAwesomeIcon name="commenting" size={45} color="white" style={styles.icon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => console.log('Share pressed')}>
-            <FontAwesome5Icon name="share" size={45} color="white" style={styles.icon} />
-          </TouchableOpacity>
-        </View>
-      </View>
+  <TouchableOpacity style={[styles.userIconContainer, { top: -20 }]} onPress={() => console.log('User icon pressed')}>
+    <FontAwesome5Icon name="user-circle" size={50} color="white" style={styles.icon} />
+  </TouchableOpacity>
+  <TouchableOpacity style={[styles.cameraIconContainer, { top: -20 }]} onPress={() => console.log('Add content pressed')}>
+    <MaterialCommunityIconsIcon name="camera-plus" size={40} color="white" style={styles.cameraIcon} />
+  </TouchableOpacity>
+  <View style={styles.rightAlignedIcons}>
+    <TouchableOpacity onPress={() => handleLikePress(item.id)}>
+      <AntDesignIcon
+        name="heart"
+        size={45}
+        color={likedItems[item.id] ? 'red' : 'white'}
+        style={styles.icon}
+      />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => toggleCommentVisibility(item.id)}>
+      <FontAwesomeIcon name="commenting" size={45} color="white" style={styles.icon} />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={handleShare}>
+      <FontAwesome5Icon name="share" size={45} color="white" style={styles.icon} />
+    </TouchableOpacity>
+  </View>
+</View>
+
+
       {commentVisible === item.id && (
         <Animated.View style={[styles.commentOverlay, { transform: [{ translateY: slideAnim }] }]}>
           <View style={styles.commentArea}>
@@ -220,107 +234,84 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   item: {
+    width: width,
+    height: height,
     justifyContent: 'center',
-    height: 600,
-    width: '100%',
-    marginBottom: 50,
-    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginBottom: 40, // Espacio blanco entre elementos
   },
   content: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    right: 10,
+    bottom: 200,
     justifyContent: 'space-between',
-    padding: 10,
+    alignItems: 'flex-end',
+  },
+  icon: {
+    margin: 15,
   },
   userIconContainer: {
     position: 'absolute',
-    bottom: 220,
-    left: -10,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
+    top: 10,
+    left: 10,
   },
   cameraIconContainer: {
     position: 'absolute',
-    bottom: 230,
-    left: 290,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
+    top: 20,
+    right: 10,
+  },
+  cameraIcon: {
+    margin: 20,
   },
   rightAlignedIcons: {
     position: 'absolute',
+    bottom: 10,
     right: 10,
-    top: -20,
-    alignItems: 'center',
-  },
-  icon: {
-    marginBottom: 20,
+    alignItems: 'flex-end',
   },
   commentOverlay: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    top: 120,
-    backgroundColor: '#fff', // Cambiar el color a blanco
-    padding: 10,
-    zIndex: 100, // Ajusta el índice z para que esté sobre otros elementos
+    height: '50%', // Ajusta la altura según sea necesario
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
   },
   commentArea: {
     flex: 1,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
     padding: 10,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-  },
-  sendIcon: {
-    marginLeft: 10,
   },
   closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
+    alignSelf: 'flex-end',
   },
   scrollViewContainer: {
-    paddingBottom: 100, // Espacio adicional para los comentarios
+    flexGrow: 1,
   },
   comment: {
-    marginBottom: 10,
-    backgroundColor: '#f0f0f0',
     padding: 10,
-    borderRadius: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 10,
   },
   commentText: {
     fontSize: 16,
+    marginBottom: 5,
   },
   replyText: {
     fontSize: 14,
-    color: '#555',
-    paddingLeft: 20,
+    marginLeft: 20,
+    marginBottom: 5,
+    color: '#888',
   },
   replyButtonText: {
     color: '#007BFF',
     fontSize: 14,
-    marginTop: 5,
+    marginBottom: 5,
   },
   replyContainer: {
     flexDirection: 'row',
@@ -329,14 +320,33 @@ const styles = StyleSheet.create({
   },
   replyInput: {
     flex: 1,
-    height: 30,
-    borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 15,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingVertical: 5,
     paddingHorizontal: 10,
     marginRight: 10,
   },
   sendReplyIcon: {
+    marginLeft: 10,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+    paddingTop: 10,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+  sendIcon: {
     marginLeft: 10,
   },
 });

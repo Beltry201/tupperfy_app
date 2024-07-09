@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -8,6 +8,52 @@ import MaterialCommunityIconsIcon from 'react-native-vector-icons/MaterialCommun
 const ProfileInfo = ({ navigation, userName }) => {
   const navigateToScreen = (screenName) => {
     navigation.navigate(screenName);
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Cerrar Sesión',
+      '¿Estás seguro que deseas cerrar sesión?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Aceptar',
+          onPress: () => {
+            // Aquí puedes agregar la lógica para cerrar sesión
+            // Por ejemplo, navegar a la pantalla de inicio de sesión
+            navigation.navigate('SignIn'); // Reemplaza 'Login' con el nombre de tu pantalla de inicio de sesión
+          },
+          style: 'destructive',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Eliminar Cuenta',
+      '¿Estás seguro que deseas eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          onPress: () => {
+            // Aquí puedes agregar la lógica para eliminar la cuenta
+            // Por ejemplo, mostrar un mensaje de confirmación y luego navegar a la pantalla de inicio
+            navigation.navigate('SignIn'); // Reemplaza 'Login' con el nombre de tu pantalla de inicio de sesión
+          },
+          style: 'destructive',
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -19,7 +65,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       <Text style={styles.title}>Mi cuenta</Text>
 
       {/* Datos de perfil */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('ProfileDetails')}>
+      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('ProfileData')}>
         <View style={styles.optionContent}>
           <IoniconsIcon name="person" size={20} color="#333" style={styles.icon} />
           <Text style={styles.optionText}>Datos de Perfil</Text>
@@ -30,7 +76,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       </TouchableOpacity>
 
       {/* Mensajes */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('Messages')}>
+      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('MessagesScreen')}>
         <View style={styles.optionContent}>
           <MaterialCommunityIconsIcon name="message" size={20} color="#333" style={styles.icon} />
           <Text style={styles.optionText}>Mensajes</Text>
@@ -63,7 +109,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       </TouchableOpacity>
 
       {/* Métodos de Pago */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('PaymentMethods')}>
+      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('PaymentSelection')}>
         <View style={styles.optionContent}>
           <IoniconsIcon name="wallet" size={20} color="#333" style={styles.icon} />
           <Text style={styles.optionText}>Métodos de Pago</Text>
@@ -74,7 +120,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       </TouchableOpacity>
 
       {/* Direcciones */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('Addresses')}>
+      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('UserAddresses')}>
         <View style={styles.optionContent}>
           <IoniconsIcon name="location" size={20} color="#333" style={styles.icon} />
           <Text style={styles.optionText}>Direcciones</Text>
@@ -113,7 +159,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       <Text style={styles.subtitle}>Información</Text>
 
       {/* Configuración */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('Settings')}>
+      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('SettingsScreen')}>
         <View style={styles.optionContent}>
           <IoniconsIcon name="settings" size={20} color="#333" style={styles.icon} />
           <Text style={styles.optionText}>Configuración</Text>
@@ -162,7 +208,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       {/* Trabaja con nosotros */}
       <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('WorkWithUs')}>
         <View style={styles.optionContent}>
-          <FontAwesome5Icon name="user-friends" size={20} color="#333" style={styles.icon} />
+          <FontAwesome5Icon name="briefcase" size={20} color="#333" style={styles.icon} />
           <Text style={styles.optionText}>Trabaja con nosotros</Text>
           <View style={styles.arrowContainer}>
             <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
@@ -171,7 +217,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       </TouchableOpacity>
 
       {/* Cerrar Sesión */}
-      <TouchableOpacity style={[styles.option, { marginTop: 40 }]} onPress={() => navigateToScreen('Logout')}>
+      <TouchableOpacity style={[styles.option, { marginTop: 40 }]} onPress={handleLogout}>
         <View style={styles.optionContent}>
           <IoniconsIcon name="log-out" size={20} color="#FF4500" style={styles.icon} />
           <Text style={[styles.optionText, { color: '#FF4500' }]}>Cerrar sesión</Text>
@@ -182,7 +228,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       </TouchableOpacity>
 
       {/* Eliminar Cuenta */}
-      <TouchableOpacity style={[styles.option, { marginBottom: 40 }]} onPress={() => navigateToScreen('DeleteAccount')}>
+      <TouchableOpacity style={[styles.option, { marginBottom: 40 }]} onPress={handleDeleteAccount}>
         <View style={styles.optionContent}>
           <IoniconsIcon name="trash" size={20} color="#FF4500" style={styles.icon} />
           <Text style={[styles.optionText, { color: '#FF4500' }]}>Eliminar Cuenta</Text>

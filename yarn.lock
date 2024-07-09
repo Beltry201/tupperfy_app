@@ -2138,10 +2138,10 @@
     prompts "^2.4.2"
     semver "^7.5.2"
 
-"@react-native-community/datetimepicker@^8.0.0", "@react-native-community/datetimepicker@>=6.7.0":
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/@react-native-community/datetimepicker/-/datetimepicker-8.0.0.tgz"
-  integrity sha512-hFiGlG5ovhspLYIZlvRs7sMg2NtKjHaG2CJQbECQH1M31760cR7BjYujS/MCM2d44ihhn4ZKLspAyXVN+Gh08g==
+"@react-native-community/datetimepicker@^8.1.1", "@react-native-community/datetimepicker@>=6.7.0":
+  version "8.1.1"
+  resolved "https://registry.npmjs.org/@react-native-community/datetimepicker/-/datetimepicker-8.1.1.tgz"
+  integrity sha512-+P9odPpeUtjota9S85S8eVfC0YOfqLXNxzG6duE3TpKU5cXdGPgp0S8VUgOBq3u9cwP9hMr6Jea/7Kx6jUldJQ==
   dependencies:
     invariant "^2.2.4"
 
@@ -7724,7 +7724,7 @@ react-native-video@^6.3.0, react-native-video@>=2.0.0:
   resolved "https://registry.npmjs.org/react-native-video/-/react-native-video-6.3.0.tgz"
   integrity sha512-lyLjWOdw/jgVpMSrprgKVwhT0KUlGzQRBVTDGyQSYDJ0I5ZkZKcmDE32rWCOyAtWhel+GtJjIyFqgT6xIXuxgg==
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.73.0, "react-native@>= 0.30.0", "react-native@>= 0.59", "react-native@>= 0.62", "react-native@>= 0.64.3", react-native@>=0.46.0, react-native@>=0.57, react-native@>=0.65.0, react-native@0.73.6:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.30.0", "react-native@>= 0.59", "react-native@>= 0.62", "react-native@>= 0.64.3", react-native@>=0.46.0, react-native@>=0.57, react-native@>=0.65.0, react-native@0.73.6:
   version "0.73.6"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.73.6.tgz"
   integrity sha512-oqmZe8D2/VolIzSPZw+oUd6j/bEmeRHwsLn1xLA5wllEYsZ5zNuMsDus235ONOnCRwexqof/J3aztyQswSmiaA==

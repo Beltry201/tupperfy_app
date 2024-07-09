@@ -22,7 +22,6 @@ import HomePage from '../screens/HomePage';
 import DishDetails from '../views/orders/DishDetails';
 import OrderPayment from '../views/orders/OrderPayment';
 import CartView from '../views/orders/CartView';
-import ProfileInfo from '../drawer_screens/ProfileInfo';
 
 
 // Importa la pantalla CreateMenu
@@ -33,6 +32,17 @@ import FollowedChefs from '../screens/FollowedChefs';
 import OrdersCompleted from '../screens/OrdersCompleted';
 import ProfileEdit from '../screens/ProfileEdit';
 import OrderStatus from '../views/orders/OrderStatus';
+import ProfileData from '../drawer_screens/ProfileData';
+import ProfileInfo from '../drawer_screens/ProfileInfo';
+import MessagesScreen from '../drawer_screens/MessagesScreen';
+import FavoriteChefs from '../drawer_screens/FavoriteChefs';
+import TupperfyPremium from '../drawer_screens/TupperfyPremium';
+import ReferFriends from '../drawer_screens/ReferFriends';
+import PromotionCodes from '../drawer_screens/PromotionCodes';
+import SettingsScreen from '../drawer_screens/SettingsScreen';
+import WorkWithUs from '../drawer_screens/WorkWithUs';
+import UserAddresses from '../drawer_screens/UserAddresses';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -90,6 +100,16 @@ const NavigationStack = () => {
         <Stack.Screen name="OrdersStatus" component={OrderStatus} />
         <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
         <Stack.Screen name="ProfileInfo" component={ProfileInfo} />
+        <Stack.Screen name="ProfileData" component={ProfileData} />
+        <Stack.Screen name="MessagesScreen" component={MessagesScreen} />
+        <Stack.Screen name="FavoriteChefs" component={FavoriteChefs} />
+        <Stack.Screen name="TupperfyPremium" component={TupperfyPremium} />
+        <Stack.Screen name="UserAddresses" component={UserAddresses} />
+        <Stack.Screen name="ReferFriends" component={ReferFriends} />
+        <Stack.Screen name="PromotionCodes" component={PromotionCodes} />
+        <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+        <Stack.Screen name="WorkWithUs" component={WorkWithUs} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

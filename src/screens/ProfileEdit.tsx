@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const EditProfile = () => {
   const [username, setUsername] = useState('diegoarria');
@@ -20,9 +21,15 @@ const EditProfile = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       <View style={styles.header}>
-        {/* Círculo para la imagen de perfil (simulado) */}
-        <View style={styles.avatarCircle}>
-          <Text style={styles.avatarText}>{username.charAt(0).toUpperCase()}</Text>
+        <View style={styles.avatarContainer}>
+          {/* Círculo para la imagen de perfil (simulado) */}
+          <View style={styles.avatarCircle}>
+            <Text style={styles.avatarText}>{username.charAt(0).toUpperCase()}</Text>
+          </View>
+          {/* Icono de editar */}
+          <TouchableOpacity style={styles.editIcon}>
+            <Icon name="edit" size={25} color="#007bff" />
+          </TouchableOpacity>
         </View>
         <Text style={styles.title}>Editar Perfil</Text>
       </View>
@@ -69,6 +76,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 30,
   },
+  avatarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   avatarCircle: {
     width: 100,
     height: 100,
@@ -76,17 +87,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#007bff',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 20,
+    marginRight: 10,
   },
   avatarText: {
     fontSize: 40,
     fontWeight: 'bold',
     color: '#ffffff',
   },
+  editIcon: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#ffffff',
+    borderRadius: 15,
+    padding: 5,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333333',
+    marginLeft: 10,
   },
   formContainer: {
     marginBottom: 30,
