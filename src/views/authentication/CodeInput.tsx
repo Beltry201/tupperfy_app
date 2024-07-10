@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 30,
@@ -102,13 +103,15 @@ const styles = StyleSheet.create({
     elevation: 5, // Sombra en Android
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: '#006BFF',
     paddingVertical: 17,
     paddingHorizontal: 70,
     borderRadius: 18,
     marginBottom: 20,
     borderColor: 'black',
-    borderWidth: 2, 
+    borderWidth: 1.5,
+    shadowOpacity: 1.5,
+    shadowColor: 'gray', 
   },
   buttonText: {
     color: '#fff',

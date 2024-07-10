@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     paddingBottom: 20,
+    marginTop: 20,
   },
   container: {
     flexGrow: 1,
@@ -207,13 +208,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: '#006BFF',
     paddingVertical: 15,
     paddingHorizontal: 115, // Ancho ajustado aquí
     borderRadius: 18,
     marginBottom: 40,
+    marginTop: 30,
     borderColor: 'black',
-    borderWidth: 2,
+    borderWidth: 1.5,
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
     },
     buttonText: {
     color: '#fff',

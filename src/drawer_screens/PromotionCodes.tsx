@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 20,
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#006BFF',
     padding: 12,
     borderRadius: 8,
     width: '100%',

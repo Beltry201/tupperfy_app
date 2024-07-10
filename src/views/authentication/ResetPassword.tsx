@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 50, // Ajuste para mover el contenido hacia arriba
     paddingHorizontal: 20,
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 24,
@@ -102,12 +103,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: '#006BFF',
     paddingVertical: 15,
     paddingHorizontal: 45,
     borderRadius: 18,
     borderColor: 'black',
-    borderWidth: 2, 
+    borderWidth: 1.5, 
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   buttonText: {
     color: '#fff',

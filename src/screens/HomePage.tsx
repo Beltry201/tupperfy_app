@@ -234,7 +234,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white',
   },
   header: {
     flexDirection: 'row',
@@ -256,12 +256,12 @@ const styles = StyleSheet.create({
   searchBoxWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f8ff',
     borderRadius: 20,
     paddingVertical: 13,
     paddingHorizontal: 18,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
+    shadowOpacity: 1.6,
     shadowRadius: 5,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   searchIconWrapper: {
-    marginLeft: 10,
+    marginLeft: 20,
   },
   subtitle: {
     fontSize: 16,
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 1.3,
     shadowRadius: 2,
     marginLeft: 10, // Ajuste para mover el ícono un poco a la derecha
   },
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 15,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
+    shadowOpacity: 1,
     shadowRadius: 5,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
@@ -400,8 +400,9 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.75,
     shadowRadius: 2,
+    
   },
 });
 

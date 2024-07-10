@@ -42,6 +42,9 @@ import PromotionCodes from '../drawer_screens/PromotionCodes';
 import SettingsScreen from '../drawer_screens/SettingsScreen';
 import WorkWithUs from '../drawer_screens/WorkWithUs';
 import UserAddresses from '../drawer_screens/UserAddresses';
+import HelpScreen from '../drawer_screens/HelpScreen';
+import SupportChat from '../extra_screens/SupportChat';
+import ChatScreen from '../extra_screens/ChatScreen';
 
 
 
@@ -109,6 +112,9 @@ const NavigationStack = () => {
         <Stack.Screen name="PromotionCodes" component={PromotionCodes} />
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
         <Stack.Screen name="WorkWithUs" component={WorkWithUs} />
+        <Stack.Screen name="HelpScreen" component={HelpScreen} />
+        <Stack.Screen name="SupportChat" component={SupportChat} />
+        <Stack.Screen name="ChatScreen" component={ChatScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

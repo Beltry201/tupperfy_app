@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
@@ -75,6 +75,7 @@ const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <Text style={styles.title}>Selecciona los platillos de tu gusto</Text>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -116,6 +117,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     padding: 20,
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
   searchContainer: {
     width: '100%',
     marginBottom: 20,
@@ -152,12 +158,14 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   buttonBox: {
-    backgroundColor: 'blue',
+    backgroundColor: '#006BFF',
     borderRadius: 18,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderColor: 'black',
-    borderWidth: 2,
+    borderWidth: 1.5,
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   buttonText: {
     color: 'white',

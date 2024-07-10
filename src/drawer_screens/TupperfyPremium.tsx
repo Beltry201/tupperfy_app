@@ -181,11 +181,13 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#FF6347',
+    backgroundColor: '#006BFF',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 40,
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   buttonText: {
     color: '#FFFFFF',
@@ -239,11 +241,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   proceedButton: {
-    backgroundColor: '#FF6347',
+    backgroundColor: '#006BFF',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   proceedButtonText: {
     color: '#FFFFFF',
@@ -254,11 +258,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#CCCCCC',
   },
   closeButton: {
-    backgroundColor: '#FF6347',
+    backgroundColor: 'red',
     padding: 10,
     borderRadius: 8,
     marginTop: 20,
     alignItems: 'center',
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   closeButtonText: {
     color: '#FFFFFF',

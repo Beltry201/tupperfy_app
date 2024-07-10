@@ -170,7 +170,7 @@ const ProfileInfo = ({ navigation, userName }) => {
       </TouchableOpacity>
 
       {/* Ayuda */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('Help')}>
+      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('HelpScreen')}>
         <View style={styles.optionContent}>
           <IoniconsIcon name="help-circle" size={22} color="#333" style={styles.icon} />
           <Text style={styles.optionText}>Ayuda</Text>

@@ -87,12 +87,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: '#006BFF',
     paddingVertical: 15,
     paddingHorizontal: 50,
     borderRadius: 18,
     borderColor: 'black', // Borde negro
-    borderWidth: 2, // Grosor del borde
+    borderWidth: 1.5, // Grosor del borde
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   buttonText: {
     color: '#fff',

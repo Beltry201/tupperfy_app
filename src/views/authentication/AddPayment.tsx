@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: '#006BFF',
     paddingVertical: 15,
     paddingHorizontal: 50,
     borderRadius: 15,

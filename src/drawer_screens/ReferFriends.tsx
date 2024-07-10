@@ -86,20 +86,24 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   copyButton: {
-    backgroundColor: '#FF6347',
+    backgroundColor: '#006BFF',
     padding: 10,
     borderRadius: 8,
     marginLeft: 8,
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   copyButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
   },
   shareButton: {
-    backgroundColor: '#FF6347',
+    backgroundColor: '#006BFF',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   shareButtonText: {
     color: '#FFFFFF',

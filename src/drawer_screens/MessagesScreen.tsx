@@ -1,6 +1,9 @@
+// MessagesScreen.tsx
+
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el icono de búsqueda desde react-native-vector-icons
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native'; // Importa hook de navegación
 
 // Datos de conversaciones
 let conversationsData = [
@@ -36,6 +39,7 @@ for (let i = 11; i <= 20; i++) {
 const MessagesScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredConversations, setFilteredConversations] = useState(conversationsData);
+  const navigation = useNavigation(); // Hook de navegación
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -50,12 +54,17 @@ const MessagesScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.item}>
+    <TouchableOpacity style={styles.item} onPress={() => navigateToChat(item)}>
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.lastMessage}>{item.lastMessage}</Text>
       <Text style={styles.time}>{item.time}</Text>
     </TouchableOpacity>
   );
+
+  const navigateToChat = (conversation) => {
+    // Navega a la pantalla de chat con los datos de la conversación
+    navigation.navigate('ChatScreen', { conversation });
+  };
 
   return (
     <View style={styles.container}>

@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     width: "80%",
-    backgroundColor: "blue",
+    backgroundColor: "#006BFF",
     borderRadius: 18, // Ajusta el borderRadius aquí
     height: 50,
     alignItems: "center",
@@ -114,7 +114,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
     borderColor: 'black', // Agrega el borde negro
-    borderWidth: 2, // Grosor del borde
+    borderWidth: 1.5, // Grosor del borde
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   loginText: {
     color: "white",
@@ -125,7 +127,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   forgotPasswordText: {
-    color: "blue",
+    color: "#004BFF",
     fontSize: 16,
     fontWeight: "bold",
   },

@@ -8,6 +8,7 @@ const AddPaymentMethod = ({ navigation }: { navigation: any }) => {
   };
 
   const handleNotNow = () => {
+    navigation.navigate('HomePage')
     // Aquí puedes implementar la lógica para continuar sin agregar un método de pago
   };
 
@@ -47,13 +48,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "blue", // Azul oscuro
+    backgroundColor: "#006BFF", // Azul oscuro
     paddingVertical: 15, // Ajuste ligeramente reducido
     paddingHorizontal: 80, // Ajuste para alargar el botón
     borderRadius: 25,
     marginBottom: 20, // Espacio entre los botones
     borderColor: 'black',
-    borderWidth: 2, 
+    borderWidth: 1.5, 
+    shadowOpacity: 1.5,
+    shadowColor: 'gray',
   },
   buttonText: {
     color: "#ffffff", // Blanco
