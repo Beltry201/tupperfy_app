@@ -1,122 +1,92 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import IoniconsIcon from 'react-native-vector-icons/Ionicons';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-const OrderStatus = ({ navigation }: { navigation: any }) => {
-  // Datos simulados del pedido
+const OrderStatus = () => {
+  // Simulated order data
   const order = {
-    orderId: '12345',
+    orderId: '123ABC',
     status: 'En camino',
-    estimatedTime: '10 minutos',
-    driver: {
+    estimatedTime: '15 min',
+    deliveryPerson: {
       name: 'Juan Pérez',
-      vehicle: 'Moto',
-      licensePlate: 'ABC123',
     },
-    deliveryAddress: 'Calle Principal 123, Ciudad',
-  };
-
-  // Función para manejar el cierre de la pantalla
-  const handleClose = () => {
-    navigation.navigate('HomePage'); // Navegar de regreso al HomePage
+    deliveryLocation: 'Av. Principal 123, Monterrey, MX', // Ubicación de entrega
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Botón de cerrar */}
-      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-        <IoniconsIcon name="close" size={24} color="#333" />
-      </TouchableOpacity>
-      
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <View style={styles.orderDetails}>
         <Text style={styles.orderId}>Pedido #{order.orderId}</Text>
         <Text style={styles.status}>{order.status}</Text>
         <Text style={styles.estimatedTime}>Tiempo estimado: {order.estimatedTime}</Text>
+        <Text style={styles.deliveryLocation}>Entregar en: {order.deliveryLocation}</Text>
       </View>
-      <View style={styles.deliveryInfo}>
-        <Text style={styles.sectionTitle}>Información de la entrega</Text>
-        <View style={styles.driverInfo}>
-          <View style={styles.driverAvatarContainer}>
-          </View>
-          <View style={styles.driverDetails}>
-            <Text style={styles.driverName}>{order.driver.name}</Text>
-            <Text style={styles.driverVehicle}>{order.driver.vehicle} - {order.driver.licensePlate}</Text>
-          </View>
-        </View>
-        <Text style={styles.deliveryAddress}>{order.deliveryAddress}</Text>
+      
+      <View style={styles.deliveryPerson}>
+        <Text style={styles.deliveryPersonName}>{order.deliveryPerson.name}</Text>
       </View>
-    </ScrollView>
+
+      {/* Aquí podrías incluir un mapa con la ubicación del repartidor o del destino */}
+      
+      <TouchableOpacity style={styles.contactButton} onPress={() => console.log('Contactar al repartidor')}>
+        <Text style={styles.contactText}>Contactar al repartidor</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    backgroundColor: '#FFF',
+    flex: 1,
     padding: 20,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  closeButton: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    zIndex: 999,
-  },
-  header: {
-    marginBottom: 20,
+  orderDetails: {
+    alignItems: 'center',
   },
   orderId: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   status: {
     fontSize: 18,
-    color: '#007BFF',
     marginBottom: 10,
   },
   estimatedTime: {
     fontSize: 16,
     marginBottom: 10,
   },
-  deliveryInfo: {
+  deliveryLocation: {
+    fontSize: 16,
     marginBottom: 20,
   },
-  sectionTitle: {
+  deliveryPerson: {
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  deliveryPersonName: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
   },
-  driverInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
+  contactButton: {
+    backgroundColor: '#2ecc71',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginTop: 20,
   },
-  driverAvatarContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    overflow: 'hidden',
-    marginRight: 10,
-  },
-  driverAvatar: {
-    width: '100%',
-    height: '100%',
-  },
-  driverDetails: {
-    flex: 1,
-  },
-  driverName: {
+  contactText: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  driverVehicle: {
-    fontSize: 14,
-    color: '#666',
-  },
-  deliveryAddress: {
-    fontSize: 16,
-    marginBottom: 10,
   },
 });
 

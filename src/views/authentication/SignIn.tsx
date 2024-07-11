@@ -1,6 +1,7 @@
 import React from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
+
 const SignInView = ({ navigation }: { navigation: any }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontFamily: 'Montserrat-Thin',
+    fontFamily: 'Montserrat-Thin', // Asegúrate de que este nombre sea correcto
     color: 'black',
   },
   buttonSection: {
@@ -56,35 +57,34 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '90%',
     paddingHorizontal: 20,
-    backgroundColor: '#d3d3d3',  // Color de fondo gris clarito para "Crea una cuenta"
+    backgroundColor: '#d3d3d3',
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 10,
     paddingVertical: 15,
-    // Propiedades de sombra
-    elevation: 5, // Sombra en Android
-    shadowColor: 'black', // Color de la sombra en iOS
-    shadowOffset: { width: 0, height: 2 }, // Desplazamiento de la sombra en iOS
-    shadowOpacity: 1.5, // Opacidad de la sombra en iOS
-    shadowRadius: 3, // Radio de la sombra en iOS
-    // Propiedades de borde
-    borderWidth: 1.5, // Grosor del borde
-    borderColor: 'black', // Color del borde
+    elevation: 5,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1.5,
+    shadowRadius: 3,
+    borderWidth: 1.5,
+    borderColor: 'black',
   },
   buttonSignIn: {
-    backgroundColor: '#005BFF',  // Color de fondo azul original para "Iniciar sesión"
+    backgroundColor: '#005BFF',
     marginBottom: 15,
   },
   buttonText: {
-    color: 'black',  // Color del texto por defecto (para "Crea una cuenta")
+    color: 'black',
     fontSize: 18,
     fontWeight: 'bold',
   },
   buttonTextSignIn: {
-    color: 'white',  // Color del texto para "Iniciar sesión"
+    color: 'white',
   },
 });
+
 
 export default SignInView;
