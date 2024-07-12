@@ -430,7 +430,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: '#DDDDDD',
+    borderColor: 'black',
+    elevation: 5,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1.5,
+    shadowRadius: 3,
   },
   eventOptions: {
     flexDirection: 'row',

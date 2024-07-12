@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importación del icono
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-const DishDetails = ({ route }: { route: any }) => {
+const DishDetails = ({ navigation, route }: { navigation: any, route: any }) => {
   const { item } = route.params;
   const [quantity, setQuantity] = useState(1);
-  const navigation = useNavigation(); // Usa el hook de navegación
+
+  const addToCart = () => {
+    navigation.navigate('CartView', { item, quantity });
+  };
 
   const incrementQuantity = () => {
     setQuantity(quantity + 1);
@@ -18,16 +20,22 @@ const DishDetails = ({ route }: { route: any }) => {
     }
   };
 
+  // Verificar si item está definido antes de acceder a sus propiedades
+  const dishName = item?.dish || 'Nombre del Platillo';
+  const dishDescription = item?.description || 'Descripción del platillo no disponible';
+  const chefDescription = item?.description || 'Descripción del cocinero no disponible';
+  const dishPrice = item?.price || 'Precio no disponible';
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}></View>
       <View style={styles.content}>
-        <Text style={styles.title}>{item.dish}</Text>
+        <Text style={styles.title}>{dishName}</Text>
         <Text style={styles.description}>Descripción del platillo:</Text>
-        <Text style={styles.descriptionText}>
-          Aquí puedes poner la descripción detallada del platillo seleccionado. Por ejemplo, ingredientes, método de preparación, información nutricional, detalles del cocinero, etc.
-        </Text>
-        <Text style={styles.price}>Precio: {item.price}</Text>
+        <Text style={styles.descriptionText}>{dishDescription}</Text>
+        <Text style={styles.description}>Descripción del cocinero:</Text>
+        <Text style={styles.descriptionText}>{chefDescription}</Text>
+        <Text style={styles.price}>Precio: {dishPrice}</Text>
       </View>
       <View style={styles.quantityContainer}>
         <View style={styles.shadowContainer}>
@@ -42,9 +50,9 @@ const DishDetails = ({ route }: { route: any }) => {
       </View>
       <TouchableOpacity
         style={styles.addToCartButton}
-        onPress={() => navigation.navigate('CartView')}
+        onPress={addToCart}
       >
-        <Text style={styles.addToCartButtonContent}>
+        <Text style={styles.addToCartButtonText}>
           <Text style={styles.addToCartButtonText}>Añadir al carrito</Text>
           <Icon name="shopping-cart" size={20} color="#FFF" style={styles.cartIcon} />
         </Text>
@@ -118,8 +126,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   addToCartButton: {
-    flexDirection: 'row', // Para alinear el texto y el ícono horizontalmente
-    alignItems: 'center', // Para centrar el contenido verticalmente
+    flexDirection: 'row',
+    alignItems: 'center',
     position: 'absolute',
     bottom: 20,
     right: 20,
@@ -128,18 +136,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
-  addToCartButtonContent: {
-    flexDirection: 'row', // Para alinear el texto y el ícono horizontalmente
-    alignItems: 'center', // Para centrar el contenido verticalmente
-  },
   addToCartButtonText: {
     fontSize: 15,
     color: '#FFF',
     fontWeight: 'bold',
-    marginRight: 20, // Espacio entre el texto y el ícono
+    marginRight: 20,
   },
   cartIcon: {
-    marginLeft: 20, // Espacio entre el texto y el ícono
+    marginLeft: 20,
   },
 });
 
