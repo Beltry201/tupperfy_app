@@ -44,7 +44,6 @@ import UserAddresses from '../drawer_screens/UserAddresses';
 import HelpScreen from '../drawer_screens/HelpScreen';
 import SupportChat from '../extra_screens/SupportChat';
 import ChatScreen from '../extra_screens/ChatScreen';
-import OrderStatus from '../views/orders/OrderStatus';
 
 
 
@@ -98,7 +97,6 @@ const NavigationStack = () => {
         <Stack.Screen name="DishDetails" component={DishDetails} />
         <Stack.Screen name="CartView" component={CartView} />
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
-        <Stack.Screen name="OrderStatus" component={OrderStatus} />
         <Stack.Screen name="FollowedChefs" component={FollowedChefs} />
         <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} />
         <Stack.Screen name="ProfileEdit" component={ProfileEdit} />

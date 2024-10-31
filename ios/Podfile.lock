@@ -1146,7 +1146,19 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNReanimated (3.14.0):
+  - RNReanimated (3.15.1):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated (= 3.15.1)
+    - RNReanimated/worklets (= 3.15.1)
+  - RNReanimated/reanimated (3.15.1):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+    - ReactCommon/turbomodule/core
+  - RNReanimated/worklets (3.15.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1461,11 +1473,11 @@ SPEC CHECKSUMS:
   RNCPicker: b7873ba797dc586bfaf3307d737cbdc620a9ff3e
   RNDateTimePicker: 430174392d275f0ffefb627d04f0f8677f667fed
   RNGestureHandler: 67d3f1f69d4d0c98d6e83f4229e3bbf997d1dc72
-  RNReanimated: f1ce27e7d23e6f941024b862ad76a7fdae93dea9
+  RNReanimated: fe9610fb0eebdd1fe8f38421bebcaa9afa0fe6b2
   RNScreens: 134a7511b12b8eb440b87aac21e36a71295d6024
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: d17d2cc8105eed528474683b42e2ea310e1daf61
 
-PODFILE CHECKSUM: 10564419716953dd807445ccd2cd8d73ca1d55e2
+PODFILE CHECKSUM: 4368307c41ab6440c2060c4fbb4e5d179dc20475
 
 COCOAPODS: 1.15.2

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Switch } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 const OrderPayment = ({ navigation }: { navigation: any }) => {
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);

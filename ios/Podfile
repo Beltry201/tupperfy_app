@@ -30,6 +30,8 @@ target 'tupperfy_app' do
 
   use_react_native!(
     :path => config[:reactNativePath],
+    # Enables Hermes.
+    :hermes_enabled => true,  # Add this line to enable Hermes
     # Enables Flipper.
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
