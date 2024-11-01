@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileData = () => {
   const navigation = useNavigation();
@@ -16,6 +17,27 @@ const ProfileData = () => {
   const [phone, setPhone] = useState('+52 123 456 7890');
   const [address, setAddress] = useState('Calle 123, Colonia Centro, Ciudad');
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const storedEmail = await AsyncStorage.getItem('email');
+        const storedPhone = await AsyncStorage.getItem('phone');
+        const storedAddress = await AsyncStorage.getItem('address');
+        const storedBirthdate = await AsyncStorage.getItem('birthdate');
+
+        if (storedEmail) setEmail(storedEmail);
+        if (storedPhone) setPhone(storedPhone);
+        if (storedAddress) setAddress(storedAddress);
+        if (storedBirthdate) setBirthdate(new Date(storedBirthdate));
+      } catch (error) {
+        console.error('Error loading profile data:', error);
+      }
+    };
+
+    loadProfileData();
+  }, []);
 
   const toggleEditing = () => {
     setEditing(!isEditing);
@@ -30,12 +52,18 @@ const ProfileData = () => {
     setModalVisible(false);
   };
 
-  const handleSaveChanges = () => {
-    // Aquí se debe implementar la lógica para guardar los cambios de manera permanente
-    // Por ejemplo, puedes guardar los datos en AsyncStorage o enviarlos a tu backend
+  const handleSaveChanges = async () => {
+    try {
+      await AsyncStorage.setItem('email', email);
+      await AsyncStorage.setItem('phone', phone);
+      await AsyncStorage.setItem('address', address);
+      await AsyncStorage.setItem('birthdate', birthdate.toISOString());
 
-    // En este ejemplo, solo actualizamos el estado localmente
-    setEditing(false); // Desactiva el modo de edición
+      console.log('Cambios guardados:', { birthdate, email, phone, address, password: defaultPassword });
+      setEditing(false); // Desactiva el modo de edición
+    } catch (error) {
+      console.error('Error saving profile data:', error);
+    }
   };
 
   const handleDateChange = (event, selectedDate) => {
@@ -53,6 +81,11 @@ const ProfileData = () => {
 
   const confirmDate = () => {
     hideDatepicker();
+  };
+
+  const handleEmailChange = (text) => {
+    const newEmail = text.charAt(0).toLowerCase() + text.slice(1);
+    setEmail(newEmail);
   };
 
   return (
@@ -110,7 +143,7 @@ const ProfileData = () => {
             <TextInput
               style={styles.input}
               value={email}
-              onChangeText={setEmail}
+              onChangeText={handleEmailChange}
               placeholder="Correo Electrónico"
             />
           ) : (
@@ -145,14 +178,12 @@ const ProfileData = () => {
         </View>
       </View>
 
-      {/* Botón para guardar cambios */}
       {isEditing && (
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
           <Text style={styles.saveButtonText}>Guardar Cambios</Text>
         </TouchableOpacity>
       )}
 
-      {/* Modal para cambiar la contraseña */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -162,13 +193,22 @@ const ProfileData = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Cambiar Contraseña</Text>
-            <TextInput
-              style={styles.input}
-              value={newPassword}
-              onChangeText={setNewPassword}
-              placeholder="Nueva Contraseña"
-              secureTextEntry={true}
-            />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.inputWithIcon}
+                value={newPassword}
+                onChangeText={setNewPassword}
+                placeholder="Nueva Contraseña"
+                secureTextEntry={!isPasswordVisible}
+              />
+              <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)} style={styles.iconContainer}>
+                <Icon 
+                  name={isPasswordVisible ? 'eye-off' : 'eye'} 
+                  size={24} 
+                  color="black" 
+                />
+              </TouchableOpacity>
+            </View>
             <Button title="Guardar Cambios" onPress={handleChangePassword} />
           </View>
         </View>
@@ -209,30 +249,46 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333333',
   },
   detailText: {
     fontSize: 16,
-    color: '#666666',
+    color: '#555',
   },
   changePasswordLink: {
     marginBottom: 12,
   },
   changePasswordText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: 'black',
+    color: '#007BFF',
+    textDecorationLine: 'underline',
   },
   asterisks: {
-    alignItems: 'flex-start',
+    paddingVertical: 5,
   },
   asteriskText: {
-    color: '#333333',
     fontSize: 16,
+    color: '#555',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 16,
+  },
+  saveButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 12,
+    borderRadius: 5,
+  },
+  saveButtonText: {
+    color: '#ffffff',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
@@ -240,48 +296,39 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 20,
     borderRadius: 10,
-    width: '100%',
-    alignItems: 'center',
+    width: '80%',
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
-    textAlign: 'center',
   },
-  confirmButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  confirmButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#cccccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    fontSize: 16,
-    color: '#333333',
-    width: '100%',
-  },
-  saveButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 15,
-    borderRadius: 5,
+  passwordContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
   },
-  saveButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  inputWithIcon: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 16,
+  },
+  iconContainer: {
+    padding: 10,
+  },
+  confirmButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 12,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  confirmButtonText: {
     color: '#ffffff',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
 

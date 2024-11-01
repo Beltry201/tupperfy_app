@@ -44,6 +44,7 @@ import UserAddresses from '../drawer_screens/UserAddresses';
 import HelpScreen from '../drawer_screens/HelpScreen';
 import SupportChat from '../extra_screens/SupportChat';
 import ChatScreen from '../extra_screens/ChatScreen';
+import OrderStatus from '../views/orders/OrderStatus';
 
 
 
@@ -113,7 +114,7 @@ const NavigationStack = () => {
         <Stack.Screen name="HelpScreen" component={HelpScreen} />
         <Stack.Screen name="SupportChat" component={SupportChat} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
-
+        <Stack.Screen name="OrderStatus" component={OrderStatus} />
       </Stack.Navigator>
     </NavigationContainer>
   );

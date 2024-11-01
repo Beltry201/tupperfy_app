@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 15,
     shadowOpacity: 1.5,
     shadowColor: 'gray',
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   cancelNote: {
     fontSize: 14,
     color: '#666666',
-    marginTop: 15,
+    marginTop: 5,
     textAlign: 'center',
   },
 });

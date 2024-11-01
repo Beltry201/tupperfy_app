@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 const UserAddresses = () => {
   // Ejemplo de direcciones de usuario
@@ -16,6 +16,11 @@ const UserAddresses = () => {
     </View>
   );
 
+  const handleAddAddress = () => {
+    // Aquí puedes agregar la lógica para agregar una nueva dirección
+    Alert.alert('Agregar dirección', 'Aquí puedes implementar la funcionalidad para agregar una nueva dirección.');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mis Direcciones</Text>
@@ -25,6 +30,9 @@ const UserAddresses = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.flatListContainer}
       />
+      <TouchableOpacity style={styles.addButton} onPress={handleAddAddress}>
+        <Text style={styles.addButtonText}>Agregar dirección</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -52,6 +60,18 @@ const styles = StyleSheet.create({
   },
   addressText: {
     fontSize: 18,
+  },
+  addButton: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

@@ -349,6 +349,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     borderRadius: 20,
     alignItems: 'center',
+    
   },
   buttonText: {
     color: '#FFF',
