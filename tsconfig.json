@@ -11,7 +11,7 @@
   },
   "include": [
     "src/**/*"
-, "app.tsx"  ],
+, "App.tsx"  ],
   "exclude": [
     "node_modules",
     "babel.config.js",

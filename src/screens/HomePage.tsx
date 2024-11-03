@@ -343,13 +343,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#005BFF', // Ajusta según tu preferencia
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    marginHorizontal: 3,
+    paddingHorizontal: 15,
     borderRadius: 20,
-    alignItems: 'center',
-    
+    marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, // Efecto de sombra en Android
   },
   buttonText: {
     color: '#FFF',

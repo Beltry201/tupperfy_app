@@ -119,6 +119,10 @@ const MenuView = () => {
     setDishes(updatedDishes);
   };
 
+  const markedDates = events.reduce((acc, event) => {
+    acc[event.selectedDate] = { marked: true, dotColor: '#007AFF' };
+    return acc;
+  }, {});
 
   const calculateTip = () => {
     const productCost = dishes.length * 10;
@@ -183,6 +187,7 @@ const MenuView = () => {
               setShowCreateEvent(true); // Mostrar los inputs al seleccionar una fecha
             }}
             markedDates={{
+              ...markedDates,
               [selectedDate]: { selected: true, selectedColor: '#007AFF' },
             }}
             theme={{

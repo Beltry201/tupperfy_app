@@ -3,17 +3,16 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Switch
 
 const OrderPayment = ({ navigation }: { navigation: any }) => {
   const [selectedDeliveryOption, setSelectedDeliveryOption] = useState(null);
-  const [needUtensils, setNeedUtensils] = useState(false); // Estado para el interruptor de cubiertos
+  const [needUtensils, setNeedUtensils] = useState(false);
   const [selectedTipIndex, setSelectedTipIndex] = useState(3); // 15% como predeterminado
 
-  // Simulación de datos del producto seleccionado y precios
   const selectedProduct = {
     name: 'Producto Seleccionado',
     quantity: 1,
     price: 100, // Precio del producto
   };
 
-  const deliveryCost = selectedDeliveryOption === 'prioritaria' ? 20 : 10; // Coste de entrega basado en la opción seleccionada
+  const deliveryCost = selectedDeliveryOption === 'prioritaria' ? 20 : 10;
   const tipPercentages = [0, 5, 10, 15, 20];
 
   const handleDeliveryOptionPress = (option) => {
@@ -27,7 +26,7 @@ const OrderPayment = ({ navigation }: { navigation: any }) => {
   const handlePayment = () => {
     // Aquí se realizarían las acciones de pago
     // Luego navegar a la pantalla de estado del pedido
-    navigation.navigate('OrderStatus')
+    navigation.navigate('OrderStatus');
   };
 
   const tipAmount = selectedProduct.price * (tipPercentages[selectedTipIndex] / 100);
@@ -75,7 +74,6 @@ const OrderPayment = ({ navigation }: { navigation: any }) => {
             <Text style={styles.itemText}>Cantidad: {selectedProduct.quantity}</Text>
             <Text style={styles.itemText}>Precio: ${selectedProduct.price}</Text>
             <View style={styles.horizontalLine} />
-            {/* Sección de "¿Necesitas cubiertos?" */}
             <View style={styles.utensilsContainer}>
               <Text style={styles.utensilsText}>¿Necesitas cubiertos?</Text>
               <Switch
@@ -166,7 +164,7 @@ const OrderPayment = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
-    paddingBottom: 100, // Agrega más espacio en la parte inferior para el botón fijo
+    paddingBottom: 100,
   },
   container: {
     flex: 1,
@@ -185,23 +183,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  orderSummary: {
-    marginBottom: 40,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  itemText: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  totalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 10,
   },
   addressContainer: {
     marginBottom: 20,
@@ -236,7 +217,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 5,
     marginBottom: 20,
-    alignSelf: 'stretch', // Estira el input para ocupar todo el ancho
+    alignSelf: 'stretch',
   },
   instructionsInput: {
     borderWidth: 1,
@@ -245,15 +226,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 5,
     marginBottom: 20,
-    alignSelf: 'stretch', // Estira el input para ocupar todo el ancho
+    alignSelf: 'stretch',
   },
   selectedProductContainer: {
     marginBottom: 40,
   },
+  utensilsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  utensilsText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   deliveryTimeContainer: {
     backgroundColor: '#D3D3D3',
     padding: 10,
-    marginTop: 10, borderRadius: 5,
+    marginTop: 10,
+    borderRadius: 5,
   },
   deliveryTimeText: {
     fontSize: 16,
@@ -261,63 +252,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   deliveryOption: {
-    backgroundColor: '#F0F0F0',
-    padding: 10,
-    marginTop: 10,
-    borderRadius: 5,
-  },
-  selectedOption: {
-    backgroundColor: '#D0D0D0',
-  },
-  deliveryOptionText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  paymentMethod: {
-    marginBottom: 40,
-  },
-  paymentButton: {
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    marginBottom: 10,
-  },
-  paymentButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  summaryContainer: {
-    backgroundColor: '#D3D3D3',
+    backgroundColor: '#F5F5F5',
     padding: 10,
     borderRadius: 5,
-    marginBottom: 40,
-  },
-  confirmButton: {
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    marginVertical: 5,
+    flexDirection: 'row',
     alignItems: 'center',
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-  },
-  confirmButtonText: {
-    fontSize: 18,
-    color: '#FFF',
-    fontWeight: 'bold',
-  },
-  horizontalLine: {
-    borderBottomColor: '#000',
-    borderBottomWidth: 1,
-    marginBottom: 10,
-  },
-  leftAlign: {
-    alignSelf: 'flex-start',
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -328,13 +268,53 @@ const styles = StyleSheet.create({
     height: 20,
     borderWidth: 1,
     borderColor: '#666',
+    borderRadius: 3,
     marginRight: 10,
   },
   checked: {
     backgroundColor: '#007BFF',
   },
+  deliveryOptionText: {
+    fontSize: 16,
+  },
+  paymentMethod: {
+    marginBottom: 40,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  horizontalLine: {
+    height: 1,
+    backgroundColor: '#ccc',
+    marginVertical: 10,
+  },
+  paymentButton: {
+    backgroundColor: '#007BFF',
+    padding: 15,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  paymentButtonText: {
+    color: '#FFF',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  summaryContainer: {
+    marginBottom: 40,
+  },
+  itemText: {
+    fontSize: 16,
+    marginVertical: 2,
+  },
+  totalText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
   tipSelectionText: {
-    fontSize: 13,
+    fontSize: 16,
     marginTop: 10,
   },
   tipButtonsContainer: {
@@ -343,29 +323,33 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   tipButton: {
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
+    backgroundColor: '#D3D3D3',
     padding: 10,
-    width: '18%',
+    borderRadius: 5,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
   },
   selectedTipButton: {
-    backgroundColor: '#0056b3',
+    backgroundColor: '#007BFF',
   },
   tipButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  utensilsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginVertical: 10,
-  },
-  utensilsText: {
-    fontSize: 16,
-    color: '#333',
     fontWeight: 'bold',
+    color: '#333',
+  },
+  confirmButton: {
+    backgroundColor: '#28A745',
+    paddingVertical: 15,
+    borderRadius: 5,
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+  },
+  confirmButtonText: {
+    color: '#FFF',
+    textAlign: 'center',
+    fontSize: 18,
   },
 });
 
