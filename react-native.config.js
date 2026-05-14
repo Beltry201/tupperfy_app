@@ -3,9 +3,7 @@ module.exports = {
         ios: {},
         android: {},
     },
-    assets: ["./assets/fonts"], // Ruta de la carpeta de fuentes
-};
-module.exports = {
+    assets: ["./assets/fonts"],
     dependencies: {
       'react-native-vector-icons': {
         platforms: {
@@ -13,4 +11,4 @@ module.exports = {
         },
       },
     },
-  };
+};

@@ -5,8 +5,16 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
-platform :ios, min_ios_version_supported
+platform :ios, '15.1'
 prepare_react_native_project!
+
+# Compatibility shim for react-native-maps 1.14.0 with React Native 0.73
+def get_folly_config()
+  return {
+    :compiler_flags => '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32',
+    :version => '2022.05.16.00'
+  }
+end
 
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
 # because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
@@ -30,14 +38,8 @@ target 'tupperfy_app' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # Enables Hermes.
-    :hermes_enabled => true,  # Add this line to enable Hermes
-    # Enables Flipper.
-    #
-    # Note that if you have use_frameworks! enabled, Flipper will not work and
-    # you should disable the next line.
+    :hermes_enabled => true,
     :flipper_configuration => flipper_config,
-    # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
