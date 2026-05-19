@@ -40,6 +40,7 @@ import UserAddresses from '../drawer_screens/UserAddresses';
 import HelpScreen from '../drawer_screens/HelpScreen';
 import AIChatScreen from '../screens/AIChatScreen';
 import AddressPickerScreen from '../screens/AddressPickerScreen';
+import SectionView from '../screens/SectionView';
 import SupportChat from '../extra_screens/SupportChat';
 import ChatScreen from '../extra_screens/ChatScreen';
 import OrderStatus from '../views/orders/OrderStatus';
@@ -144,6 +145,7 @@ const NavigationStack = () => {
         <Stack.Screen name="OrderStatus" component={OrderStatus} />
         <Stack.Screen name="AIChatScreen" component={AIChatScreen} />
         <Stack.Screen name="AddressPickerScreen" component={AddressPickerScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="SectionView" component={SectionView} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

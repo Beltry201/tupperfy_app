@@ -198,7 +198,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
 
   const navigate = (item: Item) => navigation.navigate('DishDetails', { item });
 
-  const SectionHeader = ({ title, count }: { title: string; count?: number }) => (
+  const SectionHeader = ({ title, items, count }: { title: string; items: Item[]; count?: number }) => (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionTitleRow}>
         <Text style={styles.sectionTitle}>{title}</Text>
@@ -208,7 +208,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
           </View>
         )}
       </View>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('SectionView', { title, items })}>
         <Text style={styles.seeMore}>{t('seeAll')}</Text>
       </TouchableOpacity>
     </View>
@@ -410,7 +410,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
               <>
                 {catPopular.length > 0 && (
                   <>
-                    <SectionHeader title={t('popular')} count={catPopular.length} />
+                    <SectionHeader title={t('popular')} items={catPopular} count={catPopular.length} />
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
                       {catPopular.map(item => (
                         <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
@@ -420,7 +420,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
                 )}
                 {catMostSearched.length > 0 && (
                   <>
-                    <SectionHeader title={t('mostSearched')} count={catMostSearched.length} />
+                    <SectionHeader title={t('mostSearched')} items={catMostSearched} count={catMostSearched.length} />
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
                       {catMostSearched.map(item => (
                         <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
@@ -430,7 +430,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
                 )}
                 {catNearest.length > 0 && (
                   <>
-                    <SectionHeader title={t('nearest')} count={catNearest.length} />
+                    <SectionHeader title={t('nearest')} items={catNearest} count={catNearest.length} />
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
                       {catNearest.map(item => (
                         <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
@@ -440,7 +440,7 @@ const HomePage = ({ navigation }: { navigation: any }) => {
                 )}
                 {catNewest.length > 0 && (
                   <>
-                    <SectionHeader title={t('newest')} count={catNewest.length} />
+                    <SectionHeader title={t('newest')} items={catNewest} count={catNewest.length} />
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
                       {catNewest.map(item => (
                         <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
