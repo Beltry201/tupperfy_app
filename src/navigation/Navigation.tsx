@@ -93,7 +93,7 @@ const HomeTabs = () => {
 };
 
 const NavigationStack = () => {
-  const { colors, isDark, t } = useApp();
+  const { colors, isDark } = useApp();
 
   const navTheme = isDark
     ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.background, card: colors.card, border: colors.border, text: colors.text } }
@@ -106,43 +106,43 @@ const NavigationStack = () => {
         screenOptions={{
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
-          headerTitleStyle: { fontWeight: '700', fontSize: 17 },
           headerShadowVisible: false,
           headerBackTitleVisible: false,
+          title: '',
         }}
       >
         <Stack.Screen name="SignIn" component={SignInView} options={{ headerShown: false }} />
-        <Stack.Screen name="LogIn" component={LogInView} options={{ title: t('navLogin') }} />
-        <Stack.Screen name="CreateAccount" component={CreateAccountView} options={{ title: t('navRegister') }} />
-        <Stack.Screen name="FavoriteDishesForm" component={FavoriteDishesForm} options={{ title: t('navFavorites') }} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordView} options={{ title: t('navForgotPwd') }} />
-        <Stack.Screen name="AddPaymentMethod" component={AddPaymentMethod} options={{ title: t('navPaymentMethod') }} />
-        <Stack.Screen name="PaymentSelection" component={PaymentSelection} options={{ title: t('navSelectPayment') }} />
-        <Stack.Screen name="AddPayment" component={AddPayment} options={{ title: t('navAddCard') }} />
-        <Stack.Screen name="CodeInput" component={CodeInput} options={{ title: t('navVerifyCode') }} />
-        <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ title: t('navNewPassword') }} />
+        <Stack.Screen name="LogIn" component={LogInView} />
+        <Stack.Screen name="CreateAccount" component={CreateAccountView} />
+        <Stack.Screen name="FavoriteDishesForm" component={FavoriteDishesForm} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordView} />
+        <Stack.Screen name="AddPaymentMethod" component={AddPaymentMethod} />
+        <Stack.Screen name="PaymentSelection" component={PaymentSelection} />
+        <Stack.Screen name="AddPayment" component={AddPayment} />
+        <Stack.Screen name="CodeInput" component={CodeInput} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
         <Stack.Screen name="HomePage" component={HomeTabs} options={{ headerShown: false }} />
-        <Stack.Screen name="DishDetails" component={DishDetails} options={{ title: '', headerTransparent: true }} />
-        <Stack.Screen name="CartView" component={CartView} options={{ title: t('navCart') }} />
-        <Stack.Screen name="OrderPayment" component={OrderPayment} options={{ title: t('navCheckout') }} />
-        <Stack.Screen name="FollowedChefs" component={FollowedChefs} options={{ title: t('navFollowedChefs') }} />
-        <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} options={{ title: t('navOrders') }} />
-        <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{ title: t('navEditProfile') }} />
-        <Stack.Screen name="ProfileInfo" component={ProfileInfo} options={{ title: t('navMyAccount') }} />
-        <Stack.Screen name="ProfileData" component={ProfileData} options={{ title: t('navMyData') }} />
-        <Stack.Screen name="MessagesScreen" component={MessagesScreen} options={{ title: t('navMessages') }} />
-        <Stack.Screen name="FavoriteChefs" component={FavoriteChefs} options={{ title: t('navFavoriteChefs') }} />
-        <Stack.Screen name="TupperfyPremium" component={TupperfyPremium} options={{ title: t('navPremium') }} />
-        <Stack.Screen name="UserAddresses" component={UserAddresses} options={{ title: t('navAddresses') }} />
-        <Stack.Screen name="ReferFriends" component={ReferFriends} options={{ title: t('navRefer') }} />
-        <Stack.Screen name="PromotionCodes" component={PromotionCodes} options={{ title: t('navPromos') }} />
-        <Stack.Screen name="SettingsScreen" component={SettingsScreen} options={{ title: t('navSettings') }} />
-        <Stack.Screen name="WorkWithUs" component={WorkWithUs} options={{ title: t('navWorkWithUs') }} />
-        <Stack.Screen name="HelpScreen" component={HelpScreen} options={{ title: t('navHelp') }} />
-        <Stack.Screen name="SupportChat" component={SupportChat} options={{ title: t('navSupportChat') }} />
-        <Stack.Screen name="ChatScreen" component={ChatScreen} options={{ title: t('navChat') }} />
-        <Stack.Screen name="OrderStatus" component={OrderStatus} options={{ title: t('navOrderStatus') }} />
-        <Stack.Screen name="AIChatScreen" component={AIChatScreen} options={{ title: t('navAIChat') }} />
+        <Stack.Screen name="DishDetails" component={DishDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="CartView" component={CartView} options={{ headerShown: false }} />
+        <Stack.Screen name="OrderPayment" component={OrderPayment} />
+        <Stack.Screen name="FollowedChefs" component={FollowedChefs} />
+        <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} />
+        <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
+        <Stack.Screen name="ProfileInfo" component={ProfileInfo} />
+        <Stack.Screen name="ProfileData" component={ProfileData} />
+        <Stack.Screen name="MessagesScreen" component={MessagesScreen} />
+        <Stack.Screen name="FavoriteChefs" component={FavoriteChefs} />
+        <Stack.Screen name="TupperfyPremium" component={TupperfyPremium} />
+        <Stack.Screen name="UserAddresses" component={UserAddresses} />
+        <Stack.Screen name="ReferFriends" component={ReferFriends} />
+        <Stack.Screen name="PromotionCodes" component={PromotionCodes} />
+        <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+        <Stack.Screen name="WorkWithUs" component={WorkWithUs} />
+        <Stack.Screen name="HelpScreen" component={HelpScreen} />
+        <Stack.Screen name="SupportChat" component={SupportChat} />
+        <Stack.Screen name="ChatScreen" component={ChatScreen} />
+        <Stack.Screen name="OrderStatus" component={OrderStatus} />
+        <Stack.Screen name="AIChatScreen" component={AIChatScreen} />
         <Stack.Screen name="AddressPickerScreen" component={AddressPickerScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

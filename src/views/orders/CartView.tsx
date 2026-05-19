@@ -81,6 +81,11 @@ const CartView = () => {
     return (
       <SafeAreaView style={styles.emptyContainer}>
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
+        <View style={styles.customHeader}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerBack}>
+            <Icon name="arrow-back" size={22} color={colors.text} />
+          </TouchableOpacity>
+        </View>
         <View style={styles.emptyContent}>
           <View style={styles.emptyIconWrap}>
             <Icon name="cart-outline" size={64} color={colors.gray300} />
@@ -105,6 +110,13 @@ const CartView = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
+      <SafeAreaView>
+        <View style={styles.customHeader}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerBack}>
+            <Icon name="arrow-back" size={22} color={colors.text} />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
 
         {/* Items header */}
@@ -191,6 +203,12 @@ const CartView = () => {
 const makeStyles = (colors: AppColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
   scroll: { padding: spacing.md },
+  customHeader: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
+    backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.border,
+  },
+  headerBack: { padding: 4 },
 
   emptyContainer: { flex: 1, backgroundColor: colors.card },
   emptyContent: {
