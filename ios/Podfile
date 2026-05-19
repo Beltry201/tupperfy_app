@@ -8,25 +8,6 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, '15.1'
 prepare_react_native_project!
 
-# Compatibility shim for react-native-maps 1.14.0 with React Native 0.73
-def get_folly_config()
-  return {
-    :compiler_flags => '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32',
-    :version => '2022.05.16.00'
-  }
-end
-
-# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
-# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
-#
-# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
-# ```js
-# module.exports = {
-#   dependencies: {
-#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-# ```
-flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
-
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
@@ -39,7 +20,6 @@ target 'tupperfy_app' do
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => true,
-    :flipper_configuration => flipper_config,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
@@ -49,11 +29,29 @@ target 'tupperfy_app' do
   end
 
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+
+    # Fix deployment target warnings for all pods
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
+      end
+    end
+
+    # Fix Xcode 26 duplicate symbol errors: add classic linker to app xcconfig only
+    installer.aggregate_targets.each do |aggregate_target|
+      aggregate_target.xcconfigs.each do |variant, xcconfig|
+        xcconfig_path = aggregate_target.client_root + aggregate_target.xcconfig_relative_path(variant)
+        xcconfig_content = File.read(xcconfig_path)
+        unless xcconfig_content.include?('-ld_classic')
+          updated = xcconfig_content.gsub(/(OTHER_LDFLAGS = .*)/) { "#{$1} -Wl,-ld_classic" }
+          File.write(xcconfig_path, updated)
+        end
+      end
+    end
   end
 end
