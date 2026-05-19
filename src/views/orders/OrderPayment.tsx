@@ -23,7 +23,7 @@ const TYPE_ICONS: Record<string, { icon: string; bg: string; color: string }> = 
 };
 
 const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) => {
-  const { colors, isDark, addresses, defaultAddressId } = useApp();
+  const { colors, isDark, addresses, defaultAddressId, clearCart } = useApp();
   const { item, quantity = 1, subtotal: cartSubtotal = 0 } = route?.params ?? {};
 
   // Address for this order — starts from the user's default, falls back to first saved
@@ -232,7 +232,7 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
       <SafeAreaView style={styles.bottomBar}>
         <TouchableOpacity
           style={styles.confirmButton}
-          onPress={() => navigation.navigate('OrderStatus', {
+          onPress={() => { clearCart(); navigation.navigate('OrderStatus', {
             item,
             quantity,
             subtotal: productPrice,
@@ -245,7 +245,7 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
             deliveryAddress: orderAddress?.address ?? '',
             deliveryAddressType: orderAddress?.type ?? '',
             deliveryNotes: notes,
-          })}
+          }); }}
           activeOpacity={0.85}
         >
           <Text style={styles.confirmButtonText}>Realizar pago</Text>
