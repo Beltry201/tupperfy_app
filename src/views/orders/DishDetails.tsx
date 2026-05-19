@@ -36,7 +36,7 @@ const DishDetails = ({ navigation, route }: { navigation: any; route: any }) => 
       {/* Hero con imagen real */}
       <View style={styles.heroArea}>
         <Image
-          source={{ uri: getDishImage(dishName) }}
+          source={getDishImage(dishName)}
           style={StyleSheet.absoluteFill}
           resizeMode="cover"
         />

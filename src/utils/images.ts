@@ -1,3 +1,13 @@
+const LOCAL_IMAGES: Record<string, number> = {
+  'Lasaña Congelada': require('../../assets/images/dishes/lasana.png'),
+  Tamales:            require('../../assets/images/dishes/tamales.png'),
+  Churros:            require('../../assets/images/dishes/churros.png'),
+  'Jugo Natural':     require('../../assets/images/dishes/jugo-natural.png'),
+  Flan:               require('../../assets/images/dishes/flan.png'),
+};
+
+export type DishImageSource = { uri: string } | number;
+
 const DISH_IMAGES: Record<string, string> = {
   // ── Comidas ───────────────────────────────────────────────────────────────
   Arepas:
@@ -75,5 +85,5 @@ const DISH_IMAGES: Record<string, string> = {
 const DEFAULT_IMAGE =
   'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80';
 
-export const getDishImage = (dishName: string): string =>
-  DISH_IMAGES[dishName] ?? DEFAULT_IMAGE;
+export const getDishImage = (dishName: string): DishImageSource =>
+  LOCAL_IMAGES[dishName] ?? { uri: DISH_IMAGES[dishName] ?? DEFAULT_IMAGE };

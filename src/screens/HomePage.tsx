@@ -86,7 +86,7 @@ type Item = typeof popularItems[0];
 // ─── FoodCard (horizontal) ──────────────────────────────────────────────────
 const FoodCard = ({ item, onPress, styles }: { item: Item; onPress: () => void; styles: any }) => (
   <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.88}>
-    <Image source={{ uri: getDishImage(item.dish) }} style={styles.cardImage} resizeMode="cover" />
+    <Image source={getDishImage(item.dish)} style={styles.cardImage} resizeMode="cover" />
     <View style={styles.cardBody}>
       <Text style={styles.cardDish} numberOfLines={1}>{item.dish}</Text>
       <Text style={styles.cardChef} numberOfLines={1}>Por {item.person}</Text>
@@ -105,7 +105,7 @@ const FoodCard = ({ item, onPress, styles }: { item: Item; onPress: () => void; 
 // ─── SearchResultCard (vertical, full-width) ─────────────────────────────────
 const SearchResultCard = ({ item, onPress, styles, colors }: { item: Item; onPress: () => void; styles: any; colors: AppColors }) => (
   <TouchableOpacity style={styles.resultCard} onPress={onPress} activeOpacity={0.85}>
-    <Image source={{ uri: getDishImage(item.dish) }} style={styles.resultImage} resizeMode="cover" />
+    <Image source={getDishImage(item.dish)} style={styles.resultImage} resizeMode="cover" />
     <View style={styles.resultBody}>
       <Text style={styles.resultDish}>{item.dish}</Text>
       <Text style={styles.resultChef}>Por {item.person}</Text>
@@ -137,7 +137,7 @@ const ChefCard = ({ chef, dishes, styles, onDishPress }: {
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: spacing.sm }}>
       {dishes.map(item => (
         <TouchableOpacity key={item.id} style={styles.chefDishCard} onPress={() => onDishPress(item)} activeOpacity={0.85}>
-          <Image source={{ uri: getDishImage(item.dish) }} style={styles.chefDishImage} resizeMode="cover" />
+          <Image source={getDishImage(item.dish)} style={styles.chefDishImage} resizeMode="cover" />
           <Text style={styles.chefDishName} numberOfLines={1}>{item.dish}</Text>
           <Text style={styles.chefDishPrice}>{item.price}</Text>
         </TouchableOpacity>

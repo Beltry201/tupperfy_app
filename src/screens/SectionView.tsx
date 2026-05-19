@@ -35,7 +35,7 @@ const GridCard = ({
 }) => (
   <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.88}>
     <Image
-      source={{ uri: getDishImage(item.dish) }}
+      source={getDishImage(item.dish)}
       style={styles.cardImage}
       resizeMode="cover"
     />

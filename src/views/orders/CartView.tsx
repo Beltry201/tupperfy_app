@@ -37,7 +37,7 @@ const CartItemRow = ({
 
   return (
     <View style={styles.card}>
-      <Image source={{ uri: getDishImage(item.dish) }} style={styles.itemImage} resizeMode="cover" />
+      <Image source={getDishImage(item.dish)} style={styles.itemImage} resizeMode="cover" />
       <View style={styles.itemDetails}>
         <Text style={styles.itemName} numberOfLines={1}>{item.dish}</Text>
         <Text style={styles.itemChef}>Por {item.person}</Text>
