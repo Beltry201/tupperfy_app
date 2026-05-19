@@ -19,29 +19,67 @@ const CATEGORIES = [
   { id: 'congelados',label: 'Congelados', icon: '❄️' },
 ];
 
-const PEOPLE = ['José', 'María', 'Pedro', 'Lucía', 'Carlos', 'Ana', 'Miguel', 'Laura'];
-const DISHES = ['Arepas', 'Paella', 'Sushi', 'Pizza', 'Hamburguesa', 'Ensalada', 'Pasta', 'Ramen', 'Ceviche', 'Empanadas'];
+const PEOPLE  = ['José', 'María', 'Pedro', 'Lucía', 'Carlos', 'Ana', 'Miguel', 'Laura'];
 const RATINGS = ['4.5', '4.7', '4.8', '4.9', '5.0'];
-const TIMES = ['15 min', '20 min', '25 min', '30 min', '35 min'];
+const TIMES   = ['15 min', '20 min', '25 min', '30 min', '35 min'];
 
-// Seeded with fixed values so items don't re-shuffle on re-render
+// Each dish is linked to a category so filtering works out of the box
+const DISH_CATALOG = [
+  // comidas
+  { dish: 'Arepas',       category: 'comidas' },
+  { dish: 'Paella',       category: 'comidas' },
+  { dish: 'Sushi',        category: 'comidas' },
+  { dish: 'Pizza',        category: 'comidas' },
+  { dish: 'Hamburguesa',  category: 'comidas' },
+  { dish: 'Pasta',        category: 'comidas' },
+  { dish: 'Ramen',        category: 'comidas' },
+  { dish: 'Ceviche',      category: 'comidas' },
+  { dish: 'Empanadas',    category: 'comidas' },
+  { dish: 'Tacos',        category: 'comidas' },
+  // veganas
+  { dish: 'Ensalada Verde',     category: 'veganas' },
+  { dish: 'Bowl de Quinoa',     category: 'veganas' },
+  { dish: 'Tacos Veganos',      category: 'veganas' },
+  { dish: 'Curry de Garbanzos', category: 'veganas' },
+  { dish: 'Wrap Vegano',        category: 'veganas' },
+  // bebidas
+  { dish: 'Jugo Natural',   category: 'bebidas' },
+  { dish: 'Smoothie',       category: 'bebidas' },
+  { dish: 'Agua de Jamaica', category: 'bebidas' },
+  { dish: 'Limonada',       category: 'bebidas' },
+  { dish: 'Té Helado',      category: 'bebidas' },
+  // postres
+  { dish: 'Brownie',             category: 'postres' },
+  { dish: 'Helado Artesanal',    category: 'postres' },
+  { dish: 'Flan',                category: 'postres' },
+  { dish: 'Churros',             category: 'postres' },
+  { dish: 'Pastel de Chocolate', category: 'postres' },
+  // congelados
+  { dish: 'Lasaña Congelada', category: 'congelados' },
+  { dish: 'Pizza Congelada',  category: 'congelados' },
+  { dish: 'Burritos',         category: 'congelados' },
+  { dish: 'Nuggets',          category: 'congelados' },
+  { dish: 'Tamales',          category: 'congelados' },
+];
+
 const makeItems = (count: number, prefix: string, seed: number) =>
   Array.from({ length: count }, (_, i) => {
-    const s = (seed + i * 7) % PEOPLE.length;
+    const entry = DISH_CATALOG[(seed + i * 3) % DISH_CATALOG.length];
     return {
-      id: `${prefix}-${i}`,
-      person: PEOPLE[(s * 3 + i) % PEOPLE.length],
-      dish:   DISHES[(s * 2 + i) % DISHES.length],
-      price:  `$${((s * 13 + i * 7 + 20) % 80) + 15}`,
-      rating: RATINGS[(s + i) % RATINGS.length],
-      time:   TIMES[(s * 2 + i) % TIMES.length],
+      id:       `${prefix}-${i}`,
+      person:   PEOPLE[(seed * 2 + i * 5) % PEOPLE.length],
+      dish:     entry.dish,
+      category: entry.category,
+      price:    `$${((seed * 13 + i * 7 + 20) % 80) + 15}`,
+      rating:   RATINGS[(seed + i) % RATINGS.length],
+      time:     TIMES[(seed * 2 + i) % TIMES.length],
     };
   });
 
-const popularItems     = makeItems(8, 'pop',  1);
-const mostSearchedItems = makeItems(8, 'ms',  3);
-const nearestItems     = makeItems(8, 'near', 5);
-const newestItems      = makeItems(8, 'new',  7);
+const popularItems      = makeItems(10, 'pop',  1);
+const mostSearchedItems = makeItems(10, 'ms',   3);
+const nearestItems      = makeItems(10, 'near', 5);
+const newestItems       = makeItems(10, 'new',  7);
 
 type Item = typeof popularItems[0];
 
@@ -122,7 +160,17 @@ const HomePage = ({ navigation }: { navigation: any }) => {
   const totalCartItems = cartItems.reduce((sum, ci) => sum + ci.quantity, 0);
   const isSearching = searchQuery.trim().length > 0;
 
-  // ── Filtering logic ──────────────────────────────────────────────────────
+  // ── Category filtering ────────────────────────────────────────────────────
+  const byCat = (items: Item[]) =>
+    selectedCategory === 'all' ? items : items.filter(i => i.category === selectedCategory);
+
+  const catPopular      = useMemo(() => byCat(popularItems),      [selectedCategory]);
+  const catMostSearched = useMemo(() => byCat(mostSearchedItems), [selectedCategory]);
+  const catNearest      = useMemo(() => byCat(nearestItems),      [selectedCategory]);
+  const catNewest       = useMemo(() => byCat(newestItems),       [selectedCategory]);
+  const totalCatItems   = catPopular.length + catMostSearched.length + catNearest.length + catNewest.length;
+
+  // ── Search filtering ──────────────────────────────────────────────────────
   const { dishResults, chefGroups, totalResults } = useMemo(() => {
     if (!isSearching) return { dishResults: [], chefGroups: [], totalResults: 0 };
 
@@ -154,17 +202,15 @@ const HomePage = ({ navigation }: { navigation: any }) => {
     <View style={styles.sectionHeader}>
       <View style={styles.sectionTitleRow}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        {count !== undefined && isSearching && (
+        {count !== undefined && selectedCategory !== 'all' && (
           <View style={styles.countBadge}>
             <Text style={styles.countBadgeText}>{count}</Text>
           </View>
         )}
       </View>
-      {!isSearching && (
-        <TouchableOpacity>
-          <Text style={styles.seeMore}>{t('seeAll')}</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity>
+        <Text style={styles.seeMore}>{t('seeAll')}</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -346,33 +392,64 @@ const HomePage = ({ navigation }: { navigation: any }) => {
               <Text style={styles.promoEmoji}>🎉</Text>
             </View>
 
-            <SectionHeader title={t('popular')} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
-              {popularItems.map((item) => (
-                <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
-              ))}
-            </ScrollView>
-
-            <SectionHeader title={t('mostSearched')} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
-              {mostSearchedItems.map((item) => (
-                <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
-              ))}
-            </ScrollView>
-
-            <SectionHeader title={t('nearest')} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
-              {nearestItems.map((item) => (
-                <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
-              ))}
-            </ScrollView>
-
-            <SectionHeader title={t('newest')} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
-              {newestItems.map((item) => (
-                <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
-              ))}
-            </ScrollView>
+            {totalCatItems === 0 ? (
+              <View style={styles.noResults}>
+                <Text style={styles.noResultsEmoji}>🍽️</Text>
+                <Text style={styles.noResultsTitle}>Sin platillos aquí</Text>
+                <Text style={styles.noResultsSub}>
+                  No hay opciones en esta categoría por el momento.
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setSelectedCategory('all')}
+                  style={styles.clearSearchBtn}
+                >
+                  <Text style={styles.clearSearchText}>Ver todo</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <>
+                {catPopular.length > 0 && (
+                  <>
+                    <SectionHeader title={t('popular')} count={catPopular.length} />
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
+                      {catPopular.map(item => (
+                        <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
+                      ))}
+                    </ScrollView>
+                  </>
+                )}
+                {catMostSearched.length > 0 && (
+                  <>
+                    <SectionHeader title={t('mostSearched')} count={catMostSearched.length} />
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
+                      {catMostSearched.map(item => (
+                        <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
+                      ))}
+                    </ScrollView>
+                  </>
+                )}
+                {catNearest.length > 0 && (
+                  <>
+                    <SectionHeader title={t('nearest')} count={catNearest.length} />
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
+                      {catNearest.map(item => (
+                        <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
+                      ))}
+                    </ScrollView>
+                  </>
+                )}
+                {catNewest.length > 0 && (
+                  <>
+                    <SectionHeader title={t('newest')} count={catNewest.length} />
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
+                      {catNewest.map(item => (
+                        <FoodCard key={item.id} item={item} styles={styles} onPress={() => navigate(item)} />
+                      ))}
+                    </ScrollView>
+                  </>
+                )}
+              </>
+            )}
           </>
         )}
 
