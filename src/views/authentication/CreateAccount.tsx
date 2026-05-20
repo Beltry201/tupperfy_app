@@ -1,260 +1,257 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5'; // Importa el componente Icon
+import React, { useState, useMemo } from 'react';
+import {
+  View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator,
+  ScrollView, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import DatePicker from 'react-native-date-picker';
+import { spacing, radius, shadows, AppColors } from '../../theme';
+import { useApp } from '../../context/AppContext';
+import { signUp } from '../../services/auth.service';
+import { isSupabaseConfigured } from '../../lib/supabase';
 
 const CreateAccountView = ({ navigation }: { navigation: any }) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [gender, setGender] = useState('');
-  const [password, setPassword] = useState('');
+  const { colors, isDark, signIn } = useApp();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const [firstName, setFirstName]             = useState('');
+  const [lastName, setLastName]               = useState('');
+  const [email, setEmail]                     = useState('');
+  const [phoneNumber, setPhoneNumber]         = useState('');
+  const [gender, setGender]                   = useState('');
+  const [password, setPassword]               = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
-  const [open, setOpen] = useState(false);
+  const [showPassword, setShowPassword]       = useState(false);
+  const [showConfirm, setShowConfirm]         = useState(false);
+  const [dateOfBirth, setDateOfBirth]         = useState<Date | null>(null);
+  const [openDate, setOpenDate]               = useState(false);
+  const [loading, setLoading]                 = useState(false);
+  const [error, setError]                     = useState('');
 
-  const handleSignUp = () => {
-    navigation.navigate('FavoriteDishesForm');
-    if (!firstName || !lastName || !email || !phoneNumber || !gender || !dateOfBirth) {
-      Alert.alert('Campos Obligatorios', 'Todos los campos excepto Género son obligatorios.');
-      return;
-    }    
-    // Lógica para crear la cuenta
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Email:', email);
-    console.log('Phone Number:', phoneNumber);
-    console.log('Date of Birth:', dateOfBirth);
-    console.log('Gender:', gender);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
-  };
-
-  // Format date to display in the input field
   const formatDate = (date: Date | null) => {
-    if (!date) return 'dia/mes/año'; // Placeholder text when no date is selected
-    const day = (`0${date.getDate()}`).slice(-2);
-    const month = (`0${date.getMonth() + 1}`).slice(-2);
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    if (!date) return '';
+    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
   };
 
-  return (
-    <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.header}>Crea tu cuenta</Text>
-        <View style={{flex:1, flexDirection: "row"}}>
-          <View style={[styles.inputContainer, {flex: 1}]}>
-              <Text style={styles.label}>Nombre *</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={setFirstName}
-                value={firstName}
-                placeholder="Nombre"
-              />
-          </View>
-          <View style={[styles.inputContainer, {flex: 1}]}>
-            <Text style={styles.label}>Apellido *</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={setLastName}
-              value={lastName}
-              placeholder="Apellido"
-            />
-          </View>
-        </View>
-        
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Correo electrónico *</Text>
+  const handleSignUp = async () => {
+    if (!firstName || !email || !password) { setError('Completa los campos obligatorios'); return; }
+    if (password !== confirmPassword) { setError('Las contraseñas no coinciden'); return; }
+    if (password.length < 6) { setError('La contraseña debe tener al menos 6 caracteres'); return; }
+    setError('');
+    setLoading(true);
+    try {
+      if (isSupabaseConfigured()) {
+        await signUp(email.trim(), password, `${firstName} ${lastName}`.trim(), phoneNumber || undefined);
+        await signIn(email.trim(), password);
+        navigation.navigate('HomePage');
+      } else {
+        navigation.navigate('FavoriteDishesForm');
+      }
+    } catch (e: any) {
+      setError(e?.message ?? 'Error al crear la cuenta');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const Field = ({
+    label, value, onChangeText, placeholder, keyboardType, secureTextEntry,
+    icon, rightElement, onPress,
+  }: any) => (
+    <View style={styles.fieldWrap}>
+      <Text style={styles.label}>{label}</Text>
+      <TouchableOpacity
+        style={styles.inputRow}
+        onPress={onPress}
+        activeOpacity={onPress ? 0.7 : 1}
+      >
+        <Icon name={icon} size={18} color={colors.gray400} />
+        {onPress ? (
+          <Text style={[styles.inputText, !value && styles.inputPlaceholder]}>
+            {value || placeholder}
+          </Text>
+        ) : (
           <TextInput
             style={styles.input}
-            onChangeText={setEmail}
-            value={email}
-            placeholder="Correo electrónico"
-            keyboardType="email-address"
+            value={value}
+            onChangeText={onChangeText}
+            placeholder={placeholder}
+            placeholderTextColor={colors.textLight}
+            keyboardType={keyboardType}
+            secureTextEntry={secureTextEntry}
             autoCapitalize="none"
           />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Teléfono *</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setPhoneNumber}
+        )}
+        {rightElement}
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+
+          <Text style={styles.title}>Crea tu cuenta</Text>
+          <Text style={styles.subtitle}>Completa tu información para comenzar</Text>
+
+          {/* Name row */}
+          <View style={styles.nameRow}>
+            <View style={[styles.fieldWrap, { flex: 1 }]}>
+              <Text style={styles.label}>Nombre *</Text>
+              <View style={styles.inputRow}>
+                <Icon name="person-outline" size={18} color={colors.gray400} />
+                <TextInput
+                  style={styles.input}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  placeholder="Nombre"
+                  placeholderTextColor={colors.textLight}
+                />
+              </View>
+            </View>
+            <View style={[styles.fieldWrap, { flex: 1 }]}>
+              <Text style={styles.label}>Apellido *</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  style={styles.input}
+                  value={lastName}
+                  onChangeText={setLastName}
+                  placeholder="Apellido"
+                  placeholderTextColor={colors.textLight}
+                />
+              </View>
+            </View>
+          </View>
+
+          <Field
+            label="Correo electrónico *"
+            icon="mail-outline"
+            value={email}
+            onChangeText={setEmail}
+            placeholder="correo@ejemplo.com"
+            keyboardType="email-address"
+          />
+          <Field
+            label="Teléfono *"
+            icon="call-outline"
             value={phoneNumber}
-            placeholder="+52"
+            onChangeText={setPhoneNumber}
+            placeholder="+52 000 000 0000"
             keyboardType="phone-pad"
           />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Fecha de Nacimiento *</Text>
-          <View style={styles.dateInputContainer}>
-            <TouchableOpacity
-              style={styles.dateIcon}
-              onPress={() => setOpen(true)}
-            >
-              <Icon name="calendar" size={20} color="#003f5c" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.dateTextContainer}
-              onPress={() => setOpen(true)}
-            >
-              <Text style={styles.dateText}>{formatDate(dateOfBirth)}</Text>
-            </TouchableOpacity>
-          </View>
-          <DatePicker
-            modal
-            open={open}
-            mode='date'
-            date={dateOfBirth || new Date()}
-            onConfirm={(date) => {
-              setOpen(false);
-              setDateOfBirth(date);
-            }}
-            onCancel={() => {
-              setOpen(false);
-            }}
+          <Field
+            label="Fecha de nacimiento *"
+            icon="calendar-outline"
+            value={formatDate(dateOfBirth)}
+            placeholder="dd/mm/aaaa"
+            onPress={() => setOpenDate(true)}
+            rightElement={<Icon name="chevron-down" size={16} color={colors.gray400} />}
           />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Género</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setGender}
+          <Field
+            label="Género"
+            icon="people-outline"
             value={gender}
-            placeholder="Género (Hombre/Mujer/Otro)"
+            onChangeText={setGender}
+            placeholder="Hombre / Mujer / Otro"
           />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Contraseña *</Text>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              onChangeText={setPassword}
-              value={password}
-              placeholder="Contraseña"
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Icon name={showPassword ? 'eye-slash' : 'eye'} size={20} color="#003f5c" />
-            </TouchableOpacity>
+
+          {/* Password */}
+          <View style={styles.fieldWrap}>
+            <Text style={styles.label}>Contraseña *</Text>
+            <View style={styles.inputRow}>
+              <Icon name="lock-closed-outline" size={18} color={colors.gray400} />
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Mínimo 8 caracteres"
+                placeholderTextColor={colors.textLight}
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity onPress={() => setShowPassword(v => !v)}>
+                <Icon name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={18} color={colors.gray400} />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Confirmar Contraseña *</Text>
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              onChangeText={setConfirmPassword}
-              value={confirmPassword}
-              placeholder="Confirmar contraseña"
-              secureTextEntry={!showConfirmPassword}
-            />
-            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-              <Icon name={showConfirmPassword ? 'eye-slash' : 'eye'} size={20} color="#003f5c" />
-            </TouchableOpacity>
+
+          <View style={styles.fieldWrap}>
+            <Text style={styles.label}>Confirmar contraseña *</Text>
+            <View style={styles.inputRow}>
+              <Icon name="lock-closed-outline" size={18} color={colors.gray400} />
+              <TextInput
+                style={styles.input}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="Repite tu contraseña"
+                placeholderTextColor={colors.textLight}
+                secureTextEntry={!showConfirm}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity onPress={() => setShowConfirm(v => !v)}>
+                <Icon name={showConfirm ? 'eye-off-outline' : 'eye-outline'} size={18} color={colors.gray400} />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>Crear cuenta</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <TouchableOpacity style={styles.btn} onPress={handleSignUp} activeOpacity={0.85} disabled={loading}>
+            {loading
+              ? <ActivityIndicator color="#fff" />
+              : <>
+                  <Text style={styles.btnText}>Crear cuenta</Text>
+                  <Icon name="arrow-forward" size={18} color="#FFFFFF" />
+                </>}
+          </TouchableOpacity>
+
+          <View style={{ height: spacing.xl }} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      <DatePicker
+        modal
+        open={openDate}
+        mode="date"
+        date={dateOfBirth ?? new Date(2000, 0, 1)}
+        maximumDate={new Date()}
+        onConfirm={date => { setOpenDate(false); setDateOfBirth(date); }}
+        onCancel={() => setOpenDate(false)}
+      />
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  datePicker: {
-    width: '100%',
+const makeStyles = (colors: AppColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.card },
+  scroll: { padding: spacing.md, paddingTop: spacing.lg },
+
+  title: { fontSize: 26, fontWeight: '700', color: colors.text, marginBottom: 6 },
+  subtitle: { fontSize: 14, color: colors.textSecondary, marginBottom: spacing.lg },
+
+  nameRow: { flexDirection: 'row', gap: spacing.sm },
+  fieldWrap: { marginBottom: spacing.md },
+  label: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 6 },
+  inputRow: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md, borderWidth: 1.5, borderColor: colors.border,
+    paddingHorizontal: spacing.md, height: 50,
   },
-  header: {
-    textAlign: 'left',
-    fontSize: 25,
-    fontWeight: 'bold',
-    paddingBottom: 20,
-    marginTop: 20,
+  input: { flex: 1, fontSize: 15, color: colors.text, padding: 0 },
+  inputText: { flex: 1, fontSize: 15, color: colors.text },
+  inputPlaceholder: { color: colors.textLight },
+
+  btn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: spacing.sm, backgroundColor: colors.primary,
+    borderRadius: radius.md, paddingVertical: 16,
+    marginTop: spacing.sm, ...shadows.md,
   },
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: 'white', // Fondo blanco
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    color: '#333',
-    marginBottom: 5,
-    fontSize: 16,
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  passwordInput: {
-    flex: 1,
-    height: 40,
-    borderColor: '#ccc',
-    borderBottomWidth: 1,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff',
-    fontSize: 16,
-  },
-  buttonContainer: {
-    alignItems: 'flex-end',
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: '#006BFF',
-    paddingVertical: 15,
-    paddingHorizontal: 115, // Ancho ajustado aquí
-    borderRadius: 18,
-    marginBottom: 40,
-    marginTop: 30,
-    borderColor: 'black',
-    borderWidth: 1.5,
-    shadowOpacity: 1.5,
-    shadowColor: 'gray',
-    },
-    buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    },
-    text: {
-    fontSize: 16,
-    color: '#000',
-    },
-    input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderBottomWidth: 1,
-    paddingHorizontal: 10,
-    fontSize: 16,
-    flex: 1,
-    justifyContent: 'center', // Center the text vertically
-    },
-    placeholder: {
-    fontSize: 16,
-    color: '#aaa', // Placeholder text color (grey)
-    },
-    dateInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    },
-    dateIcon: {
-    marginRight: 10,
-    },
-    dateTextContainer: {
-    flex: 1,
-    },
-    dateText: {
-    fontSize: 16,
-    color: '#000',
-    },
+  btnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  errorText: { color: '#EF4444', fontSize: 13, fontWeight: '500', textAlign: 'center', marginBottom: 4 },
 });
 
 export default CreateAccountView;

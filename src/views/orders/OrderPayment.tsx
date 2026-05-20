@@ -7,6 +7,8 @@ import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { spacing, radius, shadows, typography, AppColors } from '../../theme';
 import { useApp, Address } from '../../context/AppContext';
+import { createOrder } from '../../services/orders.service';
+import { isSupabaseConfigured } from '../../lib/supabase';
 
 const PAYMENT_METHODS = [
   { id: 'card',        label: 'Tarjeta de crédito/débito', icon: 'card-outline',   sub: '**** **** **** 1234' },
@@ -23,7 +25,7 @@ const TYPE_ICONS: Record<string, { icon: string; bg: string; color: string }> = 
 };
 
 const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) => {
-  const { colors, isDark, addresses, defaultAddressId, clearCart } = useApp();
+  const { colors, isDark, addresses, defaultAddressId, clearCart, user, cartItems } = useApp();
   const { item, quantity = 1, subtotal: cartSubtotal = 0 } = route?.params ?? {};
 
   // Address for this order — starts from the user's default, falls back to first saved
@@ -39,6 +41,7 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
   const [deliveryOption, setDeliveryOption] = useState<'normal' | 'prioritaria'>('normal');
   const [selectedTip, setSelectedTip] = useState(2);
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [confirming, setConfirming] = useState(false);
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const productPrice = cartSubtotal;
@@ -58,6 +61,38 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
   };
 
   const typeConfig = (type: string) => TYPE_ICONS[type] ?? TYPE_ICONS['Otro'];
+
+  const handleConfirm = async () => {
+    setConfirming(true);
+    try {
+      if (isSupabaseConfigured() && user) {
+        await createOrder({
+          userId: user.id,
+          cartItems,
+          deliveryAddress: orderAddress?.address ?? '',
+          deliveryNotes: notes,
+          paymentMethod,
+          subtotal: productPrice,
+          deliveryFee: deliveryCost,
+          tipAmount,
+          total,
+        });
+      }
+    } catch {} finally {
+      clearCart();
+      navigation.navigate('OrderStatus', {
+        item, quantity,
+        subtotal: productPrice, deliveryCost, tipAmount,
+        tipPercent: TIP_OPTIONS[selectedTip], total,
+        paymentMethod: PAYMENT_METHODS.find(m => m.id === paymentMethod)?.label ?? paymentMethod,
+        deliveryOption,
+        deliveryAddress: orderAddress?.address ?? '',
+        deliveryAddressType: orderAddress?.type ?? '',
+        deliveryNotes: notes,
+      });
+      setConfirming(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -232,20 +267,7 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
       <SafeAreaView style={styles.bottomBar}>
         <TouchableOpacity
           style={styles.confirmButton}
-          onPress={() => { clearCart(); navigation.navigate('OrderStatus', {
-            item,
-            quantity,
-            subtotal: productPrice,
-            deliveryCost,
-            tipAmount,
-            tipPercent: TIP_OPTIONS[selectedTip],
-            total,
-            paymentMethod: PAYMENT_METHODS.find(m => m.id === paymentMethod)?.label ?? paymentMethod,
-            deliveryOption,
-            deliveryAddress: orderAddress?.address ?? '',
-            deliveryAddressType: orderAddress?.type ?? '',
-            deliveryNotes: notes,
-          }); }}
+          onPress={handleConfirm}
           activeOpacity={0.85}
         >
           <Text style={styles.confirmButtonText}>Realizar pago</Text>

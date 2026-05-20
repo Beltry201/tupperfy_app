@@ -1,152 +1,141 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useMemo } from 'react';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
+  KeyboardAvoidingView, Platform, ScrollView, StatusBar,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { spacing, radius, shadows, typography, AppColors } from '../../theme';
+import { useApp } from '../../context/AppContext';
 
 const LogInView = ({ navigation }: { navigation: any }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  
-  
+  const { colors, isDark, signIn } = useApp();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
-  const client_username = "david@gmail.com";
-  const client_password = "1234";
-
-  const handleLogin = () => {
-    if (username === client_username.toLowerCase()) {
-      if (password === client_password) {
-        console.log("-- Inicio de sesión exitoso");
-      }else {
-        console.log("-- Contraseña incorrecta");
-      }
-    } else {
-      console.log("-- El usuario no existe, intente de nuevo.");
+  const handleLogin = async () => {
+    if (!username || !password) { setError('Completa todos los campos'); return; }
+    setError('');
+    setLoading(true);
+    try {
+      await signIn(username.trim(), password);
+      navigation.navigate('HomePage');
+    } catch (e: any) {
+      setError(e?.message ?? 'Error al iniciar sesión');
+    } finally {
+      setLoading(false);
     }
-    console.log("Username:", username);
-    console.log("Password:", password);
-    navigation.navigate('HomePage')
-    
   };
-
-  const handleForgotPassword = () => {};
-
-  const handleUsernameChange = (text: string) => {
-    setUsername(text.charAt(0).toLowerCase() + text.slice(1));
-  };
-
-  const handlePasswordChange = (text: string) => {
-    setPassword(text.charAt(0).toLowerCase() + text.slice(1));
-  };
-
-  
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.headerText}>Coloca tu usuario y contraseña para iniciar sesión</Text>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Usuario"
-          placeholderTextColor="#003f5c"
-          onChangeText={handleUsernameChange}
-        />
-      </View>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Contraseña"
-          placeholderTextColor="#003f5c"
-          secureTextEntry={true}
-          onChangeText={handlePasswordChange}
-        />
-      </View>
-      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-        <Text style={styles.loginText}>Iniciar Sesión</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.forgotPasswordBtn} onPress={() => navigation.navigate('ForgotPassword')}>
-        <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
-      </TouchableOpacity>
-    </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>Bienvenido de vuelta</Text>
+          <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+        </View>
+
+        <View style={styles.form}>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Correo electrónico</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="mail-outline" size={20} color={colors.gray400} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="tu@email.com"
+                placeholderTextColor={colors.textLight}
+                onChangeText={(t) => setUsername(t.charAt(0).toLowerCase() + t.slice(1))}
+                value={username}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+          </View>
+
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Contraseña</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="lock-closed-outline" size={20} color={colors.gray400} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="••••••••"
+                placeholderTextColor={colors.textLight}
+                secureTextEntry={!showPassword}
+                onChangeText={(t) => setPassword(t.charAt(0).toLowerCase() + t.slice(1))}
+                value={password}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+                <Icon name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={20} color={colors.gray400} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate('ForgotPassword')}>
+            <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
+          </TouchableOpacity>
+
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin} activeOpacity={0.85} disabled={loading}>
+            {loading
+              ? <ActivityIndicator color="#fff" />
+              : <Text style={styles.loginButtonText}>Iniciar sesión</Text>}
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>¿No tienes cuenta? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('CreateAccount')}>
+            <Text style={styles.footerLink}>Crear cuenta</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
+const makeStyles = (colors: AppColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.card },
+  scroll: { flexGrow: 1, paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl },
+  header: { marginTop: spacing.xl, marginBottom: spacing.xl },
+  title: { ...typography.h1, color: colors.text, marginBottom: spacing.xs },
+  subtitle: { ...typography.body, color: colors.textSecondary },
+  form: { gap: spacing.md },
+  fieldGroup: { gap: spacing.xs },
+  label: { ...typography.label, color: colors.gray600 },
+  inputWrapper: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: colors.surface, borderRadius: radius.md,
+    borderWidth: 1.5, borderColor: colors.border,
+    paddingHorizontal: spacing.md, height: 52,
   },
-  headerText: {
-    fontSize: 30,
-    marginBottom: 50,
-    marginTop: -70,
-    textAlign: "center",
-    fontWeight: "bold",
-    color: 'black',
+  inputIcon: { marginRight: spacing.sm },
+  input: { flex: 1, fontSize: 15, color: colors.text },
+  eyeButton: { padding: spacing.xs },
+  forgotButton: { alignSelf: 'flex-end', marginTop: -spacing.xs },
+  forgotText: { color: colors.primary, fontSize: 14, fontWeight: '600' },
+  loginButton: {
+    backgroundColor: colors.primary, borderRadius: radius.lg,
+    paddingVertical: 16, alignItems: 'center', marginTop: spacing.xs, ...shadows.md,
   },
-  inputView: {
-    width: "80%",
-    backgroundColor: "#ffffff",
-    borderRadius: 25,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  inputText: {
-    height: 50,
-    color: "black",
-  },
-  loginBtn: {
-    width: "80%",
-    backgroundColor: "#006BFF",
-    borderRadius: 18, // Ajusta el borderRadius aquí
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-    marginBottom: 10,
-    borderColor: 'black', // Agrega el borde negro
-    borderWidth: 1.5, // Grosor del borde
-    shadowOpacity: 1.5,
-    shadowColor: 'gray',
-  },
-  loginText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  forgotPasswordBtn: {
-    marginTop: 10,
-  },
-  forgotPasswordText: {
-    color: "#004BFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  buttonContainer: {
-    width: '90%',
-    paddingHorizontal: 20,
-    backgroundColor: 'blue',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 40,
-    marginBottom: 10,
-    paddingVertical: 15, // Aumenta el espacio vertical dentro del botón
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18, // Tamaño de fuente personalizado
-    fontWeight: 'bold',
-  },
+  loginButtonText: { color: colors.white, fontSize: 16, fontWeight: '700' },
+  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: spacing.xl },
+  footerText: { color: colors.textSecondary, fontSize: 14 },
+  footerLink: { color: colors.primary, fontSize: 14, fontWeight: '700' },
+  errorText: { color: '#EF4444', fontSize: 13, fontWeight: '500', textAlign: 'center' },
 });
 
 export default LogInView;

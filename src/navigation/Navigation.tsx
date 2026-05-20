@@ -94,16 +94,18 @@ const HomeTabs = () => {
 };
 
 const NavigationStack = () => {
-  const { colors, isDark } = useApp();
+  const { colors, isDark, user, isLoadingAuth } = useApp();
 
   const navTheme = isDark
     ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: colors.background, card: colors.card, border: colors.border, text: colors.text } }
     : { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: colors.background, card: colors.card, border: colors.border, text: colors.text } };
 
+  if (isLoadingAuth) return null;
+
   return (
     <NavigationContainer theme={navTheme}>
       <Stack.Navigator
-        initialRouteName="SignIn"
+        initialRouteName={user ? 'HomePage' : 'SignIn'}
         screenOptions={{
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
