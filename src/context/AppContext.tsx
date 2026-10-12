@@ -31,6 +31,7 @@ interface AppContextType {
   isLoadingAuth: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
   // Theme / i18n
   isDark: boolean;
   toggleDark: () => void;
@@ -55,7 +56,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType>({
   user: null, profile: null, isLoadingAuth: true,
-  signIn: async () => {}, signOut: async () => {},
+  signIn: async () => {}, signOut: async () => {}, refreshProfile: async () => {},
   isDark: false, toggleDark: () => {},
   language: 'es', setLanguage: () => {},
   colors: lightColors,
@@ -172,6 +173,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCartItems([]);
   };
 
+  const refreshProfile = async () => {
+    if (!user) return;
+    try {
+      const prof = await authService.getProfile(user.id);
+      if (prof) setProfile(prof);
+    } catch {}
+  };
+
   const toggleDark = async () => {
     const next = !isDark;
     setIsDark(next);
@@ -224,7 +233,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AppContext.Provider value={{
-      user, profile, isLoadingAuth, signIn, signOut,
+      user, profile, isLoadingAuth, signIn, signOut, refreshProfile,
       isDark, toggleDark,
       language, setLanguage,
       colors: isDark ? darkColors : lightColors,

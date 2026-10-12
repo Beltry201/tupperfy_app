@@ -17,6 +17,7 @@ const PAYMENT_METHODS = [
 ];
 
 const TIP_OPTIONS = [0, 5, 10, 15, 20];
+const SERVICE_FEE_RATE = 0.2;
 
 const TYPE_ICONS: Record<string, { icon: string; bg: string; color: string }> = {
   Casa:    { icon: 'home',      bg: '#EBF3FF', color: '#3B82F6' },
@@ -25,7 +26,7 @@ const TYPE_ICONS: Record<string, { icon: string; bg: string; color: string }> = 
 };
 
 const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) => {
-  const { colors, isDark, addresses, defaultAddressId, clearCart, user, cartItems } = useApp();
+  const { colors, isDark, addresses, setAddresses, defaultAddressId, clearCart, user, cartItems } = useApp();
   const { item, quantity = 1, subtotal: cartSubtotal = 0 } = route?.params ?? {};
 
   // Address for this order — starts from the user's default, falls back to first saved
@@ -36,6 +37,9 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
   const [notes, setNotes] = useState('');
   const [changeSheetVisible, setChangeSheetVisible] = useState(false);
   const [sheetSelectedId, setSheetSelectedId] = useState<string | null>(orderAddress?.id ?? null);
+  const [addingAddress, setAddingAddress] = useState(false);
+  const [newAddressType, setNewAddressType] = useState<'Casa' | 'Trabajo' | 'Otro'>('Casa');
+  const [newAddressText, setNewAddressText] = useState('');
 
   const [needUtensils, setNeedUtensils] = useState(false);
   const [deliveryOption, setDeliveryOption] = useState<'normal' | 'prioritaria'>('normal');
@@ -46,17 +50,30 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
 
   const productPrice = cartSubtotal;
   const deliveryCost = deliveryOption === 'prioritaria' ? 20 : 10;
+  const serviceFee = productPrice * SERVICE_FEE_RATE;
   const tipAmount = productPrice * (TIP_OPTIONS[selectedTip] / 100);
-  const total = productPrice + deliveryCost + tipAmount;
+  const total = productPrice + deliveryCost + serviceFee + tipAmount;
 
   const openChangeSheet = () => {
     setSheetSelectedId(orderAddress?.id ?? null);
+    setAddingAddress(addresses.length === 0);
     setChangeSheetVisible(true);
   };
 
   const confirmAddressChange = () => {
     const chosen = addresses.find(a => a.id === sheetSelectedId) ?? null;
     setOrderAddress(chosen);
+    setChangeSheetVisible(false);
+  };
+
+  const handleAddNewAddress = () => {
+    if (!newAddressText.trim()) return;
+    const newAddr: Address = { id: Date.now().toString(), address: newAddressText.trim(), type: newAddressType };
+    setAddresses([...addresses, newAddr]);
+    setOrderAddress(newAddr);
+    setNewAddressText('');
+    setNewAddressType('Casa');
+    setAddingAddress(false);
     setChangeSheetVisible(false);
   };
 
@@ -82,7 +99,7 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
       clearCart();
       navigation.navigate('OrderStatus', {
         item, quantity,
-        subtotal: productPrice, deliveryCost, tipAmount,
+        subtotal: productPrice, deliveryCost, serviceFee, tipAmount,
         tipPercent: TIP_OPTIONS[selectedTip], total,
         paymentMethod: PAYMENT_METHODS.find(m => m.id === paymentMethod)?.label ?? paymentMethod,
         deliveryOption,
@@ -143,7 +160,7 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
           <Text style={styles.sectionTitle}>Detalles del pedido</Text>
           <View style={styles.orderRow}>
             <View style={styles.orderImageBox}>
-              <Text style={styles.orderEmoji}>🍽️</Text>
+              <Icon name="restaurant" size={20} color={colors.primary} />
             </View>
             <View style={styles.orderInfo}>
               <Text style={styles.orderName}>{item?.dish ?? 'Platillo'}</Text>
@@ -250,6 +267,10 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
             <Text style={styles.summaryValue}>${deliveryCost}</Text>
           </View>
           <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Tarifa de servicio</Text>
+            <Text style={styles.summaryValue}>${serviceFee.toFixed(2)}</Text>
+          </View>
+          <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Propina ({TIP_OPTIONS[selectedTip]}%)</Text>
             <Text style={styles.summaryValue}>${tipAmount.toFixed(2)}</Text>
           </View>
@@ -295,13 +316,7 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
             </TouchableOpacity>
           </View>
 
-          {addresses.length === 0 ? (
-            <View style={styles.sheetEmpty}>
-              <Icon name="location-outline" size={36} color={colors.gray300} />
-              <Text style={styles.sheetEmptyText}>No tienes direcciones guardadas.</Text>
-              <Text style={styles.sheetEmptyText}>Agrégalas en Mis Direcciones.</Text>
-            </View>
-          ) : (
+          {addresses.length > 0 && !addingAddress && (
             addresses.map((addr) => {
               const cfg = typeConfig(addr.type);
               const selected = addr.id === sheetSelectedId;
@@ -327,7 +342,54 @@ const OrderPayment = ({ navigation, route }: { navigation: any; route: any }) =>
             })
           )}
 
-          {addresses.length > 0 && (
+          {!addingAddress ? (
+            <TouchableOpacity style={styles.addAddrBtn} onPress={() => setAddingAddress(true)} activeOpacity={0.8}>
+              <Icon name="add-circle-outline" size={18} color={colors.primary} />
+              <Text style={styles.addAddrBtnText}>Agregar nueva dirección</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.newAddrForm}>
+              {addresses.length > 0 && (
+                <TouchableOpacity style={styles.backToListBtn} onPress={() => setAddingAddress(false)}>
+                  <Icon name="chevron-back" size={14} color={colors.primary} />
+                  <Text style={styles.backToListText}>Ver direcciones guardadas</Text>
+                </TouchableOpacity>
+              )}
+              <View style={styles.typePillRow}>
+                {(['Casa', 'Trabajo', 'Otro'] as const).map((t) => (
+                  <TouchableOpacity
+                    key={t}
+                    style={[styles.typePill, newAddressType === t && styles.typePillActive]}
+                    onPress={() => setNewAddressType(t)}
+                  >
+                    <Icon name={typeConfig(t).icon} size={14} color={newAddressType === t ? colors.white : colors.gray500} />
+                    <Text style={[styles.typePillText, newAddressType === t && styles.typePillTextActive]}>{t}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View style={styles.inputWrapper}>
+                <Icon name="location-outline" size={18} color={colors.gray400} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Calle, número, colonia, ciudad"
+                  placeholderTextColor={colors.textLight}
+                  value={newAddressText}
+                  onChangeText={setNewAddressText}
+                  autoFocus
+                />
+              </View>
+              <TouchableOpacity
+                style={[styles.confirmAddrBtn, !newAddressText.trim() && styles.confirmAddrBtnDisabled]}
+                onPress={handleAddNewAddress}
+                activeOpacity={0.85}
+                disabled={!newAddressText.trim()}
+              >
+                <Text style={styles.confirmAddrBtnText}>Guardar y usar esta dirección</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {addresses.length > 0 && !addingAddress && (
             <TouchableOpacity style={styles.confirmAddrBtn} onPress={confirmAddressChange} activeOpacity={0.85}>
               <Text style={styles.confirmAddrBtnText}>Confirmar dirección</Text>
             </TouchableOpacity>
@@ -386,7 +448,6 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
 
   orderRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   orderImageBox: { width: 52, height: 52, borderRadius: radius.sm, backgroundColor: colors.primaryLight, justifyContent: 'center', alignItems: 'center' },
-  orderEmoji: { fontSize: 24 },
   orderInfo: { flex: 1 },
   orderName: { ...typography.h4, marginBottom: 2 },
   orderQty: { ...typography.bodySmall },
@@ -460,8 +521,6 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
   sheetHandle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.gray300, alignSelf: 'center', marginBottom: spacing.md },
   sheetHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
   sheetTitle: { fontSize: 18, fontWeight: '700', color: colors.text },
-  sheetEmpty: { alignItems: 'center', paddingVertical: spacing.xl, gap: spacing.sm },
-  sheetEmptyText: { fontSize: 14, color: colors.textSecondary, textAlign: 'center' },
   sheetAddrRow: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.md,
     padding: spacing.md, borderRadius: radius.md, marginBottom: spacing.sm,
@@ -476,7 +535,27 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
     backgroundColor: colors.primary, borderRadius: radius.md, paddingVertical: 14,
     alignItems: 'center', marginTop: spacing.sm, ...shadows.md,
   },
+  confirmAddrBtnDisabled: { backgroundColor: colors.gray300, ...shadows.sm },
   confirmAddrBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
+
+  addAddrBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    borderWidth: 1.5, borderColor: colors.primary, borderStyle: 'dashed',
+    borderRadius: radius.md, paddingVertical: 12, marginTop: spacing.xs,
+  },
+  addAddrBtnText: { color: colors.primary, fontSize: 14, fontWeight: '700' },
+  newAddrForm: { gap: spacing.sm },
+  backToListBtn: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingBottom: spacing.xs },
+  backToListText: { color: colors.primary, fontSize: 13, fontWeight: '600' },
+  typePillRow: { flexDirection: 'row', gap: spacing.sm },
+  typePill: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5,
+    borderWidth: 1.5, borderColor: colors.border, borderRadius: radius.full,
+    paddingVertical: 9, backgroundColor: colors.surface,
+  },
+  typePillActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  typePillText: { fontSize: 13, fontWeight: '600', color: colors.gray600 },
+  typePillTextActive: { color: colors.white },
 });
 
 export default OrderPayment;

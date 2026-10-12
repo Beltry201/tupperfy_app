@@ -1,146 +1,193 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import React, { useMemo, useState } from 'react';
+import {
+  View, Text, StyleSheet, TextInput, TouchableOpacity,
+  SafeAreaView, StatusBar, ScrollView, Alert, ActivityIndicator,
+  KeyboardAvoidingView, Platform,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { spacing, radius, shadows, AppColors } from '../theme';
+import { useApp } from '../context/AppContext';
+import * as authService from '../services/auth.service';
 
-const EditProfile = () => {
-  const [username, setUsername] = useState('diegoarria');
-  const [fullName, setFullName] = useState('Diego Arria');
-  const [bio, setBio] = useState('¡Hola! Soy Diego.');
-  const navigation = useNavigation();
+const getInitials = (name: string) =>
+  name.trim().split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
 
-  const handleSave = () => {
-    console.log('Guardando cambios...');
-    // Aquí podrías añadir la lógica para guardar los cambios en tu base de datos o almacenamiento
+const ProfileEdit = () => {
+  const navigation = useNavigation<any>();
+  const { colors, isDark, user, profile, refreshProfile } = useApp();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
-    navigation.navigate('HomePage'); // Navegar de vuelta a la pantalla de inicio después de guardar
+  const [fullName, setFullName] = useState(profile?.full_name ?? '');
+  const [phone, setPhone] = useState(profile?.phone ?? '');
+  const [saving, setSaving] = useState(false);
+
+  const isDirty = fullName !== (profile?.full_name ?? '') || phone !== (profile?.phone ?? '');
+
+  const handleSave = async () => {
+    if (!user) return;
+    if (!fullName.trim()) {
+      Alert.alert('Nombre requerido', 'Ingresa tu nombre completo.');
+      return;
+    }
+    setSaving(true);
+    try {
+      await authService.updateProfile(user.id, {
+        full_name: fullName.trim(),
+        phone: phone.trim() || null,
+      });
+      await refreshProfile();
+      navigation.goBack();
+    } catch (e: any) {
+      Alert.alert('No se pudo guardar', e?.message ?? 'Intenta de nuevo más tarde.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" />
-      <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          {/* Círculo para la imagen de perfil (simulado) */}
-          <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>{username.charAt(0).toUpperCase()}</Text>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.surface} />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.avatarSection}>
+            <View style={styles.avatarWrapper}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{getInitials(fullName || 'Tú')}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.cameraBtn}
+                activeOpacity={0.8}
+                onPress={() => Alert.alert('Próximamente', 'La carga de foto de perfil estará disponible pronto.')}
+              >
+                <Icon name="camera" size={16} color={colors.white} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.email}>{user?.email ?? 'Sin correo'}</Text>
           </View>
-          {/* Icono de editar */}
-          <TouchableOpacity style={styles.editIcon}>
-            <Icon name="edit" size={25} color="#007bff" />
+
+          <View style={styles.formCard}>
+            <Text style={styles.fieldLabel}>Nombre completo</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="person-outline" size={18} color={colors.textLight} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={fullName}
+                onChangeText={setFullName}
+                placeholder="Tu nombre completo"
+                placeholderTextColor={colors.textLight}
+              />
+            </View>
+
+            <View style={styles.divider} />
+
+            <Text style={styles.fieldLabel}>Teléfono</Text>
+            <View style={styles.inputWrapper}>
+              <Icon name="call-outline" size={18} color={colors.textLight} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="Agrega tu número"
+                placeholderTextColor={colors.textLight}
+                keyboardType="phone-pad"
+              />
+            </View>
+          </View>
+
+          <View style={styles.infoNote}>
+            <Icon name="information-circle-outline" size={16} color={colors.textLight} />
+            <Text style={styles.infoNoteText}>El correo no se puede modificar desde aquí.</Text>
+          </View>
+        </ScrollView>
+
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={[styles.saveButton, (!isDirty || saving) && styles.saveButtonDisabled]}
+            onPress={handleSave}
+            disabled={!isDirty || saving}
+            activeOpacity={0.85}
+          >
+            {saving
+              ? <ActivityIndicator color={colors.white} />
+              : <Text style={styles.saveButtonText}>Guardar cambios</Text>}
           </TouchableOpacity>
         </View>
-        <Text style={styles.title}>Editar Perfil</Text>
-      </View>
-      <View style={styles.formContainer}>
-        <Text style={styles.label}>Nombre de Usuario</Text>
-        <TextInput
-          style={styles.input}
-          value={username}
-          onChangeText={setUsername}
-          placeholder="Nombre de Usuario"
-        />
-        <Text style={styles.label}>Nombre Completo</Text>
-        <TextInput
-          style={styles.input}
-          value={fullName}
-          onChangeText={setFullName}
-          placeholder="Nombre Completo"
-        />
-        <Text style={styles.label}>Biografía</Text>
-        <TextInput
-          style={[styles.input, styles.bioInput]}
-          value={bio}
-          onChangeText={setBio}
-          multiline
-          placeholder="Biografía"
-        />
-      </View>
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Guardar Cambios</Text>
-      </TouchableOpacity>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
+const makeStyles = (colors: AppColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.surface },
+  scroll: { padding: spacing.md, paddingBottom: spacing.xl },
+
+  avatarSection: { alignItems: 'center', paddingVertical: spacing.lg, gap: spacing.sm },
+  avatarWrapper: { position: 'relative' },
+  avatar: {
+    width: 96, height: 96, borderRadius: 48,
+    backgroundColor: colors.primary,
+    justifyContent: 'center', alignItems: 'center',
+    ...shadows.md,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 30,
+  avatarText: { fontSize: 34, fontWeight: '700', color: colors.white },
+  cameraBtn: {
+    position: 'absolute', right: -2, bottom: -2,
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: colors.primary,
+    borderWidth: 3, borderColor: colors.surface,
+    justifyContent: 'center', alignItems: 'center',
   },
-  avatarContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  email: { fontSize: 13, color: colors.textSecondary },
+
+  formCard: {
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    borderWidth: 1, borderColor: colors.border,
+    padding: spacing.md,
+    ...shadows.sm,
   },
-  avatarCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#007bff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
+  fieldLabel: { fontSize: 12, fontWeight: '600', color: colors.textSecondary, marginBottom: 6 },
+  inputWrapper: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    borderWidth: 1, borderColor: colors.border,
+    paddingHorizontal: spacing.sm,
   },
-  avatarText: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  editIcon: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#ffffff',
-    borderRadius: 15,
-    padding: 5,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginLeft: 10,
-  },
-  formContainer: {
-    marginBottom: 30,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333333',
-    marginBottom: 10,
-  },
+  inputIcon: { marginRight: 8 },
   input: {
-    borderWidth: 1,
-    borderColor: '#cccccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    fontSize: 16,
-    color: '#333333',
+    flex: 1, fontSize: 15, color: colors.text,
+    paddingVertical: 12,
   },
-  bioInput: {
-    height: 100,
-    textAlignVertical: 'top',
+  divider: { height: spacing.md },
+
+  infoNote: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: spacing.xs, paddingTop: spacing.md,
+  },
+  infoNoteText: { fontSize: 12, color: colors.textLight, flex: 1 },
+
+  footer: {
+    padding: spacing.md,
+    borderTopWidth: 1, borderTopColor: colors.borderLight,
+    backgroundColor: colors.surface,
   },
   saveButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: colors.primary,
+    borderRadius: radius.full,
     paddingVertical: 15,
-    borderRadius: 5,
     alignItems: 'center',
   },
-  saveButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
+  saveButtonDisabled: { backgroundColor: colors.gray300 },
+  saveButtonText: { fontSize: 16, fontWeight: '700', color: colors.white },
 });
 
-export default EditProfile;
+export default ProfileEdit;

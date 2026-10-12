@@ -90,7 +90,7 @@ const SectionView = ({ navigation, route }: { navigation: any; route: any }) => 
         )}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyEmoji}>🍽️</Text>
+            <Icon name="restaurant-outline" size={48} color={colors.gray300} />
             <Text style={styles.emptyText}>Sin platillos disponibles</Text>
           </View>
         }
@@ -155,7 +155,6 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
   cardPrice: { fontSize: 14, fontWeight: '700', color: colors.primary },
 
   empty: { alignItems: 'center', paddingTop: 80, gap: spacing.md },
-  emptyEmoji: { fontSize: 48 },
   emptyText: { fontSize: 16, color: colors.textSecondary },
 });
 

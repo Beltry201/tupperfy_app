@@ -9,14 +9,14 @@ import { useApp, CartItem } from '../../context/AppContext';
 import { getDishImage } from '../../utils/images';
 
 const SIDES = [
-  { id: 1, title: 'Ensalada', emoji: '🥗' },
-  { id: 2, title: 'Refresco', emoji: '🥤' },
-  { id: 3, title: 'Pan', emoji: '🍞' },
-  { id: 4, title: 'Jugo', emoji: '🍊' },
-  { id: 5, title: 'Postre', emoji: '🍰' },
-  { id: 6, title: 'Sopa', emoji: '🍜' },
-  { id: 7, title: 'Fruta', emoji: '🍓' },
-  { id: 8, title: 'Café', emoji: '☕' },
+  { id: 'side-1', dish: 'Ensalada', person: 'Tupperfy', price: '$25', rating: '4.6', time: '5 min', category: 'acompañamiento' },
+  { id: 'side-2', dish: 'Refresco', person: 'Tupperfy', price: '$15', rating: '4.7', time: '2 min', category: 'acompañamiento' },
+  { id: 'side-3', dish: 'Pan',      person: 'Tupperfy', price: '$12', rating: '4.5', time: '2 min', category: 'acompañamiento' },
+  { id: 'side-4', dish: 'Jugo',     person: 'Tupperfy', price: '$18', rating: '4.8', time: '3 min', category: 'acompañamiento' },
+  { id: 'side-5', dish: 'Postre',   person: 'Tupperfy', price: '$22', rating: '4.9', time: '3 min', category: 'acompañamiento' },
+  { id: 'side-6', dish: 'Sopa',     person: 'Tupperfy', price: '$20', rating: '4.6', time: '5 min', category: 'acompañamiento' },
+  { id: 'side-7', dish: 'Fruta',    person: 'Tupperfy', price: '$16', rating: '4.7', time: '2 min', category: 'acompañamiento' },
+  { id: 'side-8', dish: 'Café',     person: 'Tupperfy', price: '$14', rating: '4.8', time: '3 min', category: 'acompañamiento' },
 ];
 
 const CartItemRow = ({
@@ -65,7 +65,7 @@ const CartItemRow = ({
 };
 
 const CartView = () => {
-  const { colors, isDark, cartItems, removeFromCart, updateCartQuantity, clearCart } = useApp();
+  const { colors, isDark, cartItems, addToCart, removeFromCart, updateCartQuantity, clearCart } = useApp();
   const navigation = useNavigation<any>();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
@@ -144,14 +144,31 @@ const CartView = () => {
           <Text style={styles.sidesTitle}>Acompaña tu orden</Text>
           <Text style={styles.sidesSubtitle}>Agrega algo más a tu pedido</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sidesRow}>
-            {SIDES.map((side) => (
-              <TouchableOpacity key={side.id} style={styles.sideCard} activeOpacity={0.8}>
-                <View style={styles.sideImageBox}>
-                  <Text style={styles.sideEmoji}>{side.emoji}</Text>
-                </View>
-                <Text style={styles.sideLabel}>{side.title}</Text>
-              </TouchableOpacity>
-            ))}
+            {SIDES.map((side) => {
+              const inCart = cartItems.find(ci => ci.item.id === side.id);
+              return (
+                <TouchableOpacity
+                  key={side.id}
+                  style={styles.sideCard}
+                  activeOpacity={0.8}
+                  onPress={() => addToCart(side, 1)}
+                >
+                  <View style={styles.sideImageBox}>
+                    <Image source={getDishImage(side.dish)} style={styles.sideImage} resizeMode="cover" />
+                    <View style={styles.sideAddBadge}>
+                      <Icon name={inCart ? 'checkmark' : 'add'} size={13} color="#FFFFFF" />
+                    </View>
+                    {inCart && inCart.quantity > 1 && (
+                      <View style={styles.sideQtyBadge}>
+                        <Text style={styles.sideQtyBadgeText}>{inCart.quantity}</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={styles.sideLabel} numberOfLines={1}>{side.dish}</Text>
+                  <Text style={styles.sidePrice}>{side.price}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
 
@@ -175,7 +192,7 @@ const CartView = () => {
           </View>
           <View style={styles.divider} />
           <View style={styles.summaryRow}>
-            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.totalLabel}>Subtotal</Text>
             <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
           </View>
         </View>
@@ -266,14 +283,28 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
   sidesTitle: { ...typography.h4, color: colors.text, marginBottom: 2 },
   sidesSubtitle: { ...typography.bodySmall, color: colors.textSecondary, marginBottom: spacing.md },
   sidesRow: { gap: spacing.sm },
-  sideCard: { alignItems: 'center', width: 72 },
+  sideCard: { alignItems: 'center', width: 76 },
   sideImageBox: {
-    width: 60, height: 60, borderRadius: radius.md,
-    backgroundColor: colors.primaryLight, justifyContent: 'center', alignItems: 'center',
+    width: 64, height: 64, borderRadius: radius.md,
+    backgroundColor: colors.primaryLight, overflow: 'visible',
     marginBottom: 6, borderWidth: 1, borderColor: colors.border,
   },
-  sideEmoji: { fontSize: 28 },
+  sideImage: { width: '100%', height: '100%', borderRadius: radius.md },
+  sideAddBadge: {
+    position: 'absolute', right: -6, bottom: -6,
+    width: 22, height: 22, borderRadius: 11,
+    backgroundColor: colors.primary, borderWidth: 2, borderColor: colors.card,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  sideQtyBadge: {
+    position: 'absolute', top: -6, right: -6,
+    minWidth: 18, height: 18, borderRadius: 9, paddingHorizontal: 4,
+    backgroundColor: colors.danger, borderWidth: 2, borderColor: colors.card,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  sideQtyBadgeText: { fontSize: 10, fontWeight: '700', color: '#FFFFFF' },
   sideLabel: { fontSize: 11, fontWeight: '600', color: colors.textSecondary, textAlign: 'center' },
+  sidePrice: { fontSize: 11, fontWeight: '700', color: colors.primary, marginTop: 1 },
 
   summaryCard: {
     backgroundColor: colors.card, borderRadius: radius.lg, padding: spacing.md,

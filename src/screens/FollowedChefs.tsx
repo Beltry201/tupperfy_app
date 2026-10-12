@@ -1,107 +1,183 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import {
+  View, Text, FlatList, TouchableOpacity, TextInput,
+  StyleSheet, SafeAreaView, StatusBar,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { spacing, radius, shadows, AppColors } from '../theme';
+import { useApp } from '../context/AppContext';
+
+type Chef = {
+  id: string; name: string; specialty: string;
+  rating: number; dishes: number; followers: string;
+};
+
+const CHEFS: Chef[] = [
+  { id: '1',  name: 'Chef María García',    specialty: 'Cocina Mexicana',   rating: 4.8, dishes: 24, followers: '1.2k' },
+  { id: '2',  name: 'Chef Juan Martínez',   specialty: 'Comida Italiana',   rating: 4.5, dishes: 18, followers: '890'  },
+  { id: '3',  name: 'Chef Ana López',       specialty: 'Cocina Asiática',   rating: 4.9, dishes: 32, followers: '3.4k' },
+  { id: '4',  name: 'Chef Pedro Sánchez',   specialty: 'BBQ & Parrilla',    rating: 4.3, dishes: 15, followers: '670'  },
+  { id: '5',  name: 'Chef Laura Ramírez',   specialty: 'Repostería',        rating: 4.7, dishes: 29, followers: '2.1k' },
+  { id: '6',  name: 'Chef Carlos Díaz',     specialty: 'Cocina Española',   rating: 4.6, dishes: 21, followers: '1.5k' },
+  { id: '7',  name: 'Chef Sofía Herrera',   specialty: 'Comida Vegana',     rating: 4.8, dishes: 27, followers: '980'  },
+  { id: '8',  name: 'Chef Roberto Flores',  specialty: 'Mariscos',          rating: 4.4, dishes: 19, followers: '740'  },
+];
+
+const AVATAR_COLORS = ['#006BFF', '#10B981', '#8B5CF6', '#F59E0B', '#EF4444', '#06B6D4', '#EC4899', '#84CC16'];
+
+const getInitials = (name: string) =>
+  name.replace('Chef ', '').split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
 
 const FollowedChefs = () => {
-  // Datos de ejemplo de followers
-  const followersData = [
-    { id: '1', username: 'user1', name: 'Usuario 1' },
-    { id: '2', username: 'user2', name: 'Usuario 2' },
-    { id: '3', username: 'user3', name: 'Usuario 3' },
-    { id: '4', username: 'user4', name: 'Usuario 4' },
-    { id: '5', username: 'user5', name: 'Usuario 5' },
-    { id: '6', username: 'user6', name: 'Usuario 6' },
-    { id: '7', username: 'user7', name: 'Usuario 7' },
-    { id: '8', username: 'user8', name: 'Usuario 8' },
-    { id: '9', username: 'user9', name: 'Usuario 9' },
-    { id: '10', username: 'user10', name: 'Usuario 10' },
-    { id: '11', username: 'user11', name: 'Usuario 11' },
-    { id: '12', username: 'user12', name: 'Usuario 12' },
-    { id: '13', username: 'user13', name: 'Usuario 13' },
-    { id: '14', username: 'user14', name: 'Usuario 14' },
-    { id: '15', username: 'user15', name: 'Usuario 15' },
-    { id: '16', username: 'user16', name: 'Usuario 16' },
-    { id: '17', username: 'user17', name: 'Usuario 17' },
-    { id: '18', username: 'user18', name: 'Usuario 18' },
-    { id: '19', username: 'user19', name: 'Usuario 19' },
-    { id: '20', username: 'user20', name: 'Usuario 20' },
-    { id: '21', username: 'user21', name: 'Usuario 21' },
-    { id: '22', username: 'user22', name: 'Usuario 22' },
-    { id: '23', username: 'user23', name: 'Usuario 23' },
-    { id: '24', username: 'user24', name: 'Usuario 24' },
-    { id: '25', username: 'user25', name: 'Usuario 25' },
-  ];
+  const { colors, isDark } = useApp();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const [followed, setFollowed] = useState<Set<string>>(new Set(CHEFS.map(c => c.id)));
+  const [query, setQuery] = useState('');
 
-  // Renderizado de cada item de la lista de followers
-  const renderFollowerItem = ({ item }) => (
-    <TouchableOpacity style={styles.followerItem}>
-      <View style={styles.avatarCircle} />
-      <View style={styles.textContainer}>
-        <Text style={styles.username}>{item.username}</Text>
-        <Text style={styles.name}>{item.name}</Text>
+  const toggleFollow = (id: string) =>
+    setFollowed(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const filteredChefs = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return CHEFS;
+    return CHEFS.filter(c =>
+      c.name.toLowerCase().includes(q) || c.specialty.toLowerCase().includes(q));
+  }, [query]);
+
+  const renderItem = ({ item, index }: { item: Chef; index: number }) => {
+    const isFollowing = followed.has(item.id);
+    return (
+      <View style={styles.card}>
+        <View style={[styles.avatar, { backgroundColor: AVATAR_COLORS[index % AVATAR_COLORS.length] }]}>
+          <Text style={styles.avatarText}>{getInitials(item.name)}</Text>
+        </View>
+
+        <View style={styles.info}>
+          <Text style={styles.name}>{item.name}</Text>
+          <View style={styles.tagRow}>
+            <Icon name="restaurant-outline" size={12} color={colors.primary} />
+            <Text style={styles.specialty}>{item.specialty}</Text>
+          </View>
+          <View style={styles.statsRow}>
+            <Icon name="star" size={12} color={colors.star} />
+            <Text style={styles.stat}>{item.rating}</Text>
+            <Text style={styles.statSep}>·</Text>
+            <Text style={styles.stat}>{item.dishes} platillos</Text>
+            <Text style={styles.statSep}>·</Text>
+            <Text style={styles.stat}>{item.followers} seguidores</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.followBtn, isFollowing && styles.followBtnActive]}
+          onPress={() => toggleFollow(item.id)}
+          activeOpacity={0.8}
+        >
+          <Text style={[styles.followBtnText, isFollowing && styles.followBtnTextActive]}>
+            {isFollowing ? 'Siguiendo' : 'Seguir'}
+          </Text>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
-  );
+    );
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Followed Chefs</Text>
-      </View>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.surface} />
       <FlatList
-        data={followersData}
-        renderItem={renderFollowerItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
+        data={filteredChefs}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListHeaderComponent={
+          <View style={styles.listHeader}>
+            <View style={styles.searchBar}>
+              <Icon name="search-outline" size={16} color={colors.textLight} />
+              <TextInput
+                style={styles.searchInput}
+                value={query}
+                onChangeText={setQuery}
+                placeholder="Buscar chef o especialidad"
+                placeholderTextColor={colors.textLight}
+                returnKeyType="search"
+              />
+              {query.length > 0 && (
+                <TouchableOpacity onPress={() => setQuery('')}>
+                  <Icon name="close-circle" size={16} color={colors.textLight} />
+                </TouchableOpacity>
+              )}
+            </View>
+            <Text style={styles.listHeaderCount}>{followed.size} chefs seguidos</Text>
+          </View>
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <Icon name="search-outline" size={48} color={colors.gray300} />
+            <Text style={styles.emptyTitle}>Sin resultados</Text>
+            <Text style={styles.emptySub}>No encontramos chefs para "{query}"</Text>
+          </View>
+        }
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFF',
+const makeStyles = (colors: AppColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.surface },
+  list: { padding: spacing.md, paddingTop: 0, flexGrow: 1 },
+  listHeader: { paddingVertical: spacing.md, gap: spacing.sm },
+  searchBar: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    borderWidth: 1, borderColor: colors.border,
+    paddingHorizontal: spacing.sm, paddingVertical: 10,
   },
-  header: {
-    backgroundColor: '#FAFAFA',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ECECEC',
-    alignItems: 'center',
+  searchInput: { flex: 1, fontSize: 14, color: colors.text, padding: 0 },
+  listHeaderCount: { fontSize: 13, color: colors.textSecondary, fontWeight: '600' },
+
+  emptyState: { alignItems: 'center', paddingTop: 60, gap: spacing.sm },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: colors.gray400 },
+  emptySub: { fontSize: 13, color: colors.textLight, textAlign: 'center' },
+
+  card: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    borderWidth: 1, borderColor: colors.border,
+    gap: spacing.md, ...shadows.sm,
   },
-  headerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+  avatar: {
+    width: 52, height: 52, borderRadius: 26,
+    justifyContent: 'center', alignItems: 'center',
   },
-  listContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+  avatarText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+
+  info: { flex: 1, gap: 4 },
+  name: { fontSize: 14, fontWeight: '700', color: colors.text },
+  tagRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  specialty: { fontSize: 12, color: colors.primary, fontWeight: '500' },
+  statsRow: { flexDirection: 'row', alignItems: 'center', gap: 4, flexWrap: 'wrap' },
+  stat: { fontSize: 11, color: colors.textSecondary },
+  statSep: { fontSize: 11, color: colors.gray300 },
+
+  followBtn: {
+    paddingHorizontal: 14, paddingVertical: 7,
+    borderRadius: radius.full,
+    borderWidth: 1.5, borderColor: colors.primary,
   },
-  followerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  avatarCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#007BFF', // Color azul
-  },
-  textContainer: {
-    marginLeft: 15,
-  },
-  username: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  name: {
-    fontSize: 14,
-    color: '#666',
-  },
+  followBtnActive: { backgroundColor: colors.primary },
+  followBtnText: { fontSize: 13, fontWeight: '700', color: colors.primary },
+  followBtnTextActive: { color: '#FFFFFF' },
+
+  separator: { height: spacing.sm },
 });
 
 export default FollowedChefs;

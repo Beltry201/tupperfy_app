@@ -80,6 +80,22 @@ const DISH_IMAGES: Record<string, string> = {
     'https://images.unsplash.com/photo-1562802378-063ec186a863?w=500&q=80',
   Tamales:
     'https://images.unsplash.com/photo-1620489955668-1d8b8c03eafa?w=500&q=80',
+
+  // ── Acompañamientos (carrito) ────────────────────────────────────────────
+  Refresco:
+    'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=500&q=80',
+  Pan:
+    'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&q=80',
+  Café:
+    'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500&q=80',
+  Postre:
+    'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80',
+  Sopa:
+    'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=500&q=80',
+  Fruta:
+    'https://images.unsplash.com/photo-1490885578174-acda8905c2c6?w=500&q=80',
+  Jugo:
+    'https://images.unsplash.com/photo-1621506289937-a8e0df240bf2?w=500&q=80',
 };
 
 const DEFAULT_IMAGE =

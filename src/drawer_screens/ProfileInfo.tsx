@@ -1,297 +1,274 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import IoniconsIcon from 'react-native-vector-icons/Ionicons';
-import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
-import MaterialCommunityIconsIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import React, { useMemo } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, SafeAreaView, StatusBar } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { spacing, radius, shadows, AppColors } from '../theme';
+import { useApp } from '../context/AppContext';
 
-const ProfileInfo = ({ navigation, userName }) => {
-  const navigateToScreen = (screenName) => {
-    navigation.navigate(screenName);
-  };
+const MenuItem = ({ item, onPress }: { item: any; onPress: () => void }) => {
+  const { colors } = useApp();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  return (
+    <TouchableOpacity style={styles.menuItem} onPress={onPress} activeOpacity={0.7}>
+      <View style={[styles.menuIcon, { backgroundColor: item.iconBg }]}>
+        <Icon name={item.icon} size={20} color={item.iconColor} />
+      </View>
+      <Text style={styles.menuLabel}>{item.label}</Text>
+      {item.badge && (
+        <View style={styles.badge}>
+          {item.badge === 'star'
+            ? <Icon name="star" size={11} color={colors.white} />
+            : <Text style={styles.badgeText}>{item.badge}</Text>}
+        </View>
+      )}
+      <Icon name="chevron-forward" size={18} color={colors.gray300} />
+    </TouchableOpacity>
+  );
+};
 
+const ProfileInfo = ({ navigation }: { navigation: any }) => {
+  const { colors, isDark } = useApp();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const SECTIONS = [
+    {
+      title: 'Mi cuenta',
+      items: [
+        { label: 'Datos de perfil', icon: 'person-outline', screen: 'ProfileData', iconBg: '#EBF3FF', iconColor: colors.primary },
+        { label: 'Mensajes', icon: 'chatbubble-outline', screen: 'MessagesScreen', iconBg: '#F0FDF4', iconColor: colors.success, badge: '3' },
+        { label: 'Chefs favoritos', icon: 'heart-outline', screen: 'FavoriteChefs', iconBg: '#FFF1F2', iconColor: '#E11D48' },
+        { label: 'Asistente IA', icon: 'sparkles-outline', screen: 'AIChatScreen', iconBg: '#F3E8FF', iconColor: '#7C3AED' },
+      ],
+    },
+    {
+      title: 'Finanzas',
+      items: [
+        { label: 'Métodos de pago', icon: 'card-outline', screen: 'PaymentSelection', iconBg: '#F0FDF4', iconColor: colors.success },
+        { label: 'Mis direcciones', icon: 'location-outline', screen: 'UserAddresses', iconBg: '#FEF3C7', iconColor: '#D97706' },
+        { label: 'Tupperfy Premium', icon: 'star-outline', screen: 'TupperfyPremium', iconBg: '#FFF7ED', iconColor: '#EA580C', badge: 'star' },
+      ],
+    },
+    {
+      title: 'Promociones',
+      items: [
+        { label: 'Refiere amigos', icon: 'share-social-outline', screen: 'ReferFriends', iconBg: '#EBF3FF', iconColor: colors.primary },
+        { label: 'Códigos de promoción', icon: 'gift-outline', screen: 'PromotionCodes', iconBg: '#FFF1F2', iconColor: '#E11D48' },
+      ],
+    },
+    {
+      title: 'Información',
+      items: [
+        { label: 'Configuración', icon: 'settings-outline', screen: 'SettingsScreen', iconBg: colors.surface, iconColor: colors.gray500 },
+        { label: 'Ayuda', icon: 'help-circle-outline', screen: 'HelpScreen', iconBg: colors.surface, iconColor: colors.gray500 },
+        { label: 'Trabaja con nosotros', icon: 'briefcase-outline', screen: 'WorkWithUs', iconBg: '#F0FDF4', iconColor: colors.success },
+      ],
+    },
+  ];
   const handleLogout = () => {
     Alert.alert(
-      'Cerrar Sesión',
+      'Cerrar sesión',
       '¿Estás seguro que deseas cerrar sesión?',
       [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Aceptar',
-          onPress: () => {
-            // Aquí puedes agregar la lógica para cerrar sesión
-            // Por ejemplo, navegar a la pantalla de inicio de sesión
-            navigation.navigate('SignIn'); // Reemplaza 'Login' con el nombre de tu pantalla de inicio de sesión
-          },
-          style: 'destructive',
-        },
-      ],
-      { cancelable: false }
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cerrar sesión', onPress: () => navigation.navigate('SignIn'), style: 'destructive' },
+      ]
     );
   };
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      'Eliminar Cuenta',
-      '¿Estás seguro que deseas eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.',
+      'Eliminar cuenta',
+      'Esta acción es permanente e irreversible. ¿Deseas continuar?',
       [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Eliminar',
-          onPress: () => {
-            // Aquí puedes agregar la lógica para eliminar la cuenta
-            // Por ejemplo, mostrar un mensaje de confirmación y luego navegar a la pantalla de inicio
-            navigation.navigate('SignIn'); // Reemplaza 'Login' con el nombre de tu pantalla de inicio de sesión
-          },
-          style: 'destructive',
-        },
-      ],
-      { cancelable: false }
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Eliminar', onPress: () => navigation.navigate('SignIn'), style: 'destructive' },
+      ]
     );
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {/* ¡Hola (nombre de usuario)! */}
-      <Text style={styles.greeting}>¡Hola {userName}!</Text>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
+      <ScrollView showsVerticalScrollIndicator={false}>
 
-      {/* Título "Mi cuenta" */}
-      <Text style={styles.title}>Mi cuenta</Text>
+        {/* User card */}
+        <View style={styles.userCard}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>D</Text>
+          </View>
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>Diego Arria</Text>
+            <Text style={styles.userEmail}>diego.arria19@gmail.com</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.editBtn}
+            onPress={() => navigation.navigate('ProfileData')}
+          >
+            <Icon name="create-outline" size={20} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
 
-      {/* Datos de perfil */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('ProfileData')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="person" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Datos de Perfil</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
+        {/* Premium banner */}
+        <TouchableOpacity
+          style={styles.premiumBanner}
+          onPress={() => navigation.navigate('TupperfyPremium')}
+          activeOpacity={0.85}
+        >
+          <View style={styles.premiumLeft}>
+            <View style={styles.premiumIconBox}>
+              <Icon name="star" size={18} color="#EA580C" />
+            </View>
+            <View>
+              <Text style={styles.premiumTitle}>Activa Tupperfy Premium</Text>
+              <Text style={styles.premiumSub}>30 días gratis · Cancela cuando quieras</Text>
+            </View>
+          </View>
+          <Icon name="chevron-forward" size={18} color="#EA580C" />
+        </TouchableOpacity>
+
+        {/* Sections */}
+        {SECTIONS.map((section) => (
+          <View key={section.title} style={styles.section}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            <View style={styles.sectionCard}>
+              {section.items.map((item, i) => (
+                <View key={item.label}>
+                  <MenuItem item={item} onPress={() => navigation.navigate(item.screen)} />
+                  {i < section.items.length - 1 && <View style={styles.separator} />}
+                </View>
+              ))}
+            </View>
+          </View>
+        ))}
+
+        {/* Danger zone */}
+        <View style={styles.section}>
+          <View style={styles.sectionCard}>
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogout} activeOpacity={0.7}>
+              <View style={[styles.menuIcon, { backgroundColor: '#FFF1F2' }]}>
+                <Icon name="log-out-outline" size={20} color={colors.danger} />
+              </View>
+              <Text style={[styles.menuLabel, { color: colors.danger }]}>Cerrar sesión</Text>
+              <Icon name="chevron-forward" size={18} color={colors.danger} style={{ marginLeft: 'auto' }} />
+            </TouchableOpacity>
+            <View style={styles.separator} />
+            <TouchableOpacity style={styles.menuItem} onPress={handleDeleteAccount} activeOpacity={0.7}>
+              <View style={[styles.menuIcon, { backgroundColor: '#FFF1F2' }]}>
+                <Icon name="trash-outline" size={20} color={colors.danger} />
+              </View>
+              <Text style={[styles.menuLabel, { color: colors.danger }]}>Eliminar cuenta</Text>
+              <Icon name="chevron-forward" size={18} color={colors.danger} style={{ marginLeft: 'auto' }} />
+            </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
 
-      {/* Mensajes */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('MessagesScreen')}>
-        <View style={styles.optionContent}>
-          <MaterialCommunityIconsIcon name="message" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Mensajes</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Cocineros Favoritos */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('FavoriteChefs')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="heart" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Cocineros Favoritos</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Tupperfy Premium */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('TupperfyPremium')}>
-        <View style={styles.optionContent}>
-          <FontAwesome6Icon name="crown" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Tupperfy Premium</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Métodos de Pago */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('PaymentSelection')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="wallet" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Métodos de Pago</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Direcciones */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('UserAddresses')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="location" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Direcciones</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Título "Promociones" */}
-      <Text style={styles.subtitle}>Promociones</Text>
-
-      {/* Refiere amigos */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('ReferFriends')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="share" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Refiere amigos</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Códigos de promoción o regalo */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('PromotionCodes')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="gift" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Códigos de promoción</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Título "Información" */}
-      <Text style={styles.subtitle}>Información</Text>
-
-      {/* Configuración */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('SettingsScreen')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="settings" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Configuración</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Ayuda */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('HelpScreen')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="help-circle" size={22} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Ayuda</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Términos y Condiciones */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('TermsConditions')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="document-text" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Términos y Condiciones</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Legal */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('Legal')}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="book" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Legal</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Otros */}
-      <Text style={styles.subtitle}>Otros</Text>
-
-      {/* Trabaja con nosotros */}
-      <TouchableOpacity style={styles.option} onPress={() => navigateToScreen('WorkWithUs')}>
-        <View style={styles.optionContent}>
-          <FontAwesome5Icon name="briefcase" size={20} color="#333" style={styles.icon} />
-          <Text style={styles.optionText}>Trabaja con nosotros</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#333" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Cerrar Sesión */}
-      <TouchableOpacity style={[styles.option, { marginTop: 40 }]} onPress={handleLogout}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="log-out" size={20} color="#FF4500" style={styles.icon} />
-          <Text style={[styles.optionText, { color: '#FF4500' }]}>Cerrar sesión</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#FF4500" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-
-      {/* Eliminar Cuenta */}
-      <TouchableOpacity style={[styles.option, { marginBottom: 40 }]} onPress={handleDeleteAccount}>
-        <View style={styles.optionContent}>
-          <IoniconsIcon name="trash" size={20} color="#FF4500" style={styles.icon} />
-          <Text style={[styles.optionText, { color: '#FF4500' }]}>Eliminar Cuenta</Text>
-          <View style={styles.arrowContainer}>
-            <IoniconsIcon name="chevron-forward" size={20} color="#FF4500" style={styles.arrowIcon} />
-          </View>
-        </View>
-      </TouchableOpacity>
-    </ScrollView>
+        <Text style={styles.version}>Tupperfy v1.0.0</Text>
+        <View style={{ height: spacing.xl }} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 15,
-    paddingVertical: 20,
-  },
-  greeting: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 60,
-    color: '#333',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    marginTop: 20,
-    color: '#333',
-  },
-  option: {
+const makeStyles = (colors: AppColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.surface },
+  userCard: {
     flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.card,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: spacing.md,
+    ...shadows.sm,
+  },
+  avatar: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: { color: colors.white, fontSize: 22, fontWeight: '700' },
+  userInfo: { flex: 1 },
+  userName: { fontSize: 17, fontWeight: '700', color: colors.text, marginBottom: 2 },
+  userEmail: { fontSize: 13, color: colors.textSecondary },
+  editBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.sm,
+    backgroundColor: colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  premiumBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
+    backgroundColor: '#FFF7ED',
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: '#FED7AA',
   },
-  optionContent: {
+  premiumLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  premiumIconBox: {
+    width: 36, height: 36, borderRadius: radius.md,
+    backgroundColor: 'rgba(234,88,12,0.12)', justifyContent: 'center', alignItems: 'center',
+  },
+  premiumTitle: { fontSize: 14, fontWeight: '700', color: '#92400E', marginBottom: 2 },
+  premiumSub: { fontSize: 12, color: '#B45309' },
+  section: { marginTop: spacing.md, paddingHorizontal: spacing.md },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.textLight,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: spacing.xs,
+    marginLeft: spacing.xs,
+  },
+  sectionCard: {
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+    ...shadows.sm,
+  },
+  menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 13,
+    gap: spacing.md,
   },
-  optionText: {
-    fontSize: 16,
-    color: '#333',
+  menuIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  icon: {
-    marginRight: 10,
+  menuLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: colors.text },
+  badge: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.full,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    marginRight: spacing.xs,
   },
-  arrowContainer: {
-    flex: 1,
-    alignItems: 'flex-end',
+  badgeText: { color: colors.white, fontSize: 11, fontWeight: '700' },
+  separator: { height: 1, backgroundColor: colors.borderLight, marginLeft: 68 },
+  version: {
+    textAlign: 'center',
+    fontSize: 12,
+    color: colors.textLight,
+    marginTop: spacing.lg,
   },
-  arrowIcon: {},
 });
 
 export default ProfileInfo;

@@ -45,3 +45,17 @@ export async function getProfile(userId: string) {
   if (error) throw error;
   return data;
 }
+
+export async function updateProfile(
+  userId: string,
+  updates: { full_name?: string; phone?: string | null },
+) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', userId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}

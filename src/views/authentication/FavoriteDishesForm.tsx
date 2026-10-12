@@ -1,178 +1,190 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, KeyboardAvoidingView, Platform } from "react-native";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
+import React, { useState, useMemo } from 'react';
+import {
+  View, Text, StyleSheet, TouchableOpacity, ScrollView,
+  TextInput, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { spacing, radius, shadows, AppColors } from '../../theme';
+import { useApp } from '../../context/AppContext';
 
-type DishesState = {
-  [key: string]: boolean;
-};
-
-const dishNames = [
-  "Milanesa de Pollo",
-  "Carne Asada",
-  "Enchiladas",
-  "Tacos",
-  "Chiles Rellenos",
-  "Pozole",
-  "Tamales",
-  "Quesadillas",
-  "Sopes",
-  "Pasta",
-  "Pizza Margarita",
-  "Sushi de Salmón",
-  "Enchiladas de Pollo",
-  "Hamburguesa con Queso",
-  "Pasta Alfredo",
-  "Paella",
-  "Tacos de Carne Asada",
-  "Curry de Pollo",
-  "Lasaña",
-  "Filete de Salmón al Horno",
-  "Pollo a la Parrilla",
-  "Risotto de Champiñones",
-  "Tostadas de Aguacate",
-  "Sopa de Tomate",
-  "Pad Thai",
-  "Pescado a la Parrilla con Verduras",
-  "Canelones de Carne",
-  "Fajitas de Carne de Res",
-  "Pollo al Curry con Arroz",
-  "Burritos de Frijoles y Queso",
-  "Tarta de Queso",
-  "Bistec con Puré de Papas",
-  "Sopa de Lentejas",
-  "Pollo al Horno con Papas",
-  "Hot Dogs",
-  "Espagueti a la Boloñesa",
-  "Tacos de Pescado",
-  "Estofado de Carne",
-  "Quiche de Espinacas y Queso",
-  "Arroz Frito con Verduras y Pollo",
+const DISHES = [
+  { name: 'Milanesa de Pollo',        icon: 'food-drumstick-outline' },
+  { name: 'Carne Asada',              icon: 'food-steak' },
+  { name: 'Enchiladas',               icon: 'taco' },
+  { name: 'Tacos',                    icon: 'taco' },
+  { name: 'Chiles Rellenos',          icon: 'chili-hot' },
+  { name: 'Pozole',                   icon: 'bowl-mix' },
+  { name: 'Tamales',                  icon: 'food-variant' },
+  { name: 'Quesadillas',              icon: 'cheese' },
+  { name: 'Sopes',                    icon: 'bread-slice-outline' },
+  { name: 'Pasta',                    icon: 'pasta' },
+  { name: 'Pizza Margarita',          icon: 'pizza' },
+  { name: 'Sushi de Salmón',          icon: 'fish' },
+  { name: 'Hamburguesa con Queso',    icon: 'hamburger' },
+  { name: 'Pasta Alfredo',            icon: 'pasta' },
+  { name: 'Paella',                   icon: 'rice' },
+  { name: 'Curry de Pollo',           icon: 'pot-steam' },
+  { name: 'Lasaña',                   icon: 'pasta' },
+  { name: 'Filete de Salmón',         icon: 'fish' },
+  { name: 'Pollo a la Parrilla',      icon: 'food-drumstick-outline' },
+  { name: 'Risotto de Champiñones',   icon: 'mushroom' },
+  { name: 'Tostadas de Aguacate',     icon: 'bread-slice' },
+  { name: 'Sopa de Tomate',           icon: 'bowl-mix' },
+  { name: 'Pad Thai',                 icon: 'noodles' },
+  { name: 'Pescado a la Parrilla',    icon: 'fish' },
+  { name: 'Fajitas de Res',           icon: 'taco' },
+  { name: 'Burritos',                 icon: 'taco' },
+  { name: 'Tarta de Queso',           icon: 'cake-variant' },
+  { name: 'Bistec con Puré',          icon: 'food-steak' },
+  { name: 'Sopa de Lentejas',         icon: 'bowl-mix' },
+  { name: 'Espagueti Boloñesa',       icon: 'pasta' },
 ];
 
 const FavoriteDishesForm = ({ navigation }: { navigation: any }) => {
-  const initialState: DishesState = dishNames.reduce((acc, dish) => {
-    acc[dish] = false;
-    return acc;
-  }, {} as DishesState);
+  const { colors, isDark } = useApp();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState('');
 
-  const [dishes, setDishes] = useState<DishesState>(initialState);
-  const [searchText, setSearchText] = useState('');
+  const filtered = search.trim()
+    ? DISHES.filter(d => d.name.toLowerCase().includes(search.toLowerCase()))
+    : DISHES;
 
-  const changeDishState = (dish: string, isChecked: boolean) => {
-    setDishes((prevDishes) => ({ ...prevDishes, [dish]: isChecked }));
-  };
-
-  const filteredDishNames = dishNames.filter(dish => dish.toLowerCase().includes(searchText.toLowerCase()));
-
-  const handleContinue = () => { 
-    navigation.navigate('AddPaymentMethod');
-    const selectedDishes = Object.keys(dishes).filter((dish) => dishes[dish]);
-    console.log(selectedDishes);
-  };
+  const toggle = (name: string) =>
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(name) ? next.delete(name) : next.add(name);
+      return next;
+    });
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <Text style={styles.title}>Selecciona los platillos de tu gusto</Text>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search..."
-          onChangeText={setSearchText}
-          value={searchText}
-        />
-      </View>
-      <ScrollView contentContainerStyle={styles.checkboxContainer}>
-        {filteredDishNames.map((dish, index) => (
-          <BouncyCheckbox
-            key={index}
-            size={25}
-            fillColor="red"
-            unFillColor="#FFFFFF"
-            text={dish}
-            iconStyle={{ borderColor: "red" }}
-            innerIconStyle={{ borderWidth: 2 }}
-            textStyle={styles.checkboxText}
-            style={styles.checkbox}
-            onPress={(isChecked) => {
-              changeDishState(dish, isChecked);
-            }}
-          />
-        ))}
-      </ScrollView>
-      <TouchableOpacity style={styles.buttonContainer} onPress={handleContinue}>
-        <View style={styles.buttonBox}>
-          <Text style={styles.buttonText}>Continuar</Text>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+
+        <View style={styles.header}>
+          <Text style={styles.title}>¿Qué te gusta comer?</Text>
+          <Text style={styles.subtitle}>
+            Selecciona tus platillos favoritos para personalizar tu experiencia
+          </Text>
+          <View style={styles.searchRow}>
+            <Icon name="search-outline" size={17} color={colors.gray400} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Buscar platillo..."
+              placeholderTextColor={colors.textLight}
+              value={search}
+              onChangeText={setSearch}
+            />
+            {search.length > 0 && (
+              <TouchableOpacity onPress={() => setSearch('')}>
+                <Icon name="close-circle" size={17} color={colors.gray400} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.chipsWrap}
+          keyboardShouldPersistTaps="handled"
+        >
+          {filtered.map(dish => {
+            const active = selected.has(dish.name);
+            return (
+              <TouchableOpacity
+                key={dish.name}
+                style={[styles.chip, active && styles.chipActive]}
+                onPress={() => toggle(dish.name)}
+                activeOpacity={0.75}
+              >
+                <MaterialCommunityIcon
+                  name={dish.icon}
+                  size={15}
+                  color={active ? '#FFFFFF' : colors.textSecondary}
+                />
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                  {dish.name}
+                </Text>
+                {active && <Icon name="checkmark" size={14} color="#FFFFFF" />}
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        <View style={styles.bottomBar}>
+          {selected.size > 0 && (
+            <Text style={styles.selectedCount}>{selected.size} seleccionados</Text>
+          )}
+          <TouchableOpacity
+            style={[styles.btn, selected.size === 0 && styles.btnDisabled]}
+            onPress={() => navigation.navigate('AddPaymentMethod')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.btnText}>
+              {selected.size === 0 ? 'Omitir por ahora' : 'Continuar'}
+            </Text>
+            <Icon name="arrow-forward" size={18} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
+
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    padding: 20,
+const makeStyles = (colors: AppColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.surface },
+
+  header: {
+    backgroundColor: colors.card,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    gap: spacing.sm,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  title: { fontSize: 22, fontWeight: '700', color: colors.text },
+  subtitle: { fontSize: 14, color: colors.textSecondary, lineHeight: 20 },
+  searchRow: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md, borderWidth: 1.5, borderColor: colors.border,
+    paddingHorizontal: spacing.md, height: 44,
   },
-  searchContainer: {
-    width: '100%',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    borderRadius: 12,
+  searchInput: { flex: 1, fontSize: 15, color: colors.text, padding: 0 },
+
+  chipsWrap: {
+    flexDirection: 'row', flexWrap: 'wrap',
+    padding: spacing.md, gap: spacing.sm,
   },
-  searchInput: {
-    height: 40,
-    width: '100%',
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 15,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
+  chip: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: colors.card,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.md, paddingVertical: 9,
+    borderWidth: 1.5, borderColor: colors.border,
   },
-  checkboxContainer: {
-    flexGrow: 1,
-    width: '100%',
-    marginBottom: 20,
+  chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  chipText: { fontSize: 13, fontWeight: '500', color: colors.text },
+  chipTextActive: { color: '#FFFFFF', fontWeight: '600' },
+
+  bottomBar: {
+    paddingHorizontal: spacing.md, paddingVertical: spacing.md,
+    backgroundColor: colors.card,
+    borderTopWidth: 1, borderTopColor: colors.border,
+    gap: spacing.sm,
   },
-  checkbox: {
-    marginBottom: 10,
+  selectedCount: { fontSize: 13, color: colors.textSecondary, fontWeight: '600', textAlign: 'center' },
+  btn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: spacing.sm, backgroundColor: colors.primary,
+    borderRadius: radius.md, paddingVertical: 15, ...shadows.sm,
   },
-  checkboxText: {
-    textDecorationLine: 'none',
-  },
-  buttonContainer: {
-    width: '100%',
-    alignItems: 'flex-end',
-    paddingRight: 20,
-  },
-  buttonBox: {
-    backgroundColor: '#006BFF',
-    borderRadius: 18,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderColor: 'black',
-    borderWidth: 1.5,
-    shadowOpacity: 1.5,
-    shadowColor: 'gray',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
+  btnDisabled: { backgroundColor: colors.gray400 },
+  btnText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
 });
 
 export default FavoriteDishesForm;

@@ -6,82 +6,14 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { spacing, radius, shadows, AppColors } from '../theme';
 import { useApp } from '../context/AppContext';
 import { getDishImage } from '../utils/images';
-
-const CATEGORIES = [
-  { id: 'all',       label: 'Todo',       icon: '🍽️' },
-  { id: 'comidas',   label: 'Comidas',    icon: '🥘' },
-  { id: 'veganas',   label: 'Vegano',     icon: '🥗' },
-  { id: 'bebidas',   label: 'Bebidas',    icon: '🥤' },
-  { id: 'postres',   label: 'Postres',    icon: '🍰' },
-  { id: 'congelados',label: 'Congelados', icon: '❄️' },
-];
-
-const PEOPLE  = ['José', 'María', 'Pedro', 'Lucía', 'Carlos', 'Ana', 'Miguel', 'Laura'];
-const RATINGS = ['4.5', '4.7', '4.8', '4.9', '5.0'];
-const TIMES   = ['15 min', '20 min', '25 min', '30 min', '35 min'];
-
-// Each dish is linked to a category so filtering works out of the box
-const DISH_CATALOG = [
-  // comidas
-  { dish: 'Arepas',       category: 'comidas' },
-  { dish: 'Paella',       category: 'comidas' },
-  { dish: 'Sushi',        category: 'comidas' },
-  { dish: 'Pizza',        category: 'comidas' },
-  { dish: 'Hamburguesa',  category: 'comidas' },
-  { dish: 'Pasta',        category: 'comidas' },
-  { dish: 'Ramen',        category: 'comidas' },
-  { dish: 'Ceviche',      category: 'comidas' },
-  { dish: 'Empanadas',    category: 'comidas' },
-  { dish: 'Tacos',        category: 'comidas' },
-  // veganas
-  { dish: 'Ensalada Verde',     category: 'veganas' },
-  { dish: 'Bowl de Quinoa',     category: 'veganas' },
-  { dish: 'Tacos Veganos',      category: 'veganas' },
-  { dish: 'Curry de Garbanzos', category: 'veganas' },
-  { dish: 'Wrap Vegano',        category: 'veganas' },
-  // bebidas
-  { dish: 'Jugo Natural',   category: 'bebidas' },
-  { dish: 'Smoothie',       category: 'bebidas' },
-  { dish: 'Agua de Jamaica', category: 'bebidas' },
-  { dish: 'Limonada',       category: 'bebidas' },
-  { dish: 'Té Helado',      category: 'bebidas' },
-  // postres
-  { dish: 'Brownie',             category: 'postres' },
-  { dish: 'Helado Artesanal',    category: 'postres' },
-  { dish: 'Flan',                category: 'postres' },
-  { dish: 'Churros',             category: 'postres' },
-  { dish: 'Pastel de Chocolate', category: 'postres' },
-  // congelados
-  { dish: 'Lasaña Congelada', category: 'congelados' },
-  { dish: 'Pizza Congelada',  category: 'congelados' },
-  { dish: 'Burritos',         category: 'congelados' },
-  { dish: 'Nuggets',          category: 'congelados' },
-  { dish: 'Tamales',          category: 'congelados' },
-];
-
-const makeItems = (count: number, prefix: string, seed: number) =>
-  Array.from({ length: count }, (_, i) => {
-    const entry = DISH_CATALOG[(seed + i * 3) % DISH_CATALOG.length];
-    return {
-      id:       `${prefix}-${i}`,
-      person:   PEOPLE[(seed * 2 + i * 5) % PEOPLE.length],
-      dish:     entry.dish,
-      category: entry.category,
-      price:    `$${((seed * 13 + i * 7 + 20) % 80) + 15}`,
-      rating:   RATINGS[(seed + i) % RATINGS.length],
-      time:     TIMES[(seed * 2 + i) % TIMES.length],
-    };
-  });
-
-const popularItems      = makeItems(10, 'pop',  1);
-const mostSearchedItems = makeItems(10, 'ms',   3);
-const nearestItems      = makeItems(10, 'near', 5);
-const newestItems       = makeItems(10, 'new',  7);
-
-type Item = typeof popularItems[0];
+import {
+  CATEGORIES, popularItems, mostSearchedItems, nearestItems, newestItems, ALL_ITEMS,
+  Item,
+} from '../data/catalog';
 
 // ─── FoodCard (horizontal) ──────────────────────────────────────────────────
 const FoodCard = ({ item, onPress, styles }: { item: Item; onPress: () => void; styles: any }) => (
@@ -147,8 +79,6 @@ const ChefCard = ({ chef, dishes, styles, onDishPress }: {
 );
 
 // ─── HomePage ────────────────────────────────────────────────────────────────
-const ALL_ITEMS = [...popularItems, ...mostSearchedItems, ...nearestItems, ...newestItems];
-
 const HomePage = ({ navigation }: { navigation: any }) => {
   const { colors, isDark, t, cartItems, deliveryAddress } = useApp();
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -374,7 +304,11 @@ const HomePage = ({ navigation }: { navigation: any }) => {
                   onPress={() => setSelectedCategory(cat.id)}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.categoryEmoji}>{cat.icon}</Text>
+                  <MaterialCommunityIcon
+                    name={cat.icon}
+                    size={15}
+                    color={selectedCategory === cat.id ? colors.white : colors.gray600}
+                  />
                   <Text style={[styles.categoryLabel, selectedCategory === cat.id && styles.categoryLabelActive]}>
                     {cat.label}
                   </Text>
@@ -615,7 +549,6 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
     borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.card,
   },
   categoryPillActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  categoryEmoji: { fontSize: 14 },
   categoryLabel: { fontSize: 13, fontWeight: '600', color: colors.gray600 },
   categoryLabelActive: { color: colors.white },
 

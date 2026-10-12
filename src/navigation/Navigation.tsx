@@ -105,7 +105,7 @@ const NavigationStack = () => {
   return (
     <NavigationContainer theme={navTheme}>
       <Stack.Navigator
-        initialRouteName={user ? 'HomePage' : 'SignIn'}
+        initialRouteName={'HomePage' /* DEV: forzado para probar sin login — revertir a `user ? 'HomePage' : 'SignIn'` */}
         screenOptions={{
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
@@ -128,9 +128,9 @@ const NavigationStack = () => {
         <Stack.Screen name="DishDetails" component={DishDetails} options={{ headerShown: false }} />
         <Stack.Screen name="CartView" component={CartView} options={{ headerShown: false }} />
         <Stack.Screen name="OrderPayment" component={OrderPayment} />
-        <Stack.Screen name="FollowedChefs" component={FollowedChefs} />
-        <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} />
-        <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
+        <Stack.Screen name="FollowedChefs" component={FollowedChefs} options={{ title: 'Chefs seguidos' }} />
+        <Stack.Screen name="OrdersCompleted" component={OrdersCompleted} options={{ title: 'Mis pedidos' }} />
+        <Stack.Screen name="ProfileEdit" component={ProfileEdit} options={{ title: 'Editar perfil' }} />
         <Stack.Screen name="ProfileInfo" component={ProfileInfo} />
         <Stack.Screen name="ProfileData" component={ProfileData} />
         <Stack.Screen name="MessagesScreen" component={MessagesScreen} />

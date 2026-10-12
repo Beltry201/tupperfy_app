@@ -100,9 +100,10 @@ const Stepper = ({ value, onDec, onInc, label, suffix = '', unit = '', hint, col
       </View>
     </View>
     {hint ? (
-      <Text style={{ fontSize: 11, color: colors.textLight, paddingBottom: 8, lineHeight: 15 }}>
-        💡 {hint}
-      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 5, paddingBottom: 8 }}>
+        <Icon name="bulb-outline" size={13} color={colors.textLight} style={{ marginTop: 1 }} />
+        <Text style={{ flex: 1, fontSize: 11, color: colors.textLight, lineHeight: 15 }}>{hint}</Text>
+      </View>
     ) : null}
   </View>
 );
@@ -325,7 +326,10 @@ const WorkWithUs = () => {
                 </View>
                 <View style={styles.resultDivider} />
                 <View style={styles.resultRow}>
-                  <Text style={styles.resultNetLabel}>✨ Tus ganancias netas</Text>
+                  <View style={styles.resultNetLabelRow}>
+                    <Icon name="sparkles" size={14} color="#7C3AED" />
+                    <Text style={styles.resultNetLabel}>Tus ganancias netas</Text>
+                  </View>
                   <Text style={[styles.resultNetValue, { color: '#7C3AED' }]}>{fmt(chefNet)}</Text>
                 </View>
                 <Text style={styles.resultNote}>Estimado mensual · Los resultados pueden variar</Text>
@@ -393,7 +397,10 @@ const WorkWithUs = () => {
                 </View>
                 <View style={styles.resultDivider} />
                 <View style={styles.resultRow}>
-                  <Text style={styles.resultNetLabel}>✨ Tus ganancias netas</Text>
+                  <View style={styles.resultNetLabelRow}>
+                    <Icon name="sparkles" size={14} color="#059669" />
+                    <Text style={styles.resultNetLabel}>Tus ganancias netas</Text>
+                  </View>
                   <Text style={[styles.resultNetValue, { color: '#059669' }]}>{fmt(delNet)}</Text>
                 </View>
                 <Text style={styles.resultNote}>Estimado mensual · Los resultados pueden variar</Text>
@@ -600,6 +607,7 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
   resultLabel: { fontSize: 13, color: colors.textSecondary },
   resultValue: { fontSize: 14, fontWeight: '700', color: colors.text },
   resultDivider: { height: 1, backgroundColor: colors.border, marginVertical: 6 },
+  resultNetLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   resultNetLabel: { fontSize: 15, fontWeight: '800', color: colors.text },
   resultNetValue: { fontSize: 20, fontWeight: '900' },
   resultNote: { fontSize: 11, color: colors.textLight, marginTop: 8, textAlign: 'center' },

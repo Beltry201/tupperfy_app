@@ -1,239 +1,207 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, RefreshControl } from 'react-native';
+import React, { useState, useCallback, useMemo } from 'react';
+import {
+  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  SafeAreaView, RefreshControl, StatusBar,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { StatusBar } from 'expo-status-bar';
-import { useNavigation } from '@react-navigation/native'; // Importa useNavigation desde react-navigation/native
-import MaterialIconsIcon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { spacing, radius, shadows, AppColors } from '../theme';
+import { useApp } from '../context/AppContext';
+
+const TABS = [
+  { key: 'platillos', label: 'Favoritos', icon: 'favorite' as const },
+  { key: 'cocineros', label: 'Likes', icon: 'favorite-border' as const },
+  { key: 'guardadas', label: 'Guardados', icon: 'bookmark-border' as const },
+  { key: 'notificaciones', label: 'Alertas', icon: 'notifications-none' as const },
+];
 
 const UserProfile = ({ navigation }: { navigation: any }) => {
-  const [activeButton, setActiveButton] = useState('platillos');
+  const { colors } = useApp();
+  const [activeTab, setActiveTab] = useState('platillos');
   const [refreshing, setRefreshing] = useState(false);
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const user = {
     firstName: 'Diego',
     lastName: 'Arria',
+    username: '@diego.arria',
     followedCount: 25,
-    followersCount: 75,
+    ordersCount: 75,
     likesCount: 200,
   };
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+    setTimeout(() => setRefreshing(false), 1000);
   }, []);
-
-  const onPressButton = (buttonName) => {
-    setActiveButton(buttonName);
-  };
-
-  const handleEditProfile = () => {
-    navigation.navigate('ProfileEdit'); // Navegar a la pantalla de edición de perfil
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
       <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
-        <View style={styles.header}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatarCircle}>
-              <Text style={styles.avatarText}>{user.firstName[0]}</Text>
-            </View>
-            <Text style={styles.userName}>{user.firstName} {user.lastName}</Text>
-
-            {/* Botón de Editar Perfil */}
-            <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
-              <Text style={styles.editProfileButtonText}>Editar Perfil</Text>
+        {/* Header / Banner */}
+        <View style={styles.banner}>
+          <View style={styles.bannerTop}>
+            <Text style={styles.bannerTitle}>Mi Perfil</Text>
+            <TouchableOpacity style={styles.settingsBtn} onPress={() => navigation.navigate('SettingsScreen')}>
+              <Icon name="settings-outline" size={22} color={colors.white} />
             </TouchableOpacity>
           </View>
-          <View style={styles.subtitleContainer}>
-            <View style={[styles.subtitleItem, styles.moveLeft]}>
-              <Text style={styles.subtitleText}>Chefs seguidos</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('FollowedChefs')}>
-                <Text style={styles.subtitleCount}>{user.followedCount}</Text>
-              </TouchableOpacity>
+          <View style={styles.avatarRow}>
+            <View style={styles.avatarWrapper}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{user.firstName[0]}</Text>
+              </View>
+              <View style={styles.onlineDot} />
             </View>
-            <View style={[styles.subtitleItem, styles.moveLeft]}>
-              <Text style={[styles.subtitleText, styles.pedidosRealizados]}>Pedidos realizados</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('OrdersCompleted')}>
-                <Text style={[styles.subtitleCount, styles.pedidosRealizados]}>{user.followersCount}</Text>
-              </TouchableOpacity>
+            <View style={styles.userInfo}>
+              <Text style={styles.userName}>{user.firstName} {user.lastName}</Text>
+              <Text style={styles.userHandle}>{user.username}</Text>
             </View>
-          </View>
-        </View>
-
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionRowSingle}>
-            <TouchableOpacity
-              style={[styles.sectionButton, activeButton === 'platillos' && styles.activeButton]}
-              onPress={() => onPressButton('platillos')}
-            >
-              <MaterialIconsIcon name="food-bank" size={24} color={activeButton === 'platillos' ? '#FFFFFF' : '#007BFF'} />
-              <Text style={[styles.sectionButtonText, activeButton === 'platillos' && styles.activeButtonText]}>Platillos Favoritos</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.sectionButton, activeButton === 'cocineros' && styles.activeButton]}
-              onPress={() => onPressButton('cocineros')}
-            >
-              <Icon name="heart" size={24} color={activeButton === 'cocineros' ? '#FFFFFF' : '#007BFF'} />
-              <Text style={[styles.sectionButtonText, activeButton === 'cocineros' && styles.activeButtonText]}>Likes</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.sectionButton, activeButton === 'guardadas' && styles.activeButton]}
-              onPress={() => onPressButton('guardadas')}
-            >
-              <Icon name="bookmark" size={24} color={activeButton === 'guardadas' ? '#FFFFFF' : '#007BFF'} />
-              <Text style={[styles.sectionButtonText, activeButton === 'guardadas' && styles.activeButtonText]}>Guardados</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.sectionButton, activeButton === 'notificaciones' && styles.activeButton]}
-              onPress={() => onPressButton('notificaciones')}
-            >
-              <Icon name="notifications" size={24} color={activeButton === 'notificaciones' ? '#FFFFFF' : '#007BFF'} />
-              <Text style={[styles.sectionButtonText, activeButton === 'notificaciones' && styles.activeButtonText]}>Notificaciones</Text>
+            <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('ProfileEdit')}>
+              <Icon name="create-outline" size={16} color={colors.primary} />
+              <Text style={styles.editBtnText}>Editar</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        <View style={styles.line}></View>
+        {/* Stats */}
+        <View style={styles.statsCard}>
+          <TouchableOpacity style={styles.statItem} onPress={() => navigation.navigate('FollowedChefs')}>
+            <Text style={styles.statValue}>{user.followedCount}</Text>
+            <Text style={styles.statLabel}>Chefs seguidos</Text>
+          </TouchableOpacity>
+          <View style={styles.statDivider} />
+          <TouchableOpacity style={styles.statItem} onPress={() => navigation.navigate('OrdersCompleted')}>
+            <Text style={styles.statValue}>{user.ordersCount}</Text>
+            <Text style={styles.statLabel}>Pedidos</Text>
+          </TouchableOpacity>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{user.likesCount}</Text>
+            <Text style={styles.statLabel}>Likes</Text>
+          </View>
+        </View>
 
-        <ScrollView style={styles.contentContainer}>
-          <Text style={styles.contentText}>Contenido del usuario...</Text>
-        </ScrollView>
+        {/* Quick actions */}
+        <View style={styles.quickActions}>
+          {[
+            { label: 'Mi cuenta', bg: '#EBF3FF', icon: 'person-outline', iconColor: colors.primary, screen: 'ProfileInfo' },
+            { label: 'Direcciones', bg: '#FEF3C7', icon: 'location-outline', iconColor: '#D97706', screen: 'UserAddresses' },
+            { label: 'Pagos', bg: '#F0FDF4', icon: 'card-outline', iconColor: colors.success, screen: 'PaymentSelection' },
+            { label: 'Premium', bg: '#FFF7ED', icon: 'star-outline', iconColor: '#EA580C', screen: 'TupperfyPremium' },
+          ].map(qa => (
+            <TouchableOpacity key={qa.label} style={styles.quickAction} onPress={() => navigation.navigate(qa.screen)}>
+              <View style={[styles.quickIcon, { backgroundColor: qa.bg }]}>
+                <Icon name={qa.icon} size={20} color={qa.iconColor} />
+              </View>
+              <Text style={styles.quickLabel}>{qa.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Tabs */}
+        <View style={styles.tabBar}>
+          {TABS.map((tab) => (
+            <TouchableOpacity
+              key={tab.key}
+              style={[styles.tab, activeTab === tab.key && styles.tabActive]}
+              onPress={() => setActiveTab(tab.key)}
+            >
+              <MaterialIcon name={tab.icon} size={20} color={activeTab === tab.key ? colors.primary : colors.gray400} />
+              <Text style={[styles.tabLabel, activeTab === tab.key && styles.tabLabelActive]}>{tab.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Content placeholder */}
+        <View style={styles.contentArea}>
+          <View style={styles.emptyState}>
+            <Icon name="grid-outline" size={48} color={colors.gray300} />
+            <Text style={styles.emptyTitle}>Nada por aquí aún</Text>
+            <Text style={styles.emptySubtitle}>Tus {TABS.find(t => t.key === activeTab)?.label.toLowerCase()} aparecerán aquí</Text>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
+const makeStyles = (colors: AppColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.surface },
+  banner: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xl + spacing.md,
   },
-  scrollViewContent: {
-    flexGrow: 1,
+  bannerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
+  bannerTitle: { fontSize: 20, fontWeight: '700', color: colors.white },
+  settingsBtn: {
+    width: 38, height: 38, borderRadius: radius.full,
+    backgroundColor: 'rgba(255,255,255,0.15)', justifyContent: 'center', alignItems: 'center',
   },
-  header: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    marginTop: 10,
-    alignItems: 'center',
-    marginBottom: 20,
+  avatarRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  avatarWrapper: { position: 'relative' },
+  avatar: {
+    width: 72, height: 72, borderRadius: 36,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderWidth: 3, borderColor: 'rgba(255,255,255,0.5)',
+    justifyContent: 'center', alignItems: 'center',
   },
-  avatarContainer: {
-    alignItems: 'center',
-    marginRight: 10,
+  avatarText: { fontSize: 28, fontWeight: '700', color: colors.white },
+  onlineDot: {
+    position: 'absolute', bottom: 2, right: 2,
+    width: 16, height: 16, borderRadius: 8,
+    backgroundColor: colors.success, borderWidth: 2.5, borderColor: colors.primary,
   },
-  avatarCircle: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#007BFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
+  userInfo: { flex: 1 },
+  userName: { fontSize: 20, fontWeight: '700', color: colors.white, marginBottom: 2 },
+  userHandle: { fontSize: 13, color: 'rgba(255,255,255,0.75)' },
+  editBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: colors.white, borderRadius: radius.full, paddingHorizontal: 12, paddingVertical: 7,
   },
-  avatarText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+  editBtnText: { fontSize: 13, fontWeight: '700', color: colors.primary },
+  statsCard: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: colors.card, marginHorizontal: spacing.md, marginTop: -spacing.lg,
+    borderRadius: radius.lg, padding: spacing.md,
+    borderWidth: 1, borderColor: colors.border, ...shadows.md,
   },
-  userName: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#333',
-    textAlign: 'center',
+  statItem: { flex: 1, alignItems: 'center', paddingVertical: spacing.xs },
+  statValue: { fontSize: 22, fontWeight: '700', color: colors.text, marginBottom: 2 },
+  statLabel: { fontSize: 11, color: colors.textSecondary, textAlign: 'center' },
+  statDivider: { width: 1, height: 36, backgroundColor: colors.border },
+  quickActions: { flexDirection: 'row', paddingHorizontal: spacing.md, paddingTop: spacing.md, gap: spacing.sm },
+  quickAction: {
+    flex: 1, alignItems: 'center', backgroundColor: colors.card,
+    borderRadius: radius.md, padding: spacing.sm,
+    borderWidth: 1, borderColor: colors.border, ...shadows.sm, gap: 6,
   },
-  editProfileButton: {
-    marginTop: 10,
-    backgroundColor: '#CCCCCC',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 5,
+  quickIcon: { width: 44, height: 44, borderRadius: radius.sm, justifyContent: 'center', alignItems: 'center' },
+  quickLabel: { fontSize: 11, fontWeight: '600', color: colors.textSecondary, textAlign: 'center' },
+  tabBar: {
+    flexDirection: 'row', backgroundColor: colors.card,
+    marginHorizontal: spacing.md, marginTop: spacing.md,
+    borderRadius: radius.md, borderWidth: 1, borderColor: colors.border,
+    overflow: 'hidden', ...shadows.sm,
   },
-  editProfileButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
+  tab: { flex: 1, alignItems: 'center', paddingVertical: 10, gap: 3, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  tabActive: { borderBottomColor: colors.primary, backgroundColor: colors.primaryLight },
+  tabLabel: { fontSize: 10, fontWeight: '600', color: colors.gray400 },
+  tabLabelActive: { color: colors.primary },
+  contentArea: {
+    minHeight: 240, marginHorizontal: spacing.md, marginTop: spacing.sm, marginBottom: spacing.xl,
+    backgroundColor: colors.card, borderRadius: radius.lg,
+    borderWidth: 1, borderColor: colors.border, justifyContent: 'center', alignItems: 'center', ...shadows.sm,
   },
-  subtitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginTop: -70,
-    paddingHorizontal: 20,
-  },
-  subtitleItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  subtitleText: {
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  subtitleCount: {
-    fontSize: 20,
-    color: '#333',
-    textAlign: 'center',
-  },
-  pedidosRealizados: {
-    marginLeft: -75,
-  },
-  moveLeft: {
-    marginLeft: -65,
-  },
-  sectionContainer: {
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  sectionRowSingle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  sectionButton: {
-    alignItems: 'center',
-    paddingVertical: 8,
-    flex: 1,
-    borderRadius: 5,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    marginHorizontal: 2,
-  },
-  sectionButtonText: {
-    marginTop: 4,
-    fontSize: 10,
-    color: '#007BFF',
-    textAlign: 'center',
-  },
-  activeButton: {
-    backgroundColor: '#007BFF',
-  },
-  activeButtonText: {
-    color: '#FFFFFF',
-  },
-  line: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#CCCCCC',
-    marginHorizontal: 20,
-    marginTop: 10,
-  },
-  contentContainer: {
-    paddingHorizontal: 20,
-    marginTop: 10,
-  },
-  contentText: {
-    fontSize: 14,
-    color: '#333',
-    textAlign: 'center',
-    marginVertical: 10,
-  },
+  emptyState: { alignItems: 'center', padding: spacing.xl, gap: spacing.sm },
+  emptyTitle: { fontSize: 16, fontWeight: '700', color: colors.gray400 },
+  emptySubtitle: { fontSize: 13, color: colors.textLight, textAlign: 'center' },
 });
 
 export default UserProfile;

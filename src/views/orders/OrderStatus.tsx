@@ -36,6 +36,7 @@ const OrderStatus = ({ route, navigation }: { route: any; navigation: any }) => 
     quantity            = 1,
     subtotal            = 0,
     deliveryCost        = 10,
+    serviceFee          = 0,
     tipAmount           = 0,
     tipPercent          = 0,
     total               = 0,
@@ -161,7 +162,7 @@ const OrderStatus = ({ route, navigation }: { route: any; navigation: any }) => 
                   ]}
                 />
                 <View style={styles.driverMarker}>
-                  <Text style={styles.markerEmoji}>🚴</Text>
+                  <Icon name="bicycle" size={18} color="#FFFFFF" />
                 </View>
               </View>
             </Marker>
@@ -169,7 +170,7 @@ const OrderStatus = ({ route, navigation }: { route: any; navigation: any }) => 
             {/* Destination marker */}
             <Marker coordinate={DESTINATION} anchor={{ x: 0.5, y: 1 }} tracksViewChanges={false}>
               <View style={styles.destMarker}>
-                <Text style={styles.markerEmoji}>🏠</Text>
+                <Icon name="home" size={18} color="#FFFFFF" />
               </View>
             </Marker>
           </MapView>
@@ -189,12 +190,12 @@ const OrderStatus = ({ route, navigation }: { route: any; navigation: any }) => 
           {/* Legend */}
           <View style={styles.mapLegend}>
             <View style={styles.legendItem}>
-              <Text style={styles.legendEmoji}>🚴</Text>
+              <Icon name="bicycle" size={16} color={colors.primary} />
               <Text style={styles.legendLabel}>Juan Pérez</Text>
             </View>
             <View style={styles.legendDivider} />
             <View style={styles.legendItem}>
-              <Text style={styles.legendEmoji}>🏠</Text>
+              <Icon name="home" size={16} color={colors.success} />
               <Text style={styles.legendLabel}>Tu dirección</Text>
             </View>
           </View>
@@ -287,7 +288,7 @@ const OrderStatus = ({ route, navigation }: { route: any; navigation: any }) => 
           <Text style={styles.cardTitle}>Resumen del pedido</Text>
           <View style={styles.orderRow}>
             <View style={styles.orderImageBox}>
-              <Text style={styles.orderEmoji}>🍽️</Text>
+              <Icon name="restaurant" size={22} color={colors.primary} />
             </View>
             <View style={styles.orderInfo}>
               <Text style={styles.orderDish}>{item?.dish ?? 'Platillo'}</Text>
@@ -303,6 +304,10 @@ const OrderStatus = ({ route, navigation }: { route: any; navigation: any }) => 
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Envío</Text>
             <Text style={styles.summaryValue}>${deliveryCost.toFixed(2)}</Text>
+          </View>
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Tarifa de servicio</Text>
+            <Text style={styles.summaryValue}>${serviceFee.toFixed(2)}</Text>
           </View>
           {tipPercent > 0 && (
             <View style={styles.summaryRow}>
@@ -408,7 +413,6 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
     borderTopWidth: 1, borderTopColor: colors.border,
   },
   legendItem:   { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  legendEmoji:  { fontSize: 16 },
   legendLabel:  { fontSize: 12, fontWeight: '600', color: colors.textSecondary },
   legendDivider: { width: 1, height: 16, backgroundColor: colors.border },
 
@@ -431,7 +435,6 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
     borderWidth: 2, borderColor: '#FFFFFF',
   },
-  markerEmoji: { fontSize: 18 },
 
   // Generic card
   card: {
@@ -478,7 +481,6 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
   // Order summary
   orderRow:      { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.sm },
   orderImageBox: { width: 52, height: 52, borderRadius: radius.md, backgroundColor: colors.primaryLight, justifyContent: 'center', alignItems: 'center' },
-  orderEmoji:    { fontSize: 26 },
   orderInfo:     { flex: 1 },
   orderDish:     { fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: 2 },
   orderChef:     { fontSize: 12, color: colors.textSecondary },

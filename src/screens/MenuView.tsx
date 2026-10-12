@@ -1,625 +1,430 @@
 import React, { useState, useMemo } from 'react';
 import {
   Alert, View, StyleSheet, Text, ScrollView, TextInput,
-  TouchableOpacity, Switch, SafeAreaView, StatusBar,
+  TouchableOpacity, Switch, SafeAreaView, StatusBar, Image, Modal,
+  KeyboardAvoidingView, Platform,
 } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import { Calendar } from 'react-native-calendars';
-import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import moment from 'moment';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { spacing, radius, shadows, typography, AppColors } from '../theme';
 import { useApp } from '../context/AppContext';
+import { getDishImage } from '../utils/images';
+import { CATEGORIES, ALL_ITEMS, Item } from '../data/catalog';
 
-const WEEKDAY_MAP: Record<string, number> = {
-  Domingo: 0, Lunes: 1, Martes: 2, Miércoles: 3, Jueves: 4, Viernes: 5, Sábado: 6,
+const WEEKDAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'] as const;
+type Weekday = typeof WEEKDAYS[number];
+
+const WEEKDAY_SHORT: Record<Weekday, string> = {
+  Lunes: 'LUN', Martes: 'MAR', Miércoles: 'MIÉ', Jueves: 'JUE',
+  Viernes: 'VIE', Sábado: 'SÁB', Domingo: 'DOM',
 };
 
-const FOLDER_EMOJIS = ['📁', '🍽️', '🥗', '🥩', '🌮', '🍕', '🍜', '🥘', '🍱', '🎂', '🥤', '⭐', '❤️', '🌟', '🔥'];
+interface SelectedDish { item: Item; quantity: number; }
+interface DayMenu {
+  dishes: SelectedDish[]; address: string; instructions: string;
+  deliveryTime: string; needUtensils: boolean;
+}
 
-interface Folder { id: string; name: string; emoji: string; }
+const emptyDayMenu = (): DayMenu => ({ dishes: [], address: '', instructions: '', deliveryTime: '', needUtensils: false });
+
+const createWeekMenu = (): Record<Weekday, DayMenu> =>
+  WEEKDAYS.reduce((acc, day) => { acc[day] = emptyDayMenu(); return acc; }, {} as Record<Weekday, DayMenu>);
+
+const parsePrice = (price: string) => parseFloat(price.replace(/[^0-9.]/g, '')) || 0;
+const daySubtotal = (dm: DayMenu) => dm.dishes.reduce((sum, d) => sum + parsePrice(d.item.price) * d.quantity, 0);
 
 const MenuView = () => {
-  const { colors, isDark } = useApp();
+  const { colors, isDark, deliveryAddress } = useApp();
   const styles = useMemo(() => makeStyles(colors), [colors]);
-  const calendarTheme = useMemo(() => ({
-    calendarBackground: colors.card,
-    backgroundColor: colors.card,
-    textSectionTitleColor: colors.textSecondary,
-    selectedDayBackgroundColor: colors.primary,
-    selectedDayTextColor: '#FFFFFF',
-    todayTextColor: colors.primary,
-    todayBackgroundColor: colors.primaryLight,
-    dayTextColor: colors.text,
-    textDisabledColor: colors.gray400,
-    dotColor: colors.primary,
-    selectedDotColor: '#FFFFFF',
-    arrowColor: colors.primary,
-    monthTextColor: colors.text,
-    textMonthFontWeight: '700' as const,
-    textMonthFontSize: 16,
-    textDayFontSize: 14,
-    textDayHeaderFontSize: 12,
-    textDayHeaderFontWeight: '600' as const,
-  }), [colors]);
 
-  // Form state
-  const [showCreateEvent, setShowCreateEvent] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [eventName, setEventName] = useState('');
-  const [eventLocation, setEventLocation] = useState('');
-  const [eventInstructions, setEventInstructions] = useState('');
-  const [needUtensils, setNeedUtensils] = useState(false);
-  const [repeatEvent, setRepeatEvent] = useState('Nunca');
-  const [deliveryTime, setDeliveryTime] = useState('');
-  const [notificationAlert, setNotificationAlert] = useState('2 horas antes');
-  const [paymentMethod, setPaymentMethod] = useState('Tarjeta crédito/débito');
-  const [tipPercentage, setTipPercentage] = useState(10);
-  const [dishes, setDishes] = useState([{ name: '' }]);
-  const [events, setEvents] = useState<any[]>([]);
-  const [visibleMonth, setVisibleMonth] = useState(moment().format('YYYY-MM'));
+  const [weekMenu, setWeekMenu] = useState<Record<Weekday, DayMenu>>(createWeekMenu);
+  const [editingDay, setEditingDay] = useState<Weekday | null>(null);
 
-  // Picker visibility
+  // Draft state for the day editor sheet
+  const [draftDishes, setDraftDishes] = useState<SelectedDish[]>([]);
+  const [draftAddress, setDraftAddress] = useState('');
+  const [draftInstructions, setDraftInstructions] = useState('');
+  const [draftTime, setDraftTime] = useState('');
+  const [draftUtensils, setDraftUtensils] = useState(false);
   const [isTimePickerVisible, setTimePickerVisible] = useState(false);
-  const [isNotificationPickerVisible, setNotificationPickerVisible] = useState(false);
-  const [isPaymentMethodPickerVisible, setPaymentMethodPickerVisible] = useState(false);
-  const [showRepeatEventPicker, setShowRepeatEventPicker] = useState(false);
-  const [isTipPickerVisible, setTipPickerVisible] = useState(false);
 
-  // Folder state
-  const [folders, setFolders] = useState<Folder[]>([]);
-  const [expandedFolderIds, setExpandedFolderIds] = useState<Set<string>>(new Set());
-  const [showFolderSheet, setShowFolderSheet] = useState(false);
-  const [newFolderName, setNewFolderName] = useState('');
-  const [newFolderEmoji, setNewFolderEmoji] = useState('📁');
-  const [eventFolderId, setEventFolderId] = useState<string | null>(null);
-  const [showFolderPicker, setShowFolderPicker] = useState(false);
+  // Dish picker modal
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerQuery, setPickerQuery] = useState('');
+  const [pickerCategory, setPickerCategory] = useState('all');
 
-  const handleSaveEvent = () => {
-    setEvents([...events, {
-      selectedDate, eventName, eventLocation, needUtensils,
-      repeatEvent, deliveryTime, notificationAlert,
-      paymentMethod, tipPercentage, dishes,
-      folderId: eventFolderId,
-    }]);
-    clearForm();
+  const weekStats = useMemo(() => {
+    const activeDays = WEEKDAYS.filter(d => weekMenu[d].dishes.length > 0).length;
+    const totalDishes = WEEKDAYS.reduce((sum, d) => sum + weekMenu[d].dishes.reduce((s, x) => s + x.quantity, 0), 0);
+    return { activeDays, totalDishes };
+  }, [weekMenu]);
+
+  const openDayEditor = (day: Weekday) => {
+    const dm = weekMenu[day];
+    setDraftDishes(dm.dishes.map(d => ({ ...d })));
+    setDraftAddress(dm.address || deliveryAddress || '');
+    setDraftInstructions(dm.instructions);
+    setDraftTime(dm.deliveryTime);
+    setDraftUtensils(dm.needUtensils);
+    setEditingDay(day);
   };
 
-  const clearForm = () => {
-    setSelectedDate(''); setEventName(''); setEventLocation('');
-    setNeedUtensils(false); setRepeatEvent('Nunca'); setDeliveryTime('');
-    setNotificationAlert('2 horas antes'); setPaymentMethod('Tarjeta crédito/débito');
-    setTipPercentage(10); setDishes([{ name: '' }]); setShowCreateEvent(false);
-    setEventFolderId(null); setShowFolderPicker(false);
+  const closeDayEditor = () => setEditingDay(null);
+
+  const handlePickDish = (item: Item) => {
+    setDraftDishes(prev => {
+      const idx = prev.findIndex(d => d.item.id === item.id);
+      if (idx >= 0) {
+        const next = [...prev];
+        next[idx] = { ...next[idx], quantity: next[idx].quantity + 1 };
+        return next;
+      }
+      return [...prev, { item, quantity: 1 }];
+    });
+    setPickerOpen(false);
+    setPickerQuery('');
+    setPickerCategory('all');
   };
+
+  const handleRemoveDraftDish = (itemId: string) => setDraftDishes(prev => prev.filter(d => d.item.id !== itemId));
+  const handleChangeQty = (itemId: string, delta: number) =>
+    setDraftDishes(prev => prev.map(d => d.item.id === itemId ? { ...d, quantity: Math.max(1, d.quantity + delta) } : d));
 
   const handleTimeConfirm = (time: Date) => {
     let hours = time.getHours();
     const minutes = time.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12 || 12;
-    setDeliveryTime(`${hours}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`);
+    setDraftTime(`${hours}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`);
     setTimePickerVisible(false);
   };
 
-  const handleAddDish = () => setDishes([...dishes, { name: '' }]);
-
-  const handleRemoveDish = (index: number) => {
-    const updated = [...dishes]; updated.splice(index, 1); setDishes(updated);
+  const handleSaveDay = () => {
+    if (!editingDay) return;
+    setWeekMenu(prev => ({
+      ...prev,
+      [editingDay]: {
+        dishes: draftDishes,
+        address: draftAddress.trim(),
+        instructions: draftInstructions.trim(),
+        deliveryTime: draftTime,
+        needUtensils: draftUtensils,
+      },
+    }));
+    closeDayEditor();
   };
 
-  const handleDishNameChange = (text: string, index: number) => {
-    const updated = [...dishes]; updated[index].name = text; setDishes(updated);
-  };
-
-  const handleDeleteEvent = (index: number) => {
-    Alert.alert('Eliminar Evento', '¿Estás seguro?', [
+  const handleClearDay = (day: Weekday) => {
+    Alert.alert('Vaciar día', `¿Quitar el pedido programado de ${day}?`, [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Eliminar', style: 'destructive', onPress: () => {
-        const updated = [...events]; updated.splice(index, 1); setEvents(updated);
-      }},
+      { text: 'Vaciar', style: 'destructive', onPress: () => setWeekMenu(prev => ({ ...prev, [day]: emptyDayMenu() })) },
     ]);
   };
 
-  const handleEditEvent = (index: number) => {
-    const e = events[index];
-    setSelectedDate(e.selectedDate); setEventName(e.eventName);
-    setEventLocation(e.eventLocation); setNeedUtensils(e.needUtensils);
-    setRepeatEvent(e.repeatEvent); setDeliveryTime(e.deliveryTime);
-    setNotificationAlert(e.notificationAlert); setPaymentMethod(e.paymentMethod);
-    setTipPercentage(e.tipPercentage); setDishes(e.dishes);
-    setEventFolderId(e.folderId ?? null);
-    setShowCreateEvent(true);
-  };
-
-  const handleCreateFolder = () => {
-    if (!newFolderName.trim()) return;
-    setFolders([...folders, { id: Date.now().toString(), name: newFolderName.trim(), emoji: newFolderEmoji }]);
-    setNewFolderName('');
-    setNewFolderEmoji('📁');
-    setShowFolderSheet(false);
-  };
-
-  const handleDeleteFolder = (id: string) => {
-    Alert.alert('Eliminar carpeta', 'Los menús dentro quedarán sin carpeta. ¿Continuar?', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Eliminar', style: 'destructive', onPress: () => {
-        setFolders(folders.filter(f => f.id !== id));
-        setEvents(events.map(e => e.folderId === id ? { ...e, folderId: null } : e));
-      }},
-    ]);
-  };
-
-  const toggleFolder = (id: string) => {
-    setExpandedFolderIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  };
-
-  const calculateTip = () => ((dishes.length * 10 + 5) * (tipPercentage / 100)).toFixed(2);
-  const calculateTotal = () => (dishes.length * 10 + 5 + parseFloat(calculateTip())).toFixed(2);
-
-  const markedDates = useMemo(() => {
-    const acc: Record<string, { marked: boolean; dotColor: string }> = {};
-    const monthStart = moment(visibleMonth + '-01');
-    const monthEnd = monthStart.clone().endOf('month');
-
-    events.forEach((e: any) => {
-      const eventStart = moment(e.selectedDate);
-      if (!e.repeatEvent || e.repeatEvent === 'Nunca') {
-        acc[e.selectedDate] = { marked: true, dotColor: colors.primary };
-      } else if (e.repeatEvent === 'Siempre') {
-        const cur = moment.max(eventStart, monthStart).clone();
-        while (cur.isSameOrBefore(monthEnd)) {
-          acc[cur.format('YYYY-MM-DD')] = { marked: true, dotColor: colors.primary };
-          cur.add(1, 'day');
-        }
-      } else if (WEEKDAY_MAP[e.repeatEvent] !== undefined) {
-        const targetDay = WEEKDAY_MAP[e.repeatEvent];
-        const cur = moment.max(eventStart, monthStart).clone();
-        const daysUntilTarget = (targetDay - cur.day() + 7) % 7;
-        cur.add(daysUntilTarget, 'days');
-        while (cur.isSameOrBefore(monthEnd)) {
-          acc[cur.format('YYYY-MM-DD')] = { marked: true, dotColor: colors.primary };
-          cur.add(7, 'days');
-        }
-      }
-    });
-
-    return acc;
-  }, [events, visibleMonth, colors.primary]);
-
-  const selectedFolderLabel = eventFolderId
-    ? (() => { const f = folders.find(x => x.id === eventFolderId); return f ? `${f.emoji} ${f.name}` : 'Sin carpeta'; })()
-    : 'Sin carpeta';
-
-  const renderEventCard = (event: any, globalIdx: number) => (
-    <View key={globalIdx} style={styles.eventCard}>
-      <View style={styles.eventHeader}>
-        <View style={styles.eventDateBadge}>
-          <Icon name="calendar-outline" size={14} color={colors.primary} />
-          <Text style={styles.eventDate}>{moment(event.selectedDate).format('DD MMM, YYYY')}</Text>
-        </View>
-        <View style={styles.eventActions}>
-          <TouchableOpacity style={styles.eventActionBtn} onPress={() => handleEditEvent(globalIdx)}>
-            <Icon name="create-outline" size={16} color={colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.eventActionBtn, styles.eventDeleteBtn]} onPress={() => handleDeleteEvent(globalIdx)}>
-            <Icon name="trash-outline" size={16} color={colors.danger} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <Text style={styles.eventName}>{event.eventName || 'Sin nombre'}</Text>
-      <Text style={styles.eventDetail}>🍽️ {event.dishes.map((d: any) => d.name || 'Producto').join(', ')}</Text>
-      {event.deliveryTime ? <Text style={styles.eventDetail}>🕐 {event.deliveryTime}</Text> : null}
-      <View style={styles.eventFooter}>
-        <Text style={styles.eventTotal}>Total: ${calculateTotal()}</Text>
-      </View>
-    </View>
-  );
+  const pickerResults = useMemo(() => {
+    let list = ALL_ITEMS;
+    if (pickerCategory !== 'all') list = list.filter(i => i.category === pickerCategory);
+    const q = pickerQuery.trim().toLowerCase();
+    if (q) list = list.filter(i => i.dish.toLowerCase().includes(q) || i.person.toLowerCase().includes(q));
+    return list.slice(0, 30);
+  }, [pickerCategory, pickerQuery]);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.card} />
 
       <View style={styles.pageHeader}>
-        <View>
-          <Text style={styles.pageTitle}>Mi Menú</Text>
-          <Text style={styles.pageSubtitle}>Programa tus pedidos</Text>
-        </View>
-        {selectedDate && !showCreateEvent && (
-          <TouchableOpacity style={styles.newEventBtn} onPress={() => setShowCreateEvent(true)}>
-            <Icon name="add" size={18} color={colors.white} />
-            <Text style={styles.newEventBtnText}>Nuevo</Text>
-          </TouchableOpacity>
-        )}
+        <Text style={styles.pageTitle}>Mi Menú</Text>
+        <Text style={styles.pageSubtitle}>Programa tus pedidos de la semana</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
-
-        {/* Calendar */}
-        <View style={styles.calendarCard}>
-          <Calendar
-            key={isDark ? 'dark' : 'light'}
-            current={selectedDate}
-            style={{ borderRadius: radius.lg }}
-            onDayPress={(day: any) => {
-              setSelectedDate(day.dateString);
-              setShowCreateEvent(true);
-            }}
-            onMonthChange={(month: any) => setVisibleMonth(month.dateString.slice(0, 7))}
-            markedDates={{
-              ...markedDates,
-              ...(selectedDate ? { [selectedDate]: { selected: true, selectedColor: colors.primary, marked: !!markedDates[selectedDate] } } : {}),
-            }}
-            theme={calendarTheme}
-          />
-        </View>
-
-        {/* Folders section */}
-        <View style={styles.foldersSection}>
-          <View style={styles.foldersSectionHeader}>
-            <Text style={styles.foldersSectionTitle}>Carpetas</Text>
-            <TouchableOpacity style={styles.addFolderBtn} onPress={() => setShowFolderSheet(true)} activeOpacity={0.8}>
-              <Icon name="add" size={16} color={colors.primary} />
-              <Text style={styles.addFolderBtnText}>Nueva</Text>
-            </TouchableOpacity>
+        <View style={styles.summaryCard}>
+          <View style={styles.summaryStat}>
+            <Text style={styles.summaryStatValue}>{weekStats.activeDays}/7</Text>
+            <Text style={styles.summaryStatLabel}>días programados</Text>
           </View>
-
-          {folders.length === 0 ? (
-            <TouchableOpacity style={styles.createFolderCta} onPress={() => setShowFolderSheet(true)} activeOpacity={0.8}>
-              <Icon name="folder-open-outline" size={22} color={colors.primary} />
-              <Text style={styles.createFolderCtaText}>Organiza tus menús en carpetas</Text>
-              <Icon name="chevron-forward" size={16} color={colors.gray400} />
-            </TouchableOpacity>
-          ) : (
-            folders.map(folder => {
-              const folderEvents = events.filter(e => e.folderId === folder.id);
-              const isExpanded = expandedFolderIds.has(folder.id);
-              return (
-                <View key={folder.id} style={styles.folderCard}>
-                  <TouchableOpacity style={styles.folderHeader} onPress={() => toggleFolder(folder.id)} activeOpacity={0.8}>
-                    <Text style={styles.folderEmoji}>{folder.emoji}</Text>
-                    <View style={styles.folderInfo}>
-                      <Text style={styles.folderName}>{folder.name}</Text>
-                      <Text style={styles.folderCount}>
-                        {folderEvents.length} {folderEvents.length === 1 ? 'menú' : 'menús'}
-                      </Text>
-                    </View>
-                    <TouchableOpacity
-                      style={styles.folderDeleteBtn}
-                      onPress={() => handleDeleteFolder(folder.id)}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    >
-                      <Icon name="trash-outline" size={16} color={colors.danger} />
-                    </TouchableOpacity>
-                    <Icon name={isExpanded ? 'chevron-up' : 'chevron-down'} size={18} color={colors.gray400} />
-                  </TouchableOpacity>
-
-                  {isExpanded && (
-                    <View style={styles.folderContent}>
-                      {folderEvents.length === 0 ? (
-                        <Text style={styles.folderEmptyText}>Esta carpeta está vacía</Text>
-                      ) : (
-                        folderEvents.map(event => renderEventCard(event, events.indexOf(event)))
-                      )}
-                    </View>
-                  )}
-                </View>
-              );
-            })
-          )}
+          <View style={styles.summaryDividerV} />
+          <View style={styles.summaryStat}>
+            <Text style={styles.summaryStatValue}>{weekStats.totalDishes}</Text>
+            <Text style={styles.summaryStatLabel}>platillos pedidos</Text>
+          </View>
         </View>
 
-        {/* Standalone events (not in any folder) */}
-        {events.filter(e => !e.folderId).map(event => renderEventCard(event, events.indexOf(event)))}
-
-        {/* Create event form */}
-        {showCreateEvent && (
-          <View style={styles.formCard}>
-            <View style={styles.formHeader}>
-              <Text style={styles.formTitle}>
-                {selectedDate ? moment(selectedDate).format('DD [de] MMMM') : 'Nuevo evento'}
-              </Text>
-              <TouchableOpacity onPress={() => setShowCreateEvent(false)}>
-                <Icon name="close-circle-outline" size={24} color={colors.gray400} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Menu name */}
-            <View style={styles.formSection}>
-              <Text style={styles.formSectionTitle}>Nombre del menú</Text>
-              <View style={styles.inputWrapper}>
-                <Icon name="pencil-outline" size={16} color={colors.gray400} style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ej: Comida del martes, Menú semanal..."
-                  placeholderTextColor={colors.textLight}
-                  value={eventName}
-                  onChangeText={setEventName}
-                />
+        {WEEKDAYS.map(day => {
+          const dm = weekMenu[day];
+          const hasMenu = dm.dishes.length > 0;
+          return (
+            <TouchableOpacity
+              key={day}
+              style={styles.dayCard}
+              activeOpacity={0.85}
+              onPress={() => openDayEditor(day)}
+            >
+              <View style={styles.dayCardHeader}>
+                <View style={[styles.dayBadge, hasMenu && styles.dayBadgeActive]}>
+                  <Text style={[styles.dayBadgeText, hasMenu && styles.dayBadgeTextActive]}>{WEEKDAY_SHORT[day]}</Text>
+                </View>
+                <View style={styles.dayCardInfo}>
+                  <Text style={styles.dayCardTitle}>{day}</Text>
+                  <Text style={styles.dayCardSubtitle}>
+                    {hasMenu
+                      ? `${weekMenu[day].dishes.reduce((s, x) => s + x.quantity, 0)} platillo${weekMenu[day].dishes.reduce((s, x) => s + x.quantity, 0) === 1 ? '' : 's'} · $${daySubtotal(dm).toFixed(0)}`
+                      : 'Sin pedido programado'}
+                  </Text>
+                </View>
+                {hasMenu && (
+                  <TouchableOpacity
+                    style={styles.dayClearBtn}
+                    onPress={() => handleClearDay(day)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Icon name="trash-outline" size={15} color={colors.danger} />
+                  </TouchableOpacity>
+                )}
+                <Icon name="chevron-forward" size={18} color={colors.gray400} />
               </View>
-            </View>
 
-            {/* Dishes */}
-            <View style={styles.formSection}>
-              <Text style={styles.formSectionTitle}>Productos</Text>
-              {dishes.map((dish, i) => (
-                <View key={i} style={styles.dishRow}>
-                  <View style={styles.dishInputWrapper}>
-                    <Icon name="restaurant-outline" size={16} color={colors.gray400} style={styles.inputIcon} />
-                    <TextInput
-                      style={styles.dishInput}
-                      placeholder={`Producto ${i + 1}`}
-                      placeholderTextColor={colors.textLight}
-                      value={dish.name}
-                      onChangeText={(t) => handleDishNameChange(t, i)}
+              {hasMenu ? (
+                <View style={styles.dishThumbRow}>
+                  {dm.dishes.slice(0, 4).map((d, i) => (
+                    <Image
+                      key={d.item.id}
+                      source={getDishImage(d.item.dish)}
+                      style={[styles.dishThumb, i > 0 && styles.dishThumbOverlap]}
                     />
-                  </View>
-                  {dishes.length > 1 && (
-                    <TouchableOpacity style={styles.removeBtn} onPress={() => handleRemoveDish(i)}>
-                      <Icon name="remove-circle-outline" size={22} color={colors.danger} />
-                    </TouchableOpacity>
-                  )}
+                  ))}
+                  <Text style={styles.dishThumbLabel} numberOfLines={1}>
+                    {dm.dishes.map(d => d.item.dish).join(', ')}
+                  </Text>
                 </View>
-              ))}
-              <TouchableOpacity style={styles.addDishBtn} onPress={handleAddDish}>
-                <Icon name="add-circle-outline" size={18} color={colors.primary} />
-                <Text style={styles.addDishText}>Agregar producto</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Address */}
-            <View style={styles.formSection}>
-              <Text style={styles.formSectionTitle}>Dirección de entrega</Text>
-              <View style={styles.inputWrapper}>
-                <Icon name="location-outline" size={16} color={colors.gray400} style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Dirección"
-                  placeholderTextColor={colors.textLight}
-                  value={eventLocation}
-                  onChangeText={setEventLocation}
-                />
-              </View>
-              <View style={styles.inputWrapper}>
-                <Icon name="document-text-outline" size={16} color={colors.gray400} style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Instrucciones (opcional)"
-                  placeholderTextColor={colors.textLight}
-                  value={eventInstructions}
-                  onChangeText={setEventInstructions}
-                />
-              </View>
-            </View>
-
-            {/* Delivery time */}
-            <View style={styles.formSection}>
-              <Text style={styles.formSectionTitle}>Hora de entrega</Text>
-              <TouchableOpacity style={styles.pickerRow} onPress={() => setTimePickerVisible(true)}>
-                <Icon name="time-outline" size={16} color={colors.gray400} />
-                <Text style={[styles.pickerValue, !deliveryTime && styles.pickerPlaceholder]}>
-                  {deliveryTime || 'Seleccionar hora'}
-                </Text>
-                <Icon name="chevron-forward" size={16} color={colors.gray400} />
-              </TouchableOpacity>
-              <DateTimePickerModal
-                isVisible={isTimePickerVisible}
-                mode="time"
-                onConfirm={handleTimeConfirm}
-                onCancel={() => setTimePickerVisible(false)}
-              />
-            </View>
-
-            {/* Options */}
-            <View style={styles.formSection}>
-              <View style={styles.switchRow}>
-                <View style={styles.switchLeft}>
-                  <Icon name="restaurant-outline" size={16} color={colors.textSecondary} />
-                  <Text style={styles.switchLabel}>¿Necesitas cubiertos?</Text>
-                </View>
-                <Switch
-                  value={needUtensils}
-                  onValueChange={setNeedUtensils}
-                  trackColor={{ false: colors.gray200, true: colors.primaryLight }}
-                  thumbColor={needUtensils ? colors.primary : colors.white}
-                />
-              </View>
-            </View>
-
-            {/* Configuration pickers */}
-            <View style={styles.formSection}>
-              <Text style={styles.formSectionTitle}>Configuración</Text>
-
-              <TouchableOpacity style={styles.pickerRow} onPress={() => setNotificationPickerVisible(true)}>
-                <Icon name="notifications-outline" size={16} color={colors.gray400} />
-                <Text style={styles.pickerValue}>Recordatorio: {notificationAlert}</Text>
-                <Icon name="chevron-forward" size={16} color={colors.gray400} />
-              </TouchableOpacity>
-              {isNotificationPickerVisible && (
-                <Picker selectedValue={notificationAlert} onValueChange={(v) => { setNotificationAlert(v); setNotificationPickerVisible(false); }}>
-                  {['1 día antes', '12 horas antes', '5 horas antes', '3 horas antes', '2 horas antes', '1 hora antes'].map(v => (
-                    <Picker.Item key={v} label={v} value={v} />
-                  ))}
-                </Picker>
-              )}
-
-              <TouchableOpacity style={styles.pickerRow} onPress={() => setPaymentMethodPickerVisible(true)}>
-                <Icon name="card-outline" size={16} color={colors.gray400} />
-                <Text style={styles.pickerValue}>Pago: {paymentMethod}</Text>
-                <Icon name="chevron-forward" size={16} color={colors.gray400} />
-              </TouchableOpacity>
-              {isPaymentMethodPickerVisible && (
-                <Picker selectedValue={paymentMethod} onValueChange={(v) => { setPaymentMethod(v); setPaymentMethodPickerVisible(false); }}>
-                  {['Tarjeta crédito/débito', 'PayPal', 'Efectivo'].map(v => (
-                    <Picker.Item key={v} label={v} value={v} />
-                  ))}
-                </Picker>
-              )}
-
-              <TouchableOpacity style={styles.pickerRow} onPress={() => setShowRepeatEventPicker(true)}>
-                <Icon name="repeat-outline" size={16} color={colors.gray400} />
-                <Text style={styles.pickerValue}>Repetir: {repeatEvent}</Text>
-                <Icon name="chevron-forward" size={16} color={colors.gray400} />
-              </TouchableOpacity>
-              {showRepeatEventPicker && (
-                <Picker selectedValue={repeatEvent} onValueChange={(v) => { setRepeatEvent(v); setShowRepeatEventPicker(false); }}>
-                  {['Nunca', 'Siempre', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map(v => (
-                    <Picker.Item key={v} label={v} value={v} />
-                  ))}
-                </Picker>
-              )}
-
-              <TouchableOpacity style={styles.pickerRow} onPress={() => setTipPickerVisible(true)}>
-                <Icon name="gift-outline" size={16} color={colors.gray400} />
-                <Text style={styles.pickerValue}>Propina: {tipPercentage}%</Text>
-                <Icon name="chevron-forward" size={16} color={colors.gray400} />
-              </TouchableOpacity>
-              {isTipPickerVisible && (
-                <Picker selectedValue={tipPercentage} onValueChange={(v) => { setTipPercentage(v); setTipPickerVisible(false); }}>
-                  {[0, 5, 10, 15, 20].map(v => <Picker.Item key={v} label={`${v}%`} value={v} />)}
-                </Picker>
-              )}
-
-              {/* Folder picker */}
-              <TouchableOpacity style={styles.pickerRow} onPress={() => setShowFolderPicker(!showFolderPicker)}>
-                <Icon name="folder-open-outline" size={16} color={colors.gray400} />
-                <Text style={styles.pickerValue}>Carpeta: {selectedFolderLabel}</Text>
-                <Icon name={showFolderPicker ? 'chevron-up' : 'chevron-down'} size={16} color={colors.gray400} />
-              </TouchableOpacity>
-              {showFolderPicker && (
-                <View style={styles.folderDropdown}>
-                  <TouchableOpacity
-                    style={styles.folderDropdownItem}
-                    onPress={() => { setEventFolderId(null); setShowFolderPicker(false); }}
-                  >
-                    <Icon name="close-circle-outline" size={16} color={colors.gray400} />
-                    <Text style={styles.folderDropdownItemText}>Sin carpeta</Text>
-                    {!eventFolderId && <Icon name="checkmark" size={16} color={colors.primary} />}
-                  </TouchableOpacity>
-                  {folders.map(f => (
-                    <TouchableOpacity
-                      key={f.id}
-                      style={styles.folderDropdownItem}
-                      onPress={() => { setEventFolderId(f.id); setShowFolderPicker(false); }}
-                    >
-                      <Text style={styles.folderDropdownEmoji}>{f.emoji}</Text>
-                      <Text style={styles.folderDropdownItemText}>{f.name}</Text>
-                      {eventFolderId === f.id && <Icon name="checkmark" size={16} color={colors.primary} />}
-                    </TouchableOpacity>
-                  ))}
-                  <TouchableOpacity
-                    style={[styles.folderDropdownItem, styles.folderDropdownNew]}
-                    onPress={() => { setShowFolderPicker(false); setShowFolderSheet(true); }}
-                  >
-                    <Icon name="add-circle-outline" size={16} color={colors.primary} />
-                    <Text style={[styles.folderDropdownItemText, { color: colors.primary }]}>Nueva carpeta</Text>
-                  </TouchableOpacity>
+              ) : (
+                <View style={styles.addDishesCta}>
+                  <Icon name="add-circle-outline" size={16} color={colors.primary} />
+                  <Text style={styles.addDishesCtaText}>Elegir platillos</Text>
                 </View>
               )}
-            </View>
-
-            {/* Summary */}
-            <View style={styles.summaryBox}>
-              <Text style={styles.formSectionTitle}>Resumen de pago</Text>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Productos</Text>
-                <Text style={styles.summaryValue}>${(dishes.length * 10).toFixed(2)}</Text>
-              </View>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Envío</Text>
-                <Text style={styles.summaryValue}>$5.00</Text>
-              </View>
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>Propina ({tipPercentage}%)</Text>
-                <Text style={styles.summaryValue}>${calculateTip()}</Text>
-              </View>
-              <View style={styles.summaryDivider} />
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryTotal}>Total</Text>
-                <Text style={styles.summaryTotalValue}>${calculateTotal()}</Text>
-              </View>
-            </View>
-
-            <TouchableOpacity style={styles.saveButton} onPress={handleSaveEvent}>
-              <Icon name="checkmark-circle-outline" size={20} color={colors.white} />
-              <Text style={styles.saveButtonText}>Guardar evento</Text>
             </TouchableOpacity>
-          </View>
-        )}
-
-        {!showCreateEvent && events.length === 0 && folders.length === 0 && (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyEmoji}>📅</Text>
-            <Text style={styles.emptyTitle}>Sin eventos programados</Text>
-            <Text style={styles.emptySubtitle}>Selecciona un día en el calendario para crear tu menú personalizado</Text>
-          </View>
-        )}
+          );
+        })}
 
         <View style={{ height: spacing.xl }} />
       </ScrollView>
 
-      {/* Folder creation sheet */}
-      {showFolderSheet && (
+      {editingDay && (
         <>
-          <Animated.View
-            entering={SlideInDown.duration(320).springify()}
-            exiting={SlideOutDown.duration(280)}
-            style={styles.sheet}
+          <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={closeDayEditor} />
+          <KeyboardAvoidingView
+            style={styles.editorWrapper}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            pointerEvents="box-none"
           >
-            <View style={styles.sheetHandle} />
-            <View style={styles.sheetHeader}>
-              <Text style={styles.sheetTitle}>Nueva carpeta</Text>
-              <TouchableOpacity onPress={() => setShowFolderSheet(false)}>
-                <Icon name="close" size={22} color={colors.gray500} />
-              </TouchableOpacity>
-            </View>
+            <Animated.View
+              entering={SlideInDown.duration(320).springify()}
+              exiting={SlideOutDown.duration(280)}
+              style={styles.editorSheet}
+            >
+              <View style={styles.sheetHandle} />
+              <View style={styles.sheetHeader}>
+                <Text style={styles.sheetTitle}>Pedido de {editingDay}</Text>
+                <TouchableOpacity onPress={closeDayEditor}>
+                  <Icon name="close" size={22} color={colors.gray500} />
+                </TouchableOpacity>
+              </View>
 
-            <Text style={[styles.formSectionTitle, { marginBottom: spacing.sm }]}>Icono</Text>
+              <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+                <Text style={styles.formSectionTitle}>Platillos</Text>
+
+                {draftDishes.length === 0 ? (
+                  <View style={styles.emptyPicker}>
+                    <Icon name="restaurant-outline" size={28} color={colors.gray300} />
+                    <Text style={styles.emptyPickerText}>Aún no eliges platillos para este día</Text>
+                  </View>
+                ) : (
+                  draftDishes.map(d => (
+                    <View key={d.item.id} style={styles.selectedDishRow}>
+                      <Image source={getDishImage(d.item.dish)} style={styles.selectedDishPhoto} />
+                      <View style={styles.selectedDishInfo}>
+                        <Text style={styles.selectedDishName} numberOfLines={1}>{d.item.dish}</Text>
+                        <Text style={styles.selectedDishChef} numberOfLines={1}>Por {d.item.person} · {d.item.price}</Text>
+                      </View>
+                      <View style={styles.qtyStepper}>
+                        <TouchableOpacity style={styles.qtyBtn} onPress={() => handleChangeQty(d.item.id, -1)}>
+                          <Icon name="remove" size={14} color={colors.primary} />
+                        </TouchableOpacity>
+                        <Text style={styles.qtyText}>{d.quantity}</Text>
+                        <TouchableOpacity style={styles.qtyBtn} onPress={() => handleChangeQty(d.item.id, 1)}>
+                          <Icon name="add" size={14} color={colors.primary} />
+                        </TouchableOpacity>
+                      </View>
+                      <TouchableOpacity style={styles.removeBtn} onPress={() => handleRemoveDraftDish(d.item.id)}>
+                        <Icon name="trash-outline" size={18} color={colors.danger} />
+                      </TouchableOpacity>
+                    </View>
+                  ))
+                )}
+
+                <TouchableOpacity style={styles.addDishBtn} onPress={() => setPickerOpen(true)}>
+                  <Icon name="add-circle-outline" size={18} color={colors.primary} />
+                  <Text style={styles.addDishText}>Agregar platillo</Text>
+                </TouchableOpacity>
+
+                {draftDishes.length > 0 && (
+                  <View style={styles.subtotalRow}>
+                    <Text style={styles.subtotalLabel}>Subtotal del día</Text>
+                    <Text style={styles.subtotalValue}>
+                      ${draftDishes.reduce((s, d) => s + parsePrice(d.item.price) * d.quantity, 0).toFixed(0)}
+                    </Text>
+                  </View>
+                )}
+
+                <Text style={[styles.formSectionTitle, { marginTop: spacing.md }]}>Entrega</Text>
+                <View style={styles.inputWrapper}>
+                  <Icon name="location-outline" size={16} color={colors.gray400} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Dirección de entrega"
+                    placeholderTextColor={colors.textLight}
+                    value={draftAddress}
+                    onChangeText={setDraftAddress}
+                  />
+                </View>
+                <View style={[styles.inputWrapper, { marginTop: spacing.sm }]}>
+                  <Icon name="document-text-outline" size={16} color={colors.gray400} style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Instrucciones (opcional)"
+                    placeholderTextColor={colors.textLight}
+                    value={draftInstructions}
+                    onChangeText={setDraftInstructions}
+                  />
+                </View>
+                <TouchableOpacity style={[styles.pickerRow, { marginTop: spacing.sm }]} onPress={() => setTimePickerVisible(true)}>
+                  <Icon name="time-outline" size={16} color={colors.gray400} />
+                  <Text style={[styles.pickerValue, !draftTime && styles.pickerPlaceholder]}>
+                    {draftTime || 'Hora de entrega'}
+                  </Text>
+                  <Icon name="chevron-forward" size={16} color={colors.gray400} />
+                </TouchableOpacity>
+                <DateTimePickerModal
+                  isVisible={isTimePickerVisible}
+                  mode="time"
+                  onConfirm={handleTimeConfirm}
+                  onCancel={() => setTimePickerVisible(false)}
+                />
+
+                <View style={[styles.switchRow, { marginTop: spacing.md }]}>
+                  <View style={styles.switchLeft}>
+                    <Icon name="restaurant-outline" size={16} color={colors.textSecondary} />
+                    <Text style={styles.switchLabel}>¿Incluir cubiertos?</Text>
+                  </View>
+                  <Switch
+                    value={draftUtensils}
+                    onValueChange={setDraftUtensils}
+                    trackColor={{ false: colors.gray200, true: colors.primaryLight }}
+                    thumbColor={draftUtensils ? colors.primary : colors.white}
+                  />
+                </View>
+
+                <TouchableOpacity
+                  style={[styles.saveButton, draftDishes.length === 0 && styles.saveButtonDisabled]}
+                  onPress={handleSaveDay}
+                  activeOpacity={0.85}
+                  disabled={draftDishes.length === 0}
+                >
+                  <Icon name="checkmark-circle-outline" size={20} color={colors.white} />
+                  <Text style={styles.saveButtonText}>Guardar {editingDay}</Text>
+                </TouchableOpacity>
+
+                <View style={{ height: spacing.lg }} />
+              </ScrollView>
+            </Animated.View>
+          </KeyboardAvoidingView>
+        </>
+      )}
+
+      {/* Dish picker modal */}
+      <Modal
+        visible={pickerOpen}
+        animationType="slide"
+        presentationStyle={Platform.OS === 'ios' ? 'pageSheet' : undefined}
+        onRequestClose={() => setPickerOpen(false)}
+      >
+        <SafeAreaView style={styles.pickerContainer}>
+          <View style={styles.pickerHeader}>
+            <Text style={styles.pickerTitle}>Elegir platillo</Text>
+            <TouchableOpacity onPress={() => setPickerOpen(false)}>
+              <Icon name="close" size={24} color={colors.gray500} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.pickerSearchBar}>
+            <Icon name="search-outline" size={16} color={colors.textLight} />
+            <TextInput
+              style={styles.pickerSearchInput}
+              value={pickerQuery}
+              onChangeText={setPickerQuery}
+              placeholder="Buscar platillo o chef"
+              placeholderTextColor={colors.textLight}
+            />
+          </View>
+
+          <View style={styles.pickerCategorySection}>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              style={styles.emojiRow}
-              contentContainerStyle={{ paddingHorizontal: 2, gap: spacing.sm }}
+              contentContainerStyle={styles.pickerCategoryContent}
             >
-              {FOLDER_EMOJIS.map(emoji => (
-                <TouchableOpacity
-                  key={emoji}
-                  style={[styles.emojiBtn, newFolderEmoji === emoji && styles.emojiBtnActive]}
-                  onPress={() => setNewFolderEmoji(emoji)}
-                >
-                  <Text style={styles.emojiText}>{emoji}</Text>
-                </TouchableOpacity>
-              ))}
+              {CATEGORIES.map(cat => {
+                const active = pickerCategory === cat.id;
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={[styles.categoryChip, active && styles.categoryChipActive]}
+                    onPress={() => setPickerCategory(cat.id)}
+                    activeOpacity={0.8}
+                  >
+                    <MaterialCommunityIcon name={cat.icon} size={15} color={active ? colors.white : colors.textSecondary} />
+                    <Text style={[styles.categoryChipText, active && styles.categoryChipTextActive]}>{cat.label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
+          </View>
 
-            <View style={[styles.inputWrapper, { marginTop: spacing.md }]}>
-              <Icon name="folder-open-outline" size={16} color={colors.gray400} style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Nombre de la carpeta"
-                placeholderTextColor={colors.textLight}
-                value={newFolderName}
-                onChangeText={setNewFolderName}
-                autoFocus
-                returnKeyType="done"
-                onSubmitEditing={handleCreateFolder}
-              />
-            </View>
-
-            <TouchableOpacity style={[styles.saveButton, { marginTop: spacing.md }]} onPress={handleCreateFolder} activeOpacity={0.85}>
-              <Icon name="folder-open-outline" size={18} color={colors.white} />
-              <Text style={styles.saveButtonText}>Crear carpeta</Text>
-            </TouchableOpacity>
-          </Animated.View>
-
-          <TouchableOpacity style={styles.backdrop} onPress={() => setShowFolderSheet(false)} activeOpacity={1} />
-        </>
-      )}
+          <ScrollView contentContainerStyle={styles.pickerList} showsVerticalScrollIndicator={false}>
+            {pickerResults.length === 0 ? (
+              <View style={styles.emptyPicker}>
+                <Icon name="search-outline" size={28} color={colors.gray300} />
+                <Text style={styles.emptyPickerText}>Sin resultados</Text>
+              </View>
+            ) : (
+              pickerResults.map(item => (
+                <TouchableOpacity key={item.id} style={styles.pickerItemRow} onPress={() => handlePickDish(item)} activeOpacity={0.8}>
+                  <Image source={getDishImage(item.dish)} style={styles.pickerItemPhoto} />
+                  <View style={styles.pickerItemInfo}>
+                    <Text style={styles.pickerItemName} numberOfLines={1}>{item.dish}</Text>
+                    <Text style={styles.pickerItemChef} numberOfLines={1}>Por {item.person}</Text>
+                    <View style={styles.pickerItemMeta}>
+                      <Icon name="star" size={11} color={colors.star} />
+                      <Text style={styles.pickerItemMetaText}>{item.rating}</Text>
+                      <Icon name="time-outline" size={11} color={colors.textLight} />
+                      <Text style={styles.pickerItemMetaText}>{item.time}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.pickerItemRight}>
+                    <Text style={styles.pickerItemPrice}>{item.price}</Text>
+                    <Icon name="add-circle" size={24} color={colors.primary} />
+                  </View>
+                </TouchableOpacity>
+              ))
+            )}
+            <View style={{ height: spacing.xl }} />
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -627,148 +432,67 @@ const MenuView = () => {
 const makeStyles = (colors: AppColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
   pageHeader: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: spacing.md, paddingTop: spacing.md, paddingBottom: spacing.sm,
     backgroundColor: colors.card, borderBottomWidth: 1, borderBottomColor: colors.borderLight,
   },
   pageTitle: { ...typography.h2 },
   pageSubtitle: { fontSize: 13, color: colors.textSecondary, marginTop: 2 },
-  newEventBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: colors.primary, borderRadius: radius.full,
-    paddingHorizontal: spacing.md, paddingVertical: 8,
-  },
-  newEventBtnText: { color: colors.white, fontSize: 14, fontWeight: '700' },
   scroll: { padding: spacing.md },
-  calendarCard: {
-    backgroundColor: colors.card, borderRadius: radius.lg,
-    borderWidth: 1, borderColor: colors.border, marginBottom: spacing.md,
-  },
 
-  // Folders
-  foldersSection: { marginBottom: spacing.md },
-  foldersSectionHeader: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    marginBottom: spacing.sm,
-  },
-  foldersSectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text },
-  addFolderBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 3,
-    borderWidth: 1.5, borderColor: colors.primary,
-    borderRadius: radius.full, paddingHorizontal: 12, paddingVertical: 5,
-  },
-  addFolderBtnText: { fontSize: 13, fontWeight: '700', color: colors.primary },
-  createFolderCta: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
-    backgroundColor: colors.primaryLight, borderRadius: radius.lg,
-    borderWidth: 1.5, borderColor: colors.primary, borderStyle: 'dashed',
-    padding: spacing.md,
-  },
-  createFolderCtaText: { flex: 1, fontSize: 14, fontWeight: '500', color: colors.primary },
-  folderCard: {
+  // Summary
+  summaryCard: {
+    flexDirection: 'row', alignItems: 'center',
     backgroundColor: colors.card, borderRadius: radius.lg,
-    borderWidth: 1, borderColor: colors.border, marginBottom: spacing.sm,
-    overflow: 'hidden', ...shadows.sm,
+    borderWidth: 1, borderColor: colors.border,
+    padding: spacing.md, marginBottom: spacing.md, ...shadows.sm,
   },
-  folderHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
-    padding: spacing.md,
+  summaryStat: { flex: 1, alignItems: 'center' },
+  summaryStatValue: { fontSize: 20, fontWeight: '700', color: colors.text },
+  summaryStatLabel: { fontSize: 11, color: colors.textSecondary, marginTop: 2 },
+  summaryDividerV: { width: 1, height: 32, backgroundColor: colors.border },
+
+  // Day cards
+  dayCard: {
+    backgroundColor: colors.card, borderRadius: radius.lg,
+    borderWidth: 1, borderColor: colors.border,
+    padding: spacing.md, marginBottom: spacing.sm, ...shadows.sm,
   },
-  folderEmoji: { fontSize: 26, lineHeight: 32 },
-  folderInfo: { flex: 1 },
-  folderName: { fontSize: 15, fontWeight: '700', color: colors.text },
-  folderCount: { fontSize: 12, color: colors.textSecondary, marginTop: 1 },
-  folderDeleteBtn: {
-    width: 32, height: 32, borderRadius: radius.sm,
+  dayCardHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  dayBadge: {
+    width: 40, height: 40, borderRadius: radius.md,
+    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  dayBadgeActive: { backgroundColor: colors.primaryLight, borderColor: colors.primary },
+  dayBadgeText: { fontSize: 11, fontWeight: '700', color: colors.gray400 },
+  dayBadgeTextActive: { color: colors.primary },
+  dayCardInfo: { flex: 1 },
+  dayCardTitle: { fontSize: 15, fontWeight: '700', color: colors.text },
+  dayCardSubtitle: { fontSize: 12, color: colors.textSecondary, marginTop: 1 },
+  dayClearBtn: {
+    width: 30, height: 30, borderRadius: radius.sm,
     backgroundColor: '#FEF2F2', justifyContent: 'center', alignItems: 'center',
   },
-  folderContent: {
-    borderTopWidth: 1, borderTopColor: colors.borderLight,
-    padding: spacing.sm,
-  },
-  folderEmptyText: {
-    textAlign: 'center', fontSize: 13, color: colors.textLight,
-    paddingVertical: spacing.md,
-  },
 
-  // Folder dropdown (inside form)
-  folderDropdown: {
-    backgroundColor: colors.card, borderWidth: 1, borderTopWidth: 0,
-    borderColor: colors.border,
-    borderBottomLeftRadius: radius.sm, borderBottomRightRadius: radius.sm,
+  dishThumbRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.sm, gap: spacing.xs },
+  dishThumb: {
+    width: 28, height: 28, borderRadius: 14,
+    borderWidth: 2, borderColor: colors.card, backgroundColor: colors.surface,
   },
-  folderDropdownItem: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
-    paddingHorizontal: spacing.md, paddingVertical: 12,
-    borderBottomWidth: 1, borderBottomColor: colors.borderLight,
-  },
-  folderDropdownEmoji: { fontSize: 16 },
-  folderDropdownItemText: { flex: 1, fontSize: 14, color: colors.text },
-  folderDropdownNew: { borderBottomWidth: 0 },
+  dishThumbOverlap: { marginLeft: -12 },
+  dishThumbLabel: { flex: 1, fontSize: 12, color: colors.textSecondary, marginLeft: spacing.xs },
 
-  // Event cards
-  eventCard: {
-    backgroundColor: colors.card, borderRadius: radius.lg,
-    padding: spacing.md, marginBottom: spacing.sm,
-    borderWidth: 1, borderColor: colors.border, ...shadows.sm,
-  },
-  eventHeader: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  eventDateBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    backgroundColor: colors.primaryLight, borderRadius: radius.full,
-    paddingHorizontal: 10, paddingVertical: 4,
-  },
-  eventDate: { fontSize: 12, fontWeight: '600', color: colors.primary },
-  eventActions: { flexDirection: 'row', gap: spacing.sm },
-  eventActionBtn: {
-    width: 32, height: 32, borderRadius: radius.sm,
-    backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1, borderColor: colors.border,
-  },
-  eventDeleteBtn: { backgroundColor: '#FEF2F2', borderColor: '#FECACA' },
-  eventName: { ...typography.h4, marginBottom: spacing.xs },
-  eventDetail: { fontSize: 13, color: colors.textSecondary, marginBottom: 3 },
-  eventFooter: {
-    marginTop: spacing.sm, paddingTop: spacing.sm,
-    borderTopWidth: 1, borderTopColor: colors.borderLight,
-  },
-  eventTotal: { fontSize: 14, fontWeight: '700', color: colors.primary },
+  addDishesCta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: spacing.sm },
+  addDishesCtaText: { fontSize: 13, fontWeight: '600', color: colors.primary },
 
-  // Form
-  formCard: {
-    backgroundColor: colors.card, borderRadius: radius.lg,
-    borderWidth: 1, borderColor: colors.border,
-    marginBottom: spacing.md, overflow: 'hidden', ...shadows.sm,
-  },
-  formHeader: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.borderLight,
-  },
-  formTitle: { ...typography.h3 },
-  formSection: {
-    padding: spacing.md, borderBottomWidth: 1,
-    borderBottomColor: colors.borderLight, gap: spacing.sm,
-  },
-  formSectionTitle: { ...typography.h4, marginBottom: spacing.xs },
-  dishRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  dishInputWrapper: {
-    flex: 1, flexDirection: 'row', alignItems: 'center',
-    backgroundColor: colors.surface, borderRadius: radius.sm,
-    borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.sm, height: 44,
-  },
-  inputIcon: { marginRight: spacing.xs },
-  dishInput: { flex: 1, fontSize: 14, color: colors.text },
-  removeBtn: { padding: 4 },
-  addDishBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.sm },
-  addDishText: { color: colors.primary, fontSize: 14, fontWeight: '600' },
+  // Shared form bits (editor sheet)
+  formSectionTitle: { ...typography.h4, marginBottom: spacing.sm },
   inputWrapper: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: colors.surface, borderRadius: radius.sm,
     borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.sm, height: 44,
   },
+  inputIcon: { marginRight: spacing.xs },
   input: { flex: 1, fontSize: 14, color: colors.text },
   pickerRow: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
@@ -781,41 +505,51 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
   switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   switchLeft: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   switchLabel: { fontSize: 14, fontWeight: '500', color: colors.text },
-  summaryBox: {
-    padding: spacing.md, backgroundColor: colors.surface,
-    margin: spacing.md, borderRadius: radius.md,
-    borderWidth: 1, borderColor: colors.border, gap: 4,
-  },
-  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 },
-  summaryLabel: { fontSize: 13, color: colors.textSecondary },
-  summaryValue: { fontSize: 13, fontWeight: '600', color: colors.text },
-  summaryDivider: { height: 1, backgroundColor: colors.border, marginVertical: spacing.xs },
-  summaryTotal: { fontSize: 15, fontWeight: '700', color: colors.text },
-  summaryTotalValue: { fontSize: 16, fontWeight: '700', color: colors.primary },
+  removeBtn: { padding: 4 },
+  addDishBtn: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingVertical: spacing.sm, marginBottom: spacing.xs },
+  addDishText: { color: colors.primary, fontSize: 14, fontWeight: '600' },
   saveButton: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: spacing.sm, margin: spacing.md, backgroundColor: colors.primary,
+    gap: spacing.sm, marginTop: spacing.lg, backgroundColor: colors.primary,
     borderRadius: radius.md, paddingVertical: 14, ...shadows.md,
   },
+  saveButtonDisabled: { backgroundColor: colors.gray300 },
   saveButtonText: { color: colors.white, fontSize: 15, fontWeight: '700' },
 
-  // Empty state
-  emptyState: { alignItems: 'center', paddingVertical: spacing.xxl, gap: spacing.sm },
-  emptyEmoji: { fontSize: 52 },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: colors.gray500 },
-  emptySubtitle: {
-    fontSize: 14, color: colors.textLight, textAlign: 'center',
-    paddingHorizontal: spacing.xl, lineHeight: 20,
-  },
+  emptyPicker: { alignItems: 'center', paddingVertical: spacing.lg, gap: spacing.xs },
+  emptyPickerText: { fontSize: 13, color: colors.textLight },
 
-  // Folder creation sheet
+  // Selected dish row (inside day editor)
+  selectedDishRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
+  selectedDishPhoto: { width: 48, height: 48, borderRadius: radius.sm, backgroundColor: colors.surface },
+  selectedDishInfo: { flex: 1 },
+  selectedDishName: { fontSize: 14, fontWeight: '700', color: colors.text },
+  selectedDishChef: { fontSize: 12, color: colors.textSecondary, marginTop: 1 },
+  qtyStepper: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: colors.surface, borderRadius: radius.full,
+    borderWidth: 1, borderColor: colors.border, paddingHorizontal: 4, paddingVertical: 4,
+  },
+  qtyBtn: { width: 22, height: 22, borderRadius: 11, justifyContent: 'center', alignItems: 'center' },
+  qtyText: { fontSize: 13, fontWeight: '700', color: colors.text, minWidth: 14, textAlign: 'center' },
+
+  subtotalRow: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    backgroundColor: colors.surface, borderRadius: radius.sm,
+    borderWidth: 1, borderColor: colors.border,
+    paddingHorizontal: spacing.sm, paddingVertical: spacing.sm, marginTop: spacing.xs,
+  },
+  subtotalLabel: { fontSize: 13, color: colors.textSecondary },
+  subtotalValue: { fontSize: 15, fontWeight: '700', color: colors.primary },
+
+  // Bottom sheet
   backdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)' },
-  sheet: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
+  editorWrapper: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'flex-end' },
+  editorSheet: {
     backgroundColor: colors.card,
     borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl,
-    padding: spacing.md, paddingBottom: 36,
-    zIndex: 10, ...shadows.lg,
+    padding: spacing.md, paddingBottom: spacing.md,
+    maxHeight: '88%', ...shadows.lg,
   },
   sheetHandle: {
     width: 36, height: 4, borderRadius: 2,
@@ -826,15 +560,52 @@ const makeStyles = (colors: AppColors) => StyleSheet.create({
     marginBottom: spacing.md,
   },
   sheetTitle: { fontSize: 18, fontWeight: '700', color: colors.text },
-  emojiRow: { flexDirection: 'row', marginBottom: spacing.xs },
-  emojiBtn: {
-    width: 44, height: 44, borderRadius: radius.md,
-    justifyContent: 'center', alignItems: 'center',
-    borderWidth: 1.5, borderColor: colors.border,
-    backgroundColor: colors.surface,
+
+  // Dish picker modal
+  pickerContainer: { flex: 1, backgroundColor: colors.surface },
+  pickerHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    padding: spacing.md, backgroundColor: colors.card,
+    borderBottomWidth: 1, borderBottomColor: colors.borderLight,
   },
-  emojiBtnActive: { borderColor: colors.primary, backgroundColor: colors.primaryLight },
-  emojiText: { fontSize: 22 },
+  pickerTitle: { fontSize: 18, fontWeight: '700', color: colors.text },
+  pickerSearchBar: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: colors.card, margin: spacing.md, marginBottom: spacing.sm,
+    borderRadius: radius.md, borderWidth: 1, borderColor: colors.border,
+    paddingHorizontal: spacing.sm, paddingVertical: 10,
+  },
+  pickerSearchInput: { flex: 1, fontSize: 14, color: colors.text, padding: 0 },
+  pickerCategorySection: {
+    backgroundColor: colors.card,
+    borderBottomWidth: 1, borderBottomColor: colors.borderLight,
+    paddingVertical: spacing.sm, marginBottom: spacing.sm,
+  },
+  pickerCategoryContent: { gap: spacing.sm, paddingHorizontal: spacing.md, paddingRight: spacing.lg },
+  categoryChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: colors.surface, borderRadius: radius.full,
+    borderWidth: 1.5, borderColor: colors.border,
+    paddingHorizontal: 14, paddingVertical: 9,
+  },
+  categoryChipActive: { backgroundColor: colors.primary, borderColor: colors.primary, ...shadows.sm },
+  categoryChipText: { fontSize: 13, fontWeight: '600', color: colors.textSecondary },
+  categoryChipTextActive: { color: colors.white, fontWeight: '700' },
+  pickerList: { paddingHorizontal: spacing.md },
+  pickerItemRow: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
+    backgroundColor: colors.card, borderRadius: radius.lg,
+    borderWidth: 1, borderColor: colors.border,
+    padding: spacing.sm, marginBottom: spacing.sm, ...shadows.sm,
+  },
+  pickerItemPhoto: { width: 56, height: 56, borderRadius: radius.md, backgroundColor: colors.surface },
+  pickerItemInfo: { flex: 1, gap: 2 },
+  pickerItemName: { fontSize: 14, fontWeight: '700', color: colors.text },
+  pickerItemChef: { fontSize: 12, color: colors.textSecondary },
+  pickerItemMeta: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
+  pickerItemMetaText: { fontSize: 11, color: colors.textLight },
+  pickerItemRight: { alignItems: 'center', gap: 4 },
+  pickerItemPrice: { fontSize: 13, fontWeight: '700', color: colors.text },
 });
 
 export default MenuView;
